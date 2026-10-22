@@ -14,6 +14,7 @@ const topicKeys: Record<string, string[][]> = {
   meals: [['meals'], ['suggest'], ['recipes']],
   grocery: [['grocery']],
   pantry: [['pantry'], ['suggest']],
+  money: [['money']],
 }
 
 export type LiveState = 'connecting' | 'live' | 'offline'

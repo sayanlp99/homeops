@@ -58,7 +58,8 @@ func TestClassifyAisle(t *testing.T) {
 		"Toor dal": "Pulses & Lentils", "Basmati rice": "Grains & Flour", "Mustard oil": "Oils & Ghee",
 		"Coriander leaves": "Vegetables", "Coriander powder": "Spices & Masala", "Chicken thighs": "Meat & Fish",
 		"Paneer": "Dairy & Eggs", "Curry leaves": "Vegetables", "Tomatoes": "Vegetables", "Salt": "Spices & Masala",
-		"Dishwash liquid": "Household", "Quinoa": "Grains & Flour", "Something odd": "Other",
+		"Dishwash liquid": "Household", "Tulips Cucumber Avocado Refreshing Face Wipes": "Household", "Gold Flake Indie Mint": "Other",
+		"Godrej Aer Power Pocket Bathroom Freshener": "Household", "Table White Eggs": "Dairy & Eggs", "Quinoa": "Grains & Flour", "Something odd": "Other",
 	}
 	for in, want := range cases {
 		if got := classifyAisle(in); got != want {

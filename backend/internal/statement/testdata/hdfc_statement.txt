@@ -1,0 +1,65 @@
+
+
+
+HDFC BANK Ltd.                                     Page No .:   1                                        Statement of accounts
+
+MR      ASHA ANAND                                                       Account Branch : EXAMPLE BRANCH
+                                                                         Account No     : 50100000000001   CLASSIC
+Statement From      : 01/09/2026  To: 30/09/2026                         RTGS/NEFT IFSC : HDFC0000001
+
+--------  ----------------------------------------  ----------------  --------  ------------------  ------------------  ------------------
+Date      Narration				    Chq./Ref.No.      Value Dt  Withdrawal Amt.        Deposit Amt.     Closing Balance
+--------  ----------------------------------------  ----------------  --------  ------------------  ------------------  ------------------
+
+01/09/26  UPI-CORNER FOOD COURT-Q100000001@YBL-YES  0000526018159083  01/09/26               56.00                              149,944.00   
+          B0YBLUPI-526018159083-PAYMENT FROM PHONE                                                                                            
+01/09/26  UPI-RAVI KUMAR M N-PAYTM.S1ABCDE@PTY-YES  0000016613186091  01/09/26              260.00                              149,684.00   
+          B0MCHUPI-016613186091-PAYMENT FROM PHONE                                                                                            
+02/09/26  UPI-ASHA ANAND-9000000001@AXL-UBIN050000  0000390996030824  02/09/26            5,000.00                              144,684.00   
+          1-390996030824-PAYMENT FROM PHONE                                                                                                   
+03/09/26  NWD-512967XXXXXX1111-PBGE3030-BANGALORE   0000628194821993  03/09/26            4,500.00                              140,184.00   
+05/09/26  UPI-LATHA R-LATHA.R1000@IBL-CNRB0000033-  0000518190937865  05/09/26           12,600.00                              127,584.00   
+          518190937865-UPI                                                                                                                    
+08/09/26  UPI-NATIONAL PENSION SYS-NPSTRUST-2.BDPG  0000797543231948  08/09/26            8,000.00                              119,584.00   
+          01@KOTAKPAY-KKBK0JPUPIA-797543231948-UPI                                                                                            
+09/09/26  UPI-GOOGLE INDIA DIGITAL-GPAY-UTILITY@OK  0000757491186252  09/09/26              587.00                              118,997.00   
+          PAYAXIS-UTIB0000553-757491186252-UPI                                                                                                
+11/09/26  UPI-SWIGGY-UPISWIGGY@ICICI-ICIC0DC0099-7  0000760189555979  11/09/26              105.00                              118,892.00   
+          60189555979-PAYMENT FROM PHONE                                                                                                      
+                                                 **Continue** 
+
+HDFC BANK Ltd.                                     Page No .:   2                                        Statement of accounts
+
+--------  ----------------------------------------  ----------------  --------  ------------------  ------------------  ------------------
+Date      Narration				    Chq./Ref.No.      Value Dt  Withdrawal Amt.        Deposit Amt.     Closing Balance
+--------  ----------------------------------------  ----------------  --------  ------------------  ------------------  ------------------
+
+12/09/26  UPI-OLD TOWN TEA-PAYTM.S22F1GQ@PTY-YESB0  0000711471049746  12/09/26              370.00                              118,522.00   
+          MCHUPI-711471049746-PAYMENT FROM PHONE                                                                                              
+19/09/26  UPI-BOBCARD ONE CREDIT C-BOBCARDONECREDI  0000507529170342  19/09/26            7,258.85                              111,263.15   
+          157074.RZP@RXAIRTEL-AIRP0000011-50752917                                                                                            
+          0342-PAY                                                                                                                            
+24/09/26  UPI-CRED CLUB-CRED.CLUB@AXISB-UTIB000011  0000366712768426  24/09/26           21,010.00                               90,253.15   
+          4-366712768426-PAYMENT ON CRED                                                                                                      
+29/09/26  UPI-SHREE VASTRALAYA-PAYTMQR5IYTGH@PTYS-  0000846563212233  29/09/26            3,415.00                               86,838.15   
+          YESB0PTMUPI-846563212233-PAYMENT FROM PH                                                                                            
+          ONE                                                                                                                                 
+29/09/26  UPI-IRCTC TICKETING-PINELABS.11093315@PI  0000079244026859  29/09/26            1,954.50                               84,883.65   
+          NEAXIS-UTIB000SETU-079244026859-PAY VIA                                                                                             
+          PINE LABS                                                                                                                           
+30/09/26  A2AINT01 - EXAMPLE SOFTWARE PRIVATE LIMI  0000952890786666  30/09/26                               85,000.00          169,883.65   
+          TED - SALARY - SALARY SEP 26                                                                                                        
+01/10/26  INTEREST PAID TILL 30-SEP-2026            0000176031372159  01/10/26                                  912.00          170,795.65   
+
+
+********  ****************************************  ****************  ********  ******************  ******************  ******************
+******************************************************************************************************************************************
+
+         STATEMENT SUMMARY  :- 
+           Opening Balance                                                      Debits              Credits          Closing Bal 
+                150,000.00                                                  65,116.35           85,912.00           170,795.65 
+
+                                                                              Dr Count             Cr Count 
+                                                                                    13                    2 
+
+                                            ---  End Of Statement ---  

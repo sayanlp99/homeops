@@ -164,6 +164,7 @@ func (s *Server) schedulerTick(ctx context.Context, now time.Time) {
 		}
 		if minute >= expiryAt && minute < 21*60 {
 			logErr("scheduler: expiry", s.expiryAlert(ctx, h, today))
+			logErr("scheduler: bills", s.billReminders(ctx, h, localToday(h, now)))
 		}
 		logErr("scheduler: prep", s.prepReminders(ctx, h, now))
 	}

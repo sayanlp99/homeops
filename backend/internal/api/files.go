@@ -23,13 +23,14 @@ import (
 
 const maxUploadBytes = 15 << 20
 
-var fileIDRe = regexp.MustCompile(`^[0-9a-f-]{36}$`)
+var fileIDRe = regexp.MustCompile(`^[0-9a-f-]{36}(\.pdf)?$`) // "<uuid>" = image, "<uuid>.pdf" = PDF
 
+// Uploads (recipe photos, receipts) share one namespace; IDs are random UUIDs.
 func photoKey(id string, thumb bool) string {
 	if thumb {
-		return "recipes/" + id + "_thumb.jpg"
+		return "files/" + id + "_thumb.jpg"
 	}
-	return "recipes/" + id + ".jpg"
+	return "files/" + id + ".jpg"
 }
 
 // storeImage decodes any JPEG/PNG/WebP, then stores a ≤1600px JPEG and a 480px thumbnail
@@ -81,6 +82,18 @@ func resize(img image.Image, max int) image.Image {
 	return dst
 }
 
+// storePDF keeps an invoice PDF as-is (after a basic sanity check) and returns "<uuid>.pdf".
+func (s *Server) storePDF(ctx context.Context, data []byte) (string, error) {
+	if !bytes.HasPrefix(data, []byte("%PDF")) || len(data) > maxUploadBytes {
+		return "", errBadRequest("Not a PDF, or larger than 15 MB")
+	}
+	id := uuid.NewString() + ".pdf"
+	if err := s.files.Put(ctx, "files/"+id, data, "application/pdf"); err != nil {
+		return "", err
+	}
+	return id, nil
+}
+
 func (s *Server) uploadFile(w http.ResponseWriter, r *http.Request) error {
 	r.Body = http.MaxBytesReader(w, r.Body, maxUploadBytes+1<<20)
 	file, _, err := r.FormFile("file")
@@ -104,7 +117,15 @@ func (s *Server) serveFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	thumb := r.URL.Query().Get("thumb") == "1"
-	f, err := s.files.Get(r.Context(), photoKey(id, thumb))
+	key, ctype := photoKey(id, thumb), "image/jpeg"
+	if strings.HasSuffix(id, ".pdf") {
+		if thumb {
+			http.NotFound(w, r)
+			return
+		}
+		key, ctype = "files/"+id, "application/pdf"
+	}
+	f, err := s.files.Get(r.Context(), key)
 	if errors.Is(err, blob.ErrNotFound) {
 		http.NotFound(w, r)
 		return
@@ -115,19 +136,21 @@ func (s *Server) serveFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer f.Close()
-	w.Header().Set("Content-Type", "image/jpeg")
+	w.Header().Set("Content-Type", ctype)
 	w.Header().Set("Cache-Control", "private, max-age=31536000, immutable")
-	http.ServeContent(w, r, id+".jpg", time.Time{}, f)
+	w.Header().Set("Content-Disposition", "inline")
+	http.ServeContent(w, r, id, time.Time{}, f)
 }
 
-// pruneOrphanFiles removes photos no recipe references, e.g. from an import that was
+// pruneOrphanFiles removes uploads no recipe or transaction references, e.g. from an import that was
 // never saved. Only objects older than a day are touched.
 func (s *Server) pruneOrphanFiles(ctx context.Context) error {
-	objs, err := s.files.List(ctx, "recipes/")
+	objs, err := s.files.List(ctx, "files/")
 	if err != nil {
 		return err
 	}
-	rows, err := s.db.Query(ctx, `SELECT photo FROM recipes WHERE photo <> ''`)
+	rows, err := s.db.Query(ctx, `SELECT photo FROM recipes WHERE photo <> ''
+		UNION SELECT receipt FROM money_transactions WHERE receipt <> ''`)
 	if err != nil {
 		return err
 	}
@@ -143,7 +166,10 @@ func (s *Server) pruneOrphanFiles(ctx context.Context) error {
 	rows.Close()
 	cutoff := time.Now().Add(-24 * time.Hour)
 	for _, o := range objs {
-		id := strings.TrimSuffix(strings.TrimSuffix(strings.TrimPrefix(o.Key, "recipes/"), ".jpg"), "_thumb")
+		id := strings.TrimPrefix(o.Key, "files/")
+		if !strings.HasSuffix(id, ".pdf") {
+			id = strings.TrimSuffix(strings.TrimSuffix(id, ".jpg"), "_thumb")
+		}
 		if used[id] || o.Modified.After(cutoff) {
 			continue
 		}

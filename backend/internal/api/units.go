@@ -304,6 +304,10 @@ type aisleRule struct {
 }
 
 var aisleRules = []aisleRule{
+	// Non-food first: "Cucumber Face Wipes" are household, not vegetables.
+	{aisle: "Household", keywords: []string{"detergent", "soap", "shampoo", "conditioner", "toothpaste", "toothbrush", "tissue", "napkin", "dishwash", "vim", "harpic", "phenyl", "garbage bag", "foil", "cling", "sponge", "scrub",
+		"wipes", "freshener", "face wash", "facewash", "handwash", "hand wash", "sanitizer", "sanitiser", "deodorant", "diaper", "sanitary", "razor", "toilet", "floor cleaner", "cleaner", "mosquito", "battery", "lotion", "moisturiser", "moisturizer", "sunscreen", "body wash"}},
+	{aisle: "Other", keywords: []string{"cigarette", "cigarettes", "gold flake", "marlboro", "classic milds", "bidi", "tobacco", "ice cubes", "ice cube"}},
 	{aisle: "Spices & Masala", keywords: []string{"powder", "masala", "turmeric", "haldi", "jeera", "cumin", "coriander seed", "dhania seed", "mustard seed", "rai", "fenugreek seed", "methi seed", "fennel", "saunf", "ajwain", "carom", "hing", "asafoetida", "cardamom", "elaichi", "clove", "laung", "cinnamon", "dalchini", "bay leaf", "tej patta", "peppercorn", "black pepper", "kasuri", "star anise", "nutmeg", "mace", "saffron", "kesar", "salt", "sugar", "jaggery", "gur", "chaat", "amchur", "kalonji", "nigella", "poppy", "sesame", "til", "red chilli", "kashmiri", "dry chilli", "dried chilli", "baking soda", "baking powder", "yeast", "vinegar", "soy sauce", "ketchup", "sauce"}},
 	{aisle: "Oils & Ghee", keywords: []string{"oil", "ghee", "vanaspati", "dalda"}},
 	{aisle: "Dairy & Eggs", keywords: []string{"milk", "curd", "dahi", "yogurt", "yoghurt", "paneer", "butter", "cheese", "cream", "malai", "khoya", "mawa", "buttermilk", "chaas", "egg"}},
@@ -315,7 +319,6 @@ var aisleRules = []aisleRule{
 	{aisle: "Frozen", keywords: []string{"frozen", "ice cream"}},
 	{aisle: "Beverages", keywords: []string{"tea", "chai patti", "coffee", "juice", "soda", "cola", "water bottle"}},
 	{aisle: "Snacks & Packaged", keywords: []string{"biscuit", "chips", "namkeen", "chocolate", "jam", "honey", "pickle", "achar", "papad", "cornflakes", "muesli", "peanut butter", "maggi", "instant"}},
-	{aisle: "Household", keywords: []string{"detergent", "soap", "shampoo", "toothpaste", "tissue", "dishwash", "vim", "harpic", "phenyl", "garbage bag", "foil", "cling", "sponge", "scrub"}},
 	{aisle: "Vegetables", keywords: []string{"onion", "pyaz", "tomato", "tamatar", "potato", "aloo", "garlic", "lahsun", "ginger", "adrak", "chilli", "chili", "mirchi", "capsicum", "bell pepper", "carrot", "gajar", "peas", "matar", "beans", "cauliflower", "gobi", "cabbage", "spinach", "palak", "methi", "fenugreek", "coriander", "dhania", "cilantro", "mint", "pudina", "curry leaf", "curry leaves", "kadi patta", "brinjal", "baingan", "eggplant", "okra", "bhindi", "lady finger", "cucumber", "kheera", "bottle gourd", "lauki", "ridge gourd", "turai", "bitter gourd", "karela", "pumpkin", "kaddu", "radish", "mooli", "beetroot", "sweet potato", "shakarkandi", "drumstick", "moringa", "mushroom", "corn", "lettuce", "spring onion", "lemon", "lime", "nimbu", "zucchini", "broccoli", "raw banana", "plantain", "yam", "colocasia", "arbi", "jackfruit", "kathal", "tinda", "parwal", "pointed gourd", "cluster beans", "gawar", "celery", "leek", "avocado"}},
 }
 

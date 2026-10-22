@@ -6,7 +6,7 @@ import { taskKey } from '@/lib/format'
 import { useRecipes } from '@/lib/meals'
 import { useTasks } from '@/lib/tasks'
 import { setTheme } from '@/lib/theme'
-import { openQuickAdd, palette, useTaskParam } from '@/lib/ui'
+import { openQuickAdd, openQuickExpense, palette, useTaskParam } from '@/lib/ui'
 import { StatusIcon } from '@/features/tasks/TaskBits'
 
 const nav = [
@@ -20,7 +20,10 @@ const nav = [
   { to: '/recipes/new', label: 'New recipe', icon: Plus },
   { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
   { to: '/pantry', label: 'Pantry', icon: Package },
-  { to: '/budget', label: 'Budget', icon: Wallet },
+  { to: '/budget', label: 'Budget overview', icon: Wallet },
+  { to: '/budget/transactions', label: 'Transactions', icon: Wallet },
+  { to: '/budget/import', label: 'Import statement or invoice', icon: Wallet },
+  { to: '/budget/bills', label: 'Bills', icon: Wallet },
   { to: '/retro', label: 'Retro', icon: RotateCcw },
   { to: '/settings/notifications', label: 'Notification settings', icon: Bell },
   { to: '/settings/profile', label: 'Settings', icon: Settings },
@@ -54,6 +57,9 @@ export function CommandPalette() {
               <Command.Group heading="Actions" className="[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-subtle">
                 <Command.Item className={itemCls} onSelect={() => run(() => openQuickAdd())}>
                   <Plus className="size-4 text-subtle" /> Create task <span className="ml-auto text-[11px] text-subtle">C</span>
+                </Command.Item>
+                <Command.Item className={itemCls} onSelect={() => run(() => openQuickExpense())}>
+                  <Wallet className="size-4 text-subtle" /> Add expense <span className="ml-auto text-[11px] text-subtle">E</span>
                 </Command.Item>
                 <Command.Item className={itemCls} onSelect={() => run(() => setTheme('dark'))}>
                   <Moon className="size-4 text-subtle" /> Dark theme

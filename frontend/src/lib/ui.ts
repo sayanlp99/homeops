@@ -56,3 +56,6 @@ export function findTask(tasks: Task[] | undefined, param: string | null) {
   if (!param || !tasks) return undefined
   return /^\d+$/.test(param) ? tasks.find((t) => t.number === Number(param)) : tasks.find((t) => t.id === param)
 }
+
+export const quickExpense = store<{ open: boolean; defaults: { categoryId?: string | null; amount?: number; payee?: string } }>({ open: false, defaults: {} })
+export const openQuickExpense = (defaults: { categoryId?: string | null; amount?: number; payee?: string } = {}) => quickExpense.set({ open: true, defaults })

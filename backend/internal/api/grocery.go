@@ -371,11 +371,37 @@ func (s *Server) completeShopping(w http.ResponseWriter, r *http.Request) error 
 	if _, err := tx.Exec(ctx, `DELETE FROM grocery_items WHERE household_id = $1 AND checked_at IS NOT NULL`, u.HouseholdID); err != nil {
 		return err
 	}
+	// The bill becomes a shared Groceries expense, so the budget is up to date.
+	var groceryCat *string
+	if in.Total != nil && *in.Total > 0 {
+		if err := s.ensureMoneyDefaults(ctx, u.HouseholdID); err != nil {
+			return err
+		}
+		var cid string
+		if err := tx.QueryRow(ctx, `SELECT id FROM money_categories WHERE household_id = $1 AND owner_id IS NULL AND lower(name) = 'groceries' AND NOT archived`,
+			u.HouseholdID).Scan(&cid); err == nil {
+			groceryCat = &cid
+		}
+		payee := strings.TrimSpace(in.Store)
+		if payee == "" {
+			payee = "Groceries"
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO money_transactions (id, household_id, kind, amount, date, payee, note, category_id, paid_by, source,
+			grocery_trip_id, created_by) VALUES ($1, $2, 'expense', $3, current_date, $4, $5, $6, $7, 'grocery', $8, $7)`,
+			randomUUID(), u.HouseholdID, int64(math.Round(*in.Total*100)), truncate(payee, 80), fmt.Sprintf("Shopping trip · %d items", len(bought)),
+			groceryCat, u.ID, tripID); err != nil {
+			return err
+		}
+	}
 	if err := tx.Commit(ctx); err != nil {
 		return err
 	}
 	s.hub.Publish(u.HouseholdID, eventGrocery.from(r))
 	s.hub.Publish(u.HouseholdID, eventPantry.from(r))
+	if groceryCat != nil {
+		s.hub.Publish(u.HouseholdID, eventMoney.from(r))
+		s.checkBudgetAlerts(ctx, u.HouseholdID, groceryCat, time.Now().Format(time.DateOnly))
+	}
 	return ok(w, map[string]any{"tripId": tripID, "items": len(bought)})
 }
 

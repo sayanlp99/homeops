@@ -1,4 +1,4 @@
-import { RotateCcw, Wallet, WifiOff } from 'lucide-react'
+import { RotateCcw, WifiOff } from 'lucide-react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { Button, Spinner } from '@/components/ui'
@@ -6,6 +6,11 @@ import { JoinPage, LoginPage, SetupPage } from '@/features/auth/AuthPages'
 import { GroceryPage } from '@/features/grocery/GroceryPage'
 import { HomePage } from '@/features/home/HomePage'
 import { MealPlanPage } from '@/features/meals/MealPlanPage'
+import { BillsPage } from '@/features/money/BillsPage'
+import { BudgetPage } from '@/features/money/BudgetPage'
+import { ImportPage } from '@/features/money/ImportPage'
+import { MoneySetupPage } from '@/features/money/MoneySetupPage'
+import { TransactionsPage } from '@/features/money/TransactionsPage'
 import { PantryPage } from '@/features/pantry/PantryPage'
 import { RecipeDetailPage } from '@/features/recipes/RecipeDetailPage'
 import { RecipeEditorPage } from '@/features/recipes/RecipeEditorPage'
@@ -61,10 +66,11 @@ export function App() {
         <Route path="recipes/:id/edit" element={<RecipeEditorPage key="edit" />} />
         <Route path="grocery" element={<GroceryPage />} />
         <Route path="pantry" element={<PantryPage />} />
-        <Route
-          path="budget"
-          element={<ComingSoon title="Budget" phase={3} icon={<Wallet className="size-5" />} items={['Monthly category envelopes, shared + personal', '3-tap expense entry with receipt photos', 'HDFC / ICICI / SBI / Axis / card statement import', '80% and 100% budget alerts']} />}
-        />
+        <Route path="budget" element={<BudgetPage />} />
+        <Route path="budget/transactions" element={<TransactionsPage />} />
+        <Route path="budget/bills" element={<BillsPage />} />
+        <Route path="budget/import" element={<ImportPage />} />
+        <Route path="budget/setup" element={<MoneySetupPage />} />
         <Route
           path="retro"
           element={<ComingSoon title="Retro" phase={4} icon={<RotateCcw className="size-5" />} items={['Went well / Improve / Actions with private reveal & voting', 'Action items become next sprint’s tasks', 'Burndown, velocity & fairness charts', 'Kudos and streaks']} />}

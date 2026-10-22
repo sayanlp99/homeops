@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { Avatar, Button, Card, CardHeader, EmptyState, Progress, Stat } from '@/components/ui'
 import { sprintRange, todayISO } from '@/lib/format'
 import { SLOTS, useMeals } from '@/lib/meals'
+import { monthKey, rupees, useMoneyCategories, useSummary } from '@/lib/money'
 import { pushSupport } from '@/lib/push'
 import { useSession } from '@/lib/session'
 import { useSprints } from '@/lib/sprints'
@@ -159,10 +160,7 @@ export function HomePage() {
             </Card>
           )}
           <TodaysMenu />
-          <Card>
-            <CardHeader title="Budget this month" actions={<Wallet className="size-4 text-subtle" />} />
-            <p className="px-4 py-5 text-[13px] text-subtle">Budgets arrive in Phase 3.</p>
-          </Card>
+          <BudgetCard />
         </div>
       </div>
     </div>
@@ -199,6 +197,46 @@ function TodaysMenu() {
             )
           })}
         </dl>
+      )}
+    </Card>
+  )
+}
+
+function BudgetCard() {
+  const { data: s } = useSummary(monthKey())
+  const { data: cats = [] } = useMoneyCategories()
+  const byId = new Map(cats.map((c) => [c.id, c]))
+  const tight = (s?.categories ?? [])
+    .filter((c) => c.limit + c.carry > 0)
+    .map((c) => ({ ...c, used: c.spent / (c.limit + c.carry), cat: byId.get(c.categoryId) }))
+    .sort((a, b) => b.used - a.used)
+    .slice(0, 3)
+  return (
+    <Card>
+      <CardHeader
+        title="Budget this month"
+        actions={
+          <Link to="/budget" className="flex items-center gap-1 text-[12px] text-accent hover:underline">
+            Open <Wallet className="size-3.5" />
+          </Link>
+        }
+      />
+      {!s ? (
+        <p className="px-4 py-5 text-[13px] text-subtle">Loading…</p>
+      ) : (
+        <div className="space-y-3 p-4">
+          <div className="flex items-baseline justify-between">
+            <span className="text-xl font-semibold">{rupees(s.spent)}</span>
+            <span className="text-[12px] text-muted">{s.budgeted ? `of ${rupees(s.budgeted)}` : 'no budgets set'}</span>
+          </div>
+          {s.budgeted > 0 && <Progress value={s.spent / s.budgeted} tone={s.spent > s.budgeted ? 'danger' : s.spent / s.budgeted > 0.8 ? 'warning' : 'accent'} />}
+          {tight.map((c) => (
+            <div key={c.categoryId} className="flex items-center justify-between text-[12px]">
+              <span className="truncate text-muted">{c.cat?.name}</span>
+              <span className={c.used > 1 ? 'font-medium text-danger' : c.used > 0.8 ? 'text-warning' : 'text-muted'}>{Math.round(c.used * 100)}%</span>
+            </div>
+          ))}
+        </div>
       )}
     </Card>
   )

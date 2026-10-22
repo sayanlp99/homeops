@@ -5,7 +5,8 @@ Runs on your home server and is published through a Cloudflare Tunnel, so no por
 
 **Phase 1 (done):** sign-in with password + passkeys, partner invite, installable PWA, push notifications, live sync, offline mode, Kanban board, sprint planning, recurring chores, notification inbox.
 **Phase 2 (done):** weekly meal plan (breakfast/lunch/snacks/dinner, several dishes per slot), recipe library with photos and import-from-link, rule-based suggestions and auto-fill, grocery list built from the plan, pantry with low-stock and expiry tracking, meal & prep notifications.
-**Coming:** Phase 3 budget & bank imports · Phase 4 retro & charts.
+**Phase 3 (done):** monthly budget envelopes (shared + private personal), 3-tap expense entry with receipt photos, bank statement import with learned categorisation, grocery invoice import (Zepto, Blinkit), bills with reminders, budget alerts.
+**Coming:** Phase 4 retro & charts.
 
 ## Stack
 
@@ -79,6 +80,10 @@ Back up `./backups` somewhere off the server too (offsite target is still to be 
 - **Grocery list:** built from planned, uncooked meals: scaled to servings, units converted and summed, pantry stock subtracted, rounded up to what you'd buy, grouped by aisle (move an item to another aisle once and it stays there). Finishing a trip stocks the pantry and records the bill for Phase 3's budget. Ticking items off works offline.
 - **Pantry:** marking a meal cooked deducts its ingredients (undo restores them). Low-stock and expiry badges, a one-tap restock to the grocery list, and a 09:00 "use soon" notification.
 - **Recipe import:** paste a link from almost any recipe site; the schema.org data sites publish for Google is parsed into ingredients, steps, times and photo, for you to review before saving. The server refuses to fetch addresses on your home network.
+- **Budget:** each category has a monthly limit (override any single month; optional rollover of unspent money). Shared categories are the household budget; personal categories, transactions, accounts and bills are visible only to their owner, enforced in every query. Alerts at 80% and 100% go to both of you for shared categories, to the owner for personal ones.
+- **Statement import:** CSV, XLSX, the HTML ".xls" many Indian banks serve, and HDFC's fixed-width text download. Columns are detected from headers (HDFC, ICICI, SBI, Axis and card layouts) with a manual column mapper as fallback, remembered per account. HDFC text statements are checked against the bank's own summary (debit/credit totals and counts). Rows are de-duplicated across overlapping imports, transfers (to yourselves, card bills, CRED, NPS/SIPs) are excluded from budgets, and fixing a category teaches a rule for next time. Every import can be undone.
+- **Grocery invoices:** upload the PDF from the Zepto or Blinkit order page: the total (summed across Blinkit's merged seller invoices), line items, pack sizes and fees are read, the PDF is kept as the receipt, and goods can go straight into the pantry. When the bank statement arrives later, the matching UPI payment is recognised and skipped.
+- **Bills:** due day, usual amount and reminder lead time; "Mark paid" records the expense and stops the month's reminders.
 - **Live sync:** one SSE stream per open app. A change on one phone shows up on the other in well under a second.
 
 ## Development

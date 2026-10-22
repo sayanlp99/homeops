@@ -219,3 +219,129 @@ export interface Ingredient {
   name: string
   aisle: string
 }
+
+// ---- money (Phase 3) ----  amounts are integer paise
+
+export interface MoneyCategory {
+  id: string
+  ownerId: string | null
+  name: string
+  icon: string
+  color: string
+  kind: 'expense' | 'income'
+  monthlyLimit: number
+  rollover: boolean
+  position: number
+  archived: boolean
+}
+
+export interface MoneyAccount {
+  id: string
+  ownerId: string | null
+  name: string
+  kind: 'bank' | 'card' | 'cash' | 'wallet'
+  archived: boolean
+  hasImportMapping: boolean
+}
+
+export type TxnKind = 'expense' | 'income' | 'transfer'
+
+export interface Transaction {
+  id: string
+  ownerId: string | null
+  kind: TxnKind
+  amount: number
+  date: string
+  payee: string
+  description: string
+  note: string
+  categoryId: string | null
+  accountId: string | null
+  paidBy: string | null
+  receipt: string
+  source: 'manual' | 'import' | 'grocery' | 'bill'
+  importId: string | null
+  createdBy: string | null
+  createdAt: string
+}
+
+export interface MoneySummary {
+  month: string
+  categories: { categoryId: string; limit: number; carry: number; spent: number; count: number }[]
+  budgeted: number
+  spent: number
+  income: number
+  uncategorized: number
+  byPerson: Record<string, number>
+  daily: number[]
+  trend: { month: string; spent: number; income: number }[]
+  topPayees: { payee: string; amount: number; count: number }[] | null
+}
+
+export interface Bill {
+  id: string
+  ownerId: string | null
+  name: string
+  amount: number
+  dueDay: number
+  categoryId: string | null
+  accountId: string | null
+  remindDaysBefore: number
+  lastPaidMonth: string | null
+  active: boolean
+}
+
+export interface MoneyRule {
+  id: string
+  ownerId: string | null
+  pattern: string
+  categoryId: string
+  kind: TxnKind
+}
+
+export interface ImportMapping {
+  headerRow: number
+  date: number
+  description: number
+  debit: number
+  credit: number
+  amount: number
+  drCr: number
+  ref: number
+}
+
+export interface ImportRow {
+  line: number
+  date: string
+  description: string
+  ref: string
+  amount: number
+  debit: boolean
+  payee: string
+  hash: string
+  kind: TxnKind
+  categoryId: string | null
+  matched: '' | 'rule' | 'builtin'
+  duplicate: boolean
+  include: boolean
+  alreadyRecorded?: string
+}
+
+export interface ImportPreview {
+  filename: string
+  mapping: ImportMapping
+  header: string[] | null
+  sample: string[][]
+  rows: ImportRow[] | null
+  warnings: string[] | null
+}
+
+export interface MoneyImport {
+  id: string
+  accountId: string | null
+  filename: string
+  rowCount: number
+  imported: number
+  createdBy: string | null
+  createdAt: string
+}

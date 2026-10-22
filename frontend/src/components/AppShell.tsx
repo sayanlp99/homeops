@@ -28,7 +28,8 @@ import { syncPush } from '@/lib/push'
 import { clearLocalData } from '@/lib/queryClient'
 import { useRealtime, type LiveState } from '@/lib/realtime'
 import { useSession } from '@/lib/session'
-import { openQuickAdd, palette } from '@/lib/ui'
+import { openQuickAdd, openQuickExpense, palette } from '@/lib/ui'
+import { AddExpenseDialog } from '@/features/money/AddExpenseDialog'
 import { QuickAddTask } from '@/features/tasks/QuickAddTask'
 import { TaskDrawer } from '@/features/tasks/TaskDrawer'
 import { CommandPalette } from './CommandPalette'
@@ -50,7 +51,7 @@ const household: NavItem[] = [
   { to: '/recipes', label: 'Recipes', icon: ChefHat },
   { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
   { to: '/pantry', label: 'Pantry', icon: Package },
-  { to: '/budget', label: 'Budget', icon: Wallet, soon: true },
+  { to: '/budget', label: 'Budget', icon: Wallet },
   { to: '/retro', label: 'Retro', icon: RotateCcw, soon: true },
 ]
 const tabs: NavItem[] = [
@@ -88,6 +89,7 @@ export function AppShell() {
       'mod+k': () => palette.set(!palette.get()),
       '/': () => palette.set(true),
       c: () => openQuickAdd(),
+      e: () => openQuickExpense(),
     }),
     [],
   )
@@ -111,13 +113,14 @@ export function AppShell() {
       </div>
       <MobileTabs />
       <button
-        onClick={() => openQuickAdd()}
-        aria-label="New task"
+        onClick={() => (location.pathname.startsWith('/budget') ? openQuickExpense() : openQuickAdd())}
+        aria-label={location.pathname.startsWith('/budget') ? 'Add expense' : 'New task'}
         className="fixed right-4 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 flex size-13 items-center justify-center rounded-full bg-accent text-accent-fg shadow-pop active:scale-95 lg:hidden"
       >
         <Plus className="size-6" />
       </button>
       <QuickAddTask />
+      <AddExpenseDialog />
       <TaskDrawer />
       <CommandPalette />
     </div>
