@@ -1,0 +1,180 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { BellOff, BellRing, CheckCircle2, Share, SquarePlus, XCircle } from 'lucide-react'
+import { useState } from 'react'
+import { toast } from 'sonner'
+import { Badge, Button, Card, CardHeader, Input, Switch } from '@/components/ui'
+import { patch } from '@/lib/api'
+import { currentSubscription, disablePush, enablePush, isIOS, pushSupport, sendTestPush } from '@/lib/push'
+import { bootstrapKey, useSession } from '@/lib/session'
+import type { NotifyKind, PushResult, User } from '@/lib/types'
+
+const kinds: { kind: NotifyKind; label: string; hint: string; later?: boolean }[] = [
+  { kind: 'task_assigned', label: 'Assigned to you', hint: 'When your partner gives you a task' },
+  { kind: 'task_due', label: 'Morning digest', hint: "8:00 AM — what's due today" },
+  { kind: 'task_overdue', label: 'Evening nudge', hint: "7:00 PM — what's still open or overdue" },
+  { kind: 'ceremony', label: 'Sprint planning & retro', hint: '30 minutes before, and when it starts' },
+  { kind: 'meals', label: 'Meal prep reminders', hint: 'Arrives with meal planning', later: true },
+  { kind: 'budget', label: 'Budget alerts', hint: 'Arrives with budgeting', later: true },
+]
+
+export function NotificationSettings() {
+  return (
+    <>
+      <DeviceCard />
+      <PreferencesCard />
+    </>
+  )
+}
+
+function DeviceCard() {
+  const { vapidPublicKey } = useSession()
+  const support = pushSupport()
+  const sub = useQuery({ queryKey: ['push-subscription'], queryFn: async () => !!(await currentSubscription()), enabled: support === 'supported' })
+  const qc = useQueryClient()
+  const [results, setResults] = useState<PushResult[] | null>(null)
+  const permission = typeof Notification !== 'undefined' ? Notification.permission : 'default'
+  const enabled = permission === 'granted' && sub.data
+
+  const enable = useMutation({
+    mutationFn: () => enablePush(vapidPublicKey),
+    onSuccess: () => {
+      toast.success('Notifications enabled on this device')
+      qc.invalidateQueries({ queryKey: ['push-subscription'] })
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+  const disable = useMutation({
+    mutationFn: disablePush,
+    onSuccess: () => {
+      toast.success('Notifications turned off on this device')
+      qc.invalidateQueries({ queryKey: ['push-subscription'] })
+    },
+  })
+  const test = useMutation({
+    mutationFn: sendTestPush,
+    onSuccess: (r) => {
+      setResults(r)
+      if (r.length === 0) toast.error('No devices are registered for push yet')
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
+
+  return (
+    <Card>
+      <CardHeader
+        title="This device"
+        subtitle="Each phone and computer is enabled separately."
+        actions={enabled ? <Badge tone="success">On</Badge> : <Badge>{permission === 'denied' ? 'Blocked' : 'Off'}</Badge>}
+      />
+      <div className="space-y-4 p-4">
+        {support === 'needs-install' && (
+          <div className="space-y-2 rounded-md bg-accent-soft p-3 text-[13px]">
+            <p className="font-medium">On iPhone, notifications need HomeOps on your Home Screen:</p>
+            <ol className="list-decimal space-y-1 pl-5 text-muted">
+              <li>
+                Tap <Share className="inline size-3.5 align-[-2px]" /> <b>Share</b> in Safari's toolbar
+              </li>
+              <li>
+                Choose <SquarePlus className="inline size-3.5 align-[-2px]" /> <b>Add to Home Screen</b>
+              </li>
+              <li>Open HomeOps from the Home Screen icon and come back here</li>
+            </ol>
+            <p className="text-[12px] text-subtle">Requires iOS 16.4 or later.</p>
+          </div>
+        )}
+        {support === 'unsupported' && <p className="text-[13px] text-muted">This browser doesn't support web push notifications.</p>}
+        {support === 'supported' && permission === 'denied' && (
+          <p className="text-[13px] text-muted">
+            Notifications are blocked for this site. {isIOS() ? 'Open iOS Settings → Notifications → HomeOps and allow them.' : 'Click the lock icon in the address bar → Site settings → allow Notifications, then reload.'}
+          </p>
+        )}
+        {support === 'supported' && permission !== 'denied' && (
+          <div className="flex flex-wrap gap-2">
+            {enabled ? (
+              <Button icon={<BellOff className="size-4" />} loading={disable.isPending} onClick={() => disable.mutate()}>
+                Turn off on this device
+              </Button>
+            ) : (
+              <Button variant="primary" icon={<BellRing className="size-4" />} loading={enable.isPending} onClick={() => enable.mutate()}>
+                Enable notifications
+              </Button>
+            )}
+          </div>
+        )}
+        <div className="border-t border-border pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="text-[13px] font-medium">Test delivery</p>
+              <p className="text-[12px] text-subtle">Sends a test to all your registered devices, ignoring quiet hours.</p>
+            </div>
+            <Button size="sm" loading={test.isPending} onClick={() => test.mutate()}>
+              Send test
+            </Button>
+          </div>
+          {results && results.length > 0 && (
+            <ul className="mt-3 space-y-1.5">
+              {results.map((r, i) => (
+                <li key={i} className="flex items-center gap-2 text-[13px]">
+                  {r.ok ? <CheckCircle2 className="size-4 text-success" /> : <XCircle className="size-4 text-danger" />}
+                  <span>{r.device}</span>
+                  <span className="text-[12px] text-subtle">{r.ok ? 'delivered to push service' : r.error}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </Card>
+  )
+}
+
+function PreferencesCard() {
+  const { user } = useSession()
+  const qc = useQueryClient()
+  const save = useMutation({
+    mutationFn: (p: Partial<Pick<User, 'notifyPrefs'>> & { quietStart?: string; quietEnd?: string }) => patch<User>('/me', p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: bootstrapKey }),
+    onError: (e: Error) => toast.error(e.message),
+  })
+  const quiet = !!(user.quietStart && user.quietEnd)
+  const [qs, setQs] = useState(user.quietStart ?? '22:00')
+  const [qe, setQe] = useState(user.quietEnd ?? '07:00')
+
+  return (
+    <Card>
+      <CardHeader title="What to notify me about" />
+      <ul>
+        {kinds.map((k) => (
+          <li key={k.kind} className="flex items-center justify-between gap-4 border-b border-border px-4 py-3">
+            <div>
+              <p className="text-[13px] font-medium">{k.label}</p>
+              <p className="text-[12px] text-subtle">{k.hint}</p>
+            </div>
+            <Switch
+              label={k.label}
+              disabled={k.later}
+              checked={!k.later && user.notifyPrefs[k.kind] !== false}
+              onChange={(v) => save.mutate({ notifyPrefs: { [k.kind]: v } })}
+            />
+          </li>
+        ))}
+        <li className="px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[13px] font-medium">Quiet hours</p>
+              <p className="text-[12px] text-subtle">Notifications wait in your inbox and are sent once quiet hours end.</p>
+            </div>
+            <Switch label="Quiet hours" checked={quiet} onChange={(v) => save.mutate(v ? { quietStart: qs, quietEnd: qe } : { quietStart: '', quietEnd: '' })} />
+          </div>
+          {quiet && (
+            <div className="mt-3 flex items-center gap-2 text-[13px]">
+              <Input type="time" value={qs} onChange={(e) => setQs(e.target.value)} onBlur={() => qs && save.mutate({ quietStart: qs })} className="w-32" />
+              <span className="text-subtle">to</span>
+              <Input type="time" value={qe} onChange={(e) => setQe(e.target.value)} onBlur={() => qe && save.mutate({ quietEnd: qe })} className="w-32" />
+            </div>
+          )}
+        </li>
+      </ul>
+    </Card>
+  )
+}

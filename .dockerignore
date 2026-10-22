@@ -1,0 +1,7 @@
+.env
+.git
+backups
+**/node_modules
+frontend/dist
+frontend/dev-dist
+backend/.devdata
