@@ -16,6 +16,7 @@ import (
 	"time"
 
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
+	"github.com/jackc/pgx/v5/pgxpool"
 
 	"homeops/internal/config"
 	"homeops/internal/store"
@@ -27,33 +28,7 @@ func TestAPI(t *testing.T) {
 		t.Skip("integration test")
 	}
 	ctx := context.Background()
-	dir := t.TempDir()
-	pg := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
-		Port(54329).RuntimePath(dir + "/rt").DataPath(dir + "/data").CachePath(os.TempDir() + "/homeops-pg-cache").
-		Logger(io.Discard))
-	if err := pg.Start(); err != nil {
-		t.Fatal(err)
-	}
-	defer pg.Stop()
-
-	db, err := store.Open(ctx, "postgres://postgres:postgres@localhost:54329/postgres?sslmode=disable")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer db.Close()
-	if err := store.Migrate(ctx, db); err != nil {
-		t.Fatal(err)
-	}
-	if err := store.Migrate(ctx, db); err != nil { // idempotent
-		t.Fatal(err)
-	}
-	s, err := New(ctx, config.Config{PublicURL: "http://localhost:5173", VAPIDEmail: "t@example.com"}, db)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ts := httptest.NewServer(s.Routes())
-	defer ts.Close()
-
+	s, ts, db := startTestServer(t, 54329)
 	alice := newClient(t, ts.URL)
 	bob := newClient(t, ts.URL)
 
@@ -236,6 +211,43 @@ func TestAPI(t *testing.T) {
 	alice.do("GET", "/api/tasks", nil, 200, nil)
 }
 
+// startTestServer boots a throwaway Postgres and an API server; both stop with the test.
+func startTestServer(t *testing.T, port uint32) (*Server, *httptest.Server, *pgxpool.Pool) {
+	t.Helper()
+	ctx := context.Background()
+	dir := t.TempDir()
+	pg := embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+		Port(port).RuntimePath(dir + "/rt").DataPath(dir + "/data").CachePath(os.TempDir() + "/homeops-pg-cache").
+		Logger(io.Discard))
+	if err := pg.Start(); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { pg.Stop() })
+	db, err := store.Open(ctx, fmt.Sprintf("postgres://postgres:postgres@localhost:%d/postgres?sslmode=disable", port))
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(db.Close)
+	if err := store.Migrate(ctx, db); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.Migrate(ctx, db); err != nil { // idempotent
+		t.Fatal(err)
+	}
+	cfg := config.Config{PublicURL: "http://localhost:5173", VAPIDEmail: "t@example.com", DataDir: dir + "/files"}
+	if ep := os.Getenv("HOMEOPS_TEST_S3_ENDPOINT"); ep != "" { // run against real object storage
+		cfg.S3Endpoint, cfg.S3Bucket = ep, fmt.Sprintf("homeops-test-%d", port)
+		cfg.S3AccessKey, cfg.S3SecretKey = os.Getenv("HOMEOPS_TEST_S3_ACCESS_KEY"), os.Getenv("HOMEOPS_TEST_S3_SECRET_KEY")
+	}
+	s, err := New(ctx, cfg, db)
+	if err != nil {
+		t.Fatal(err)
+	}
+	ts := httptest.NewServer(s.Routes())
+	t.Cleanup(ts.Close)
+	return s, ts, db
+}
+
 func (t Task) householdIDFor(tb testing.TB, s *Server) string {
 	var hid string
 	if err := s.db.QueryRow(context.Background(), `SELECT household_id FROM tasks WHERE id = $1`, t.ID).Scan(&hid); err != nil {
@@ -324,4 +336,11 @@ func (c *testClient) sse(path string) (<-chan string, context.CancelFunc) {
 		}
 	}()
 	return ch, cancel
+}
+
+func jsonDecode(t *testing.T, r io.Reader, v any) {
+	t.Helper()
+	if err := json.NewDecoder(r).Decode(v); err != nil {
+		t.Fatal(err)
+	}
 }

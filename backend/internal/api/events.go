@@ -18,6 +18,10 @@ const (
 	eventMembers       topic = "members"
 	eventHousehold     topic = "household"
 	eventNotifications topic = "notifications"
+	eventRecipes       topic = "recipes"
+	eventMeals         topic = "meals"
+	eventGrocery       topic = "grocery"
+	eventPantry        topic = "pantry"
 )
 
 // from builds an event attributed to the request's client (nil for background jobs).

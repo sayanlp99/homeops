@@ -2,6 +2,7 @@ import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { get as idbGet, set as idbSet, del as idbDel } from 'idb-keyval'
 import { ApiError } from './api'
+import { registerMealMutations } from './meals'
 import { registerTaskMutations } from './tasks'
 
 // A 401 anywhere means the session ended (expired or signed out elsewhere): refresh
@@ -28,6 +29,7 @@ export const queryClient: QueryClient = new QueryClient({
 })
 
 registerTaskMutations(queryClient)
+registerMealMutations(queryClient)
 
 // The cache (and any writes queued while offline) lives in IndexedDB so the app opens
 // instantly with the last known data, even without a connection.

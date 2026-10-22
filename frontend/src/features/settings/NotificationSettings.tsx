@@ -13,7 +13,7 @@ const kinds: { kind: NotifyKind; label: string; hint: string; later?: boolean }[
   { kind: 'task_due', label: 'Morning digest', hint: "8:00 AM — what's due today" },
   { kind: 'task_overdue', label: 'Evening nudge', hint: "7:00 PM — what's still open or overdue" },
   { kind: 'ceremony', label: 'Sprint planning & retro', hint: '30 minutes before, and when it starts' },
-  { kind: 'meals', label: 'Meal prep reminders', hint: 'Arrives with meal planning', later: true },
+  { kind: 'meals', label: 'Meals & pantry', hint: "7:00 AM today's menu, advance-prep reminders, and items expiring soon" },
   { kind: 'budget', label: 'Budget alerts', hint: 'Arrives with budgeting', later: true },
 ]
 

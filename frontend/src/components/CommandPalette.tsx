@@ -1,8 +1,9 @@
 import * as RD from '@radix-ui/react-dialog'
 import { Command } from 'cmdk'
-import { Bell, CalendarRange, ChefHat, Home, KanbanSquare, ListChecks, Moon, Plus, Repeat, RotateCcw, Settings, Sun, Wallet } from 'lucide-react'
+import { Bell, CalendarRange, ChefHat, Home, KanbanSquare, ListChecks, Moon, Package, Plus, Repeat, RotateCcw, Settings, ShoppingCart, Sun, UtensilsCrossed, Wallet } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { taskKey } from '@/lib/format'
+import { useRecipes } from '@/lib/meals'
 import { useTasks } from '@/lib/tasks'
 import { setTheme } from '@/lib/theme'
 import { openQuickAdd, palette, useTaskParam } from '@/lib/ui'
@@ -14,7 +15,11 @@ const nav = [
   { to: '/backlog', label: 'Planning & backlog', icon: ListChecks },
   { to: '/sprints', label: 'Sprints', icon: CalendarRange },
   { to: '/recurring', label: 'Recurring chores', icon: Repeat },
-  { to: '/meals', label: 'Meals', icon: ChefHat },
+  { to: '/meals', label: 'Meal plan', icon: UtensilsCrossed },
+  { to: '/recipes', label: 'Recipes', icon: ChefHat },
+  { to: '/recipes/new', label: 'New recipe', icon: Plus },
+  { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
+  { to: '/pantry', label: 'Pantry', icon: Package },
   { to: '/budget', label: 'Budget', icon: Wallet },
   { to: '/retro', label: 'Retro', icon: RotateCcw },
   { to: '/settings/notifications', label: 'Notification settings', icon: Bell },
@@ -25,6 +30,7 @@ export function CommandPalette() {
   const open = palette.use()
   const navigate = useNavigate()
   const { data: tasks = [] } = useTasks()
+  const { data: recipes = [] } = useRecipes()
   const { open: openTask } = useTaskParam()
   const close = () => palette.set(false)
   const run = (fn: () => void) => {
@@ -60,6 +66,13 @@ export function CommandPalette() {
                 {nav.map((n) => (
                   <Command.Item key={n.to} className={itemCls} onSelect={() => run(() => navigate(n.to))}>
                     <n.icon className="size-4 text-subtle" /> {n.label}
+                  </Command.Item>
+                ))}
+              </Command.Group>
+              <Command.Group heading="Recipes" className="[&_[cmdk-group-heading]]:px-2.5 [&_[cmdk-group-heading]]:py-1.5 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:text-subtle">
+                {recipes.map((r) => (
+                  <Command.Item key={r.id} value={`recipe ${r.title} ${r.cuisine}`} className={itemCls} onSelect={() => run(() => navigate(`/recipes/${r.id}`))}>
+                    <ChefHat className="size-4 text-subtle" /> <span className="truncate">{r.title}</span>
                   </Command.Item>
                 ))}
               </Command.Group>

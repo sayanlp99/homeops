@@ -30,6 +30,7 @@ export interface Household {
   planningDow: number
   planningTime: string
   autoRoll: boolean
+  mealTimes: Record<'breakfast' | 'lunch' | 'snacks' | 'dinner', string>
 }
 
 export interface Label {
@@ -119,4 +120,102 @@ export interface PushResult {
   ok: boolean
   status: number
   error?: string
+}
+
+// ---- meals (Phase 2) ----
+
+export type Slot = 'breakfast' | 'lunch' | 'snacks' | 'dinner'
+export type Diet = 'veg' | 'egg' | 'nonveg' | 'vegan'
+
+export interface RecipeIngredient {
+  ingredientId?: string
+  name: string
+  aisle?: string
+  quantity: number | null
+  unit: string
+  note: string
+}
+
+export interface Recipe {
+  id: string
+  title: string
+  description: string
+  category: string
+  mealTypes: Slot[]
+  diet: Diet
+  cuisine: string
+  tags: string[]
+  servings: number
+  prepMinutes: number | null
+  cookMinutes: number | null
+  prepNote: string
+  prepLeadHours: number
+  steps: string[]
+  sourceUrl: string
+  photo: string
+  favorite: boolean
+  rating: number
+  createdAt: string
+  updatedAt: string
+  timesCooked: number
+  lastCooked: string | null
+  ingredients: RecipeIngredient[]
+  warnings?: string[]
+}
+
+export interface MealItem {
+  id: string
+  date: string
+  slot: Slot
+  position: number
+  recipeId: string | null
+  title: string
+  servings: number
+  note: string
+  cookedAt: string | null
+  cookedBy: string | null
+  createdAt: string
+}
+
+export interface Suggestion {
+  recipeId: string
+  title: string
+  photo: string
+  category: string
+  score: number
+  reasons: string[]
+}
+
+export interface GroceryItem {
+  id: string
+  ingredientId: string | null
+  name: string
+  quantity: number | null
+  unit: string
+  aisle: string
+  note: string
+  source: 'manual' | 'plan' | 'pantry'
+  checkedAt: string | null
+  checkedBy: string | null
+  createdBy: string | null
+  createdAt: string
+}
+
+export interface PantryItem {
+  id: string
+  ingredientId: string
+  name: string
+  aisle: string
+  quantity: number | null
+  unit: string
+  lowThreshold: number | null
+  location: 'pantry' | 'fridge' | 'freezer'
+  expiresOn: string | null
+  updatedAt: string
+}
+
+export interface Ingredient {
+  id: string
+  name: string
+  aisle: string
 }

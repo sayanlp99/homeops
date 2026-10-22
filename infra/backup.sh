@@ -1,7 +1,7 @@
 #!/bin/sh
 # Nightly Postgres backup loop, run by the `backup` compose service.
-# Writes /backups/homeops-YYYY-MM-DD.sql.gz at $BACKUP_AT local time and keeps
-# $BACKUP_KEEP_DAYS days. `docker compose exec backup /bin/sh /backup.sh now`
+# Writes /backups/homeops-YYYY-MM-DD.sql.gz (database) and files-YYYY-MM-DD.tar.gz
+# (SeaweedFS data: photos, receipts) at $BACKUP_AT local time, keeping $BACKUP_KEEP_DAYS days. `docker compose exec backup /bin/sh /backup.sh now`
 # takes a backup immediately.
 set -eu
 
@@ -10,8 +10,13 @@ backup() {
   tmp="$file.partial"
   pg_dump --no-owner --clean --if-exists | gzip -9 > "$tmp"
   mv "$tmp" "$file"
-  find /backups -name 'homeops-*.sql.gz' -mtime +"${BACKUP_KEEP_DAYS:-30}" -delete
-  echo "$(date '+%F %T') backup written: $file ($(du -h "$file" | cut -f1))"
+  echo "$(date '+%F %T') database backup: $file ($(du -h "$file" | cut -f1))"
+  if [ -d /seaweed ]; then
+    files="/backups/files-$(date +%F).tar.gz"
+    tar -czf "$files.partial" -C /seaweed . && mv "$files.partial" "$files"
+    echo "$(date '+%F %T') files backup: $files ($(du -h "$files" | cut -f1))"
+  fi
+  find /backups \( -name 'homeops-*.sql.gz' -o -name 'files-*.tar.gz' \) -mtime +"${BACKUP_KEEP_DAYS:-30}" -delete
 }
 
 if [ "${1:-}" = "now" ]; then

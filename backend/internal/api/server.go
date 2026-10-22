@@ -13,6 +13,7 @@ import (
 	"github.com/go-webauthn/webauthn/webauthn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
+	"homeops/internal/blob"
 	"homeops/internal/config"
 	"homeops/internal/realtime"
 )
@@ -25,6 +26,7 @@ type Server struct {
 	ceremony *ttlStore[webauthn.SessionData]
 	limiter  *rateLimiter
 	push     *pusher
+	files    blob.Store
 	stopping <-chan struct{} // closed on shutdown so long-lived SSE streams end
 }
 
@@ -49,6 +51,15 @@ func New(ctx context.Context, cfg config.Config, db *pgxpool.Pool) (*Server, err
 	if err != nil {
 		return nil, err
 	}
+	if cfg.S3Endpoint != "" {
+		s.files, err = blob.NewS3(ctx, blob.S3Config{Endpoint: cfg.S3Endpoint, Bucket: cfg.S3Bucket, AccessKey: cfg.S3AccessKey, SecretKey: cfg.S3SecretKey, UseSSL: cfg.S3UseSSL})
+	} else {
+		s.files, err = blob.NewDir(cfg.DataDir)
+	}
+	if err != nil {
+		return nil, err
+	}
+	slog.Info("file storage", "backend", s.files.Name())
 	return s, nil
 }
 
@@ -105,6 +116,41 @@ func (s *Server) Routes() http.Handler {
 			r.Method("POST", "/recurring", handler(s.createRecurring))
 			r.Method("PATCH", "/recurring/{id}", handler(s.updateRecurring))
 			r.Method("DELETE", "/recurring/{id}", handler(s.deleteRecurring))
+
+			r.Method("POST", "/files", handler(s.uploadFile))
+			r.Method("GET", "/files/{id}", http.HandlerFunc(s.serveFile))
+
+			r.Method("GET", "/recipes", handler(s.listRecipes))
+			r.Method("POST", "/recipes", handler(s.saveRecipe))
+			r.Method("POST", "/recipes/import", handler(s.importRecipe))
+			r.Method("GET", "/recipes/{id}", handler(s.getRecipe))
+			r.Method("PUT", "/recipes/{id}", handler(s.saveRecipe))
+			r.Method("PATCH", "/recipes/{id}", handler(s.patchRecipe))
+			r.Method("DELETE", "/recipes/{id}", handler(s.deleteRecipe))
+			r.Method("GET", "/ingredients", handler(s.listIngredients))
+			r.Method("PATCH", "/ingredients/{id}", handler(s.updateIngredient))
+			r.Method("POST", "/ingredients/parse", handler(s.parseIngredients))
+
+			r.Method("GET", "/meals", handler(s.listMeals))
+			r.Method("POST", "/meals", handler(s.createMeal))
+			r.Method("GET", "/meals/suggest", handler(s.suggestMeals))
+			r.Method("POST", "/meals/autofill", handler(s.autofillMeals))
+			r.Method("PATCH", "/meals/{id}", handler(s.updateMeal))
+			r.Method("DELETE", "/meals/{id}", handler(s.deleteMeal))
+
+			r.Method("GET", "/grocery", handler(s.listGrocery))
+			r.Method("POST", "/grocery", handler(s.addGrocery))
+			r.Method("POST", "/grocery/generate", handler(s.generateGrocery))
+			r.Method("POST", "/grocery/complete", handler(s.completeShopping))
+			r.Method("GET", "/grocery/trips", handler(s.listTrips))
+			r.Method("PATCH", "/grocery/{id}", handler(s.updateGrocery))
+			r.Method("DELETE", "/grocery/{id}", handler(s.deleteGrocery))
+
+			r.Method("GET", "/pantry", handler(s.listPantry))
+			r.Method("POST", "/pantry", handler(s.upsertPantry))
+			r.Method("POST", "/pantry/restock", handler(s.restockPantry))
+			r.Method("PATCH", "/pantry/{id}", handler(s.updatePantry))
+			r.Method("DELETE", "/pantry/{id}", handler(s.deletePantry))
 
 			r.Method("GET", "/notifications", handler(s.listNotifications))
 			r.Method("POST", "/notifications/read", handler(s.markNotificationsRead))

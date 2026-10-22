@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { Avatar, Button, Card, CardHeader, EmptyState, Progress, Stat } from '@/components/ui'
 import { sprintRange, todayISO } from '@/lib/format'
+import { SLOTS, useMeals } from '@/lib/meals'
 import { pushSupport } from '@/lib/push'
 import { useSession } from '@/lib/session'
 import { useSprints } from '@/lib/sprints'
@@ -157,10 +158,7 @@ export function HomePage() {
               </div>
             </Card>
           )}
-          <Card>
-            <CardHeader title="Today's menu" actions={<ChefHat className="size-4 text-subtle" />} />
-            <p className="px-4 py-5 text-[13px] text-subtle">Meal planning arrives in Phase 2.</p>
-          </Card>
+          <TodaysMenu />
           <Card>
             <CardHeader title="Budget this month" actions={<Wallet className="size-4 text-subtle" />} />
             <p className="px-4 py-5 text-[13px] text-subtle">Budgets arrive in Phase 3.</p>
@@ -168,5 +166,40 @@ export function HomePage() {
         </div>
       </div>
     </div>
+  )
+}
+
+function TodaysMenu() {
+  const today = todayISO()
+  const { data: meals = [] } = useMeals(today, today)
+  return (
+    <Card>
+      <CardHeader
+        title="Today's menu"
+        actions={
+          <Link to="/meals" className="flex items-center gap-1 text-[12px] text-accent hover:underline">
+            Plan <ChefHat className="size-3.5" />
+          </Link>
+        }
+      />
+      {meals.length === 0 ? (
+        <p className="px-4 py-5 text-[13px] text-subtle">
+          Nothing planned today. <Link to="/meals" className="text-accent hover:underline">Plan meals →</Link>
+        </p>
+      ) : (
+        <dl className="divide-y divide-border">
+          {SLOTS.map((s) => {
+            const dishes = meals.filter((m) => m.slot === s.value)
+            if (!dishes.length) return null
+            return (
+              <div key={s.value} className="flex gap-3 px-4 py-2.5 text-[13px]">
+                <dt className="w-20 shrink-0 text-subtle">{s.label}</dt>
+                <dd className="min-w-0 flex-1">{dishes.map((d) => (d.cookedAt ? `✓ ${d.title}` : d.title)).join(', ')}</dd>
+              </div>
+            )
+          })}
+        </dl>
+      )}
+    </Card>
   )
 }

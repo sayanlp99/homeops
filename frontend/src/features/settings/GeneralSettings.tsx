@@ -105,6 +105,18 @@ export function HouseholdSettings() {
           <Field label="Planning time" hint="You both get a reminder 30 minutes before.">
             <Input type="time" value={h.planningTime} onChange={(e) => setH({ ...h, planningTime: e.target.value })} />
           </Field>
+          <div className="sm:col-span-2">
+            <span className="mb-1.5 block text-[12px] font-medium text-muted">Meal times</span>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {(['breakfast', 'lunch', 'snacks', 'dinner'] as const).map((slot) => (
+                <label key={slot} className="block">
+                  <span className="block text-[11px] text-subtle capitalize">{slot}</span>
+                  <Input type="time" value={h.mealTimes?.[slot] ?? ''} onChange={(e) => setH({ ...h, mealTimes: { ...h.mealTimes, [slot]: e.target.value } })} />
+                </label>
+              ))}
+            </div>
+            <span className="mt-1 block text-[12px] text-subtle">Used for prep reminders, e.g. "soak rajma" 10 hours before lunch.</span>
+          </div>
           <label className="flex items-center justify-between gap-4 sm:col-span-2">
             <span>
               <span className="block text-[13px] font-medium">Auto-roll sprints</span>

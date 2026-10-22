@@ -12,6 +12,12 @@ type Config struct {
 	DatabaseURL string
 	PublicURL   string // e.g. https://home.example.com — used for passkeys and push
 	StaticDir   string // built frontend; empty disables static serving
+	DataDir     string // local file storage when no S3 endpoint is set (dev/tests)
+	S3Endpoint  string // host:port of the S3 API (SeaweedFS); empty = use DataDir
+	S3Bucket    string
+	S3AccessKey string
+	S3SecretKey string
+	S3UseSSL    bool
 	VAPIDEmail  string // contact address sent to push services
 	DevMode     bool   // relaxes Secure cookies for http://localhost
 }
@@ -22,12 +28,21 @@ func Load() (Config, error) {
 		DatabaseURL: env("DATABASE_URL", "postgres://homeops:homeops@localhost:5432/homeops?sslmode=disable"),
 		PublicURL:   strings.TrimRight(env("HOMEOPS_PUBLIC_URL", "http://localhost:5173"), "/"),
 		StaticDir:   env("HOMEOPS_STATIC_DIR", ""),
+		DataDir:     env("HOMEOPS_DATA_DIR", "./data"),
+		S3Endpoint:  env("HOMEOPS_S3_ENDPOINT", ""),
+		S3Bucket:    env("HOMEOPS_S3_BUCKET", "homeops"),
+		S3AccessKey: env("HOMEOPS_S3_ACCESS_KEY", ""),
+		S3SecretKey: env("HOMEOPS_S3_SECRET_KEY", ""),
+		S3UseSSL:    env("HOMEOPS_S3_USE_SSL", "") == "1",
 		VAPIDEmail:  env("HOMEOPS_VAPID_EMAIL", "admin@localhost"),
 		DevMode:     env("HOMEOPS_DEV", "") == "1",
 	}
 	u, err := url.Parse(c.PublicURL)
 	if err != nil || u.Host == "" {
 		return c, fmt.Errorf("HOMEOPS_PUBLIC_URL must be an absolute URL, got %q", c.PublicURL)
+	}
+	if c.S3Endpoint != "" && (c.S3AccessKey == "" || c.S3SecretKey == "") {
+		return c, fmt.Errorf("HOMEOPS_S3_ACCESS_KEY and HOMEOPS_S3_SECRET_KEY are required with HOMEOPS_S3_ENDPOINT")
 	}
 	return c, nil
 }

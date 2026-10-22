@@ -1,9 +1,15 @@
-import { ChefHat, RotateCcw, Wallet, WifiOff } from 'lucide-react'
+import { RotateCcw, Wallet, WifiOff } from 'lucide-react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { Button, Spinner } from '@/components/ui'
 import { JoinPage, LoginPage, SetupPage } from '@/features/auth/AuthPages'
+import { GroceryPage } from '@/features/grocery/GroceryPage'
 import { HomePage } from '@/features/home/HomePage'
+import { MealPlanPage } from '@/features/meals/MealPlanPage'
+import { PantryPage } from '@/features/pantry/PantryPage'
+import { RecipeDetailPage } from '@/features/recipes/RecipeDetailPage'
+import { RecipeEditorPage } from '@/features/recipes/RecipeEditorPage'
+import { RecipesPage } from '@/features/recipes/RecipesPage'
 import { ComingSoon } from '@/features/placeholder/ComingSoon'
 import { RecurringPage } from '@/features/recurring/RecurringPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
@@ -48,10 +54,13 @@ export function App() {
         <Route path="sprints" element={<SprintsPage />} />
         <Route path="recurring" element={<RecurringPage />} />
         <Route path="tasks/:number" element={<TaskRedirect />} />
-        <Route
-          path="meals"
-          element={<ComingSoon title="Meals" phase={2} icon={<ChefHat className="size-5" />} items={['Weekly planner: breakfast, lunch, snacks, dinner', 'Recipe library with photos & URL import', 'Auto grocery list & pantry tracking', 'Mix-and-match suggestions from your history']} />}
-        />
+        <Route path="meals" element={<MealPlanPage />} />
+        <Route path="recipes" element={<RecipesPage />} />
+        <Route path="recipes/new" element={<RecipeEditorPage />} />
+        <Route path="recipes/:id" element={<RecipeDetailPage />} />
+        <Route path="recipes/:id/edit" element={<RecipeEditorPage key="edit" />} />
+        <Route path="grocery" element={<GroceryPage />} />
+        <Route path="pantry" element={<PantryPage />} />
         <Route
           path="budget"
           element={<ComingSoon title="Budget" phase={3} icon={<Wallet className="size-5" />} items={['Monthly category envelopes, shared + personal', '3-tap expense entry with receipt photos', 'HDFC / ICICI / SBI / Axis / card statement import', '80% and 100% budget alerts']} />}

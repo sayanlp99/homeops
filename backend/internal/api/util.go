@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 )
@@ -123,3 +124,5 @@ func parseClock(s string) (int, error) {
 	}
 	return t.Hour()*60 + t.Minute(), nil
 }
+
+func randomUUID() string { return uuid.NewString() }

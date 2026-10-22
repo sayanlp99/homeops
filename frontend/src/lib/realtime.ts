@@ -8,8 +8,12 @@ const topicKeys: Record<string, string[][]> = {
   recurring: [['recurring']],
   labels: [['bootstrap']],
   members: [['bootstrap']],
-  household: [['bootstrap'], ['sprints']],
+  household: [['bootstrap'], ['sprints'], ['meals']],
   notifications: [['notifications']],
+  recipes: [['recipes'], ['suggest']],
+  meals: [['meals'], ['suggest'], ['recipes']],
+  grocery: [['grocery']],
+  pantry: [['pantry'], ['suggest']],
 }
 
 export type LiveState = 'connecting' | 'live' | 'offline'

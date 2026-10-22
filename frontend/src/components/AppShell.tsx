@@ -9,6 +9,9 @@ import {
   ListChecks,
   LogOut,
   Menu as MenuIcon,
+  Package,
+  ShoppingCart,
+  UtensilsCrossed,
   Plus,
   Repeat,
   RotateCcw,
@@ -43,7 +46,10 @@ const workspace: NavItem[] = [
   { to: '/recurring', label: 'Recurring chores', icon: Repeat },
 ]
 const household: NavItem[] = [
-  { to: '/meals', label: 'Meals', icon: ChefHat, soon: true },
+  { to: '/meals', label: 'Meal plan', icon: UtensilsCrossed },
+  { to: '/recipes', label: 'Recipes', icon: ChefHat },
+  { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
+  { to: '/pantry', label: 'Pantry', icon: Package },
   { to: '/budget', label: 'Budget', icon: Wallet, soon: true },
   { to: '/retro', label: 'Retro', icon: RotateCcw, soon: true },
 ]
@@ -51,7 +57,7 @@ const tabs: NavItem[] = [
   { to: '/', label: 'Home', icon: Home },
   { to: '/board', label: 'Board', icon: KanbanSquare },
   { to: '/backlog', label: 'Plan', icon: ListChecks },
-  { to: '/meals', label: 'Meals', icon: ChefHat },
+  { to: '/meals', label: 'Kitchen', icon: UtensilsCrossed },
 ]
 
 export function AppShell() {
@@ -257,11 +263,13 @@ function MobileTabs() {
 }
 
 function TabLink({ to, label, icon }: { to: string; label: string; icon: ReactNode }) {
+  const { pathname } = useLocation()
+  const kitchen = to === '/meals' && ['/recipes', '/grocery', '/pantry'].some((k) => pathname.startsWith(k))
   return (
     <NavLink
       to={to}
       end={to === '/'}
-      className={({ isActive }) => clsx('flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium', isActive ? 'text-accent' : 'text-subtle')}
+      className={({ isActive }) => clsx('flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium', isActive || kitchen ? 'text-accent' : 'text-subtle')}
     >
       {icon}
       {label}
@@ -271,8 +279,9 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: ReactNo
 
 function MoreSheet() {
   const more = [...workspace.slice(3), ...household.filter((h) => h.to !== '/meals'), { to: '/settings', label: 'Settings', icon: Settings }]
+  const kitchen = ['/recipes', '/grocery', '/pantry']
   const location = useLocation()
-  const active = more.some((m) => location.pathname.startsWith(m.to))
+  const active = more.some((m) => location.pathname.startsWith(m.to) && !kitchen.some((k) => location.pathname.startsWith(k)))
   return (
     <RD.Root>
       <RD.Trigger className={clsx('flex flex-col items-center justify-center gap-0.5 text-[10px] font-medium', active ? 'text-accent' : 'text-subtle')}>

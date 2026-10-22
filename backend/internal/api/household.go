@@ -17,10 +17,11 @@ type Household struct {
 	SprintStartDow int    `json:"sprintStartDow" db:"sprint_start_dow"`
 	PlanningDow    int    `json:"planningDow" db:"planning_dow"`
 	PlanningTime   string `json:"planningTime" db:"planning_time"`
-	AutoRoll       bool   `json:"autoRoll" db:"auto_roll"`
+	AutoRoll       bool              `json:"autoRoll" db:"auto_roll"`
+	MealTimes      map[string]string `json:"mealTimes" db:"meal_times"`
 }
 
-const householdColumns = `id, name, timezone, sprint_start_dow, planning_dow, planning_time, auto_roll`
+const householdColumns = `id, name, timezone, sprint_start_dow, planning_dow, planning_time, auto_roll, meal_times`
 
 type Member struct {
 	ID          string `json:"id" db:"id"`
@@ -96,7 +97,8 @@ func (s *Server) updateHousehold(w http.ResponseWriter, r *http.Request) error {
 		SprintStartDow *int    `json:"sprintStartDow"`
 		PlanningDow    *int    `json:"planningDow"`
 		PlanningTime   *string `json:"planningTime"`
-		AutoRoll       *bool   `json:"autoRoll"`
+		AutoRoll       *bool             `json:"autoRoll"`
+		MealTimes      map[string]string `json:"mealTimes"`
 	}
 	if err := decode(r, &in); err != nil {
 		return err
@@ -134,6 +136,14 @@ func (s *Server) updateHousehold(w http.ResponseWriter, r *http.Request) error {
 		planning_dow = $5, planning_time = $6, auto_roll = $7 WHERE id = $1`,
 		h.ID, h.Name, h.Timezone, h.SprintStartDow, h.PlanningDow, h.PlanningTime, h.AutoRoll); err != nil {
 		return err
+	}
+	if in.MealTimes != nil {
+		if err := s.updateMealTimes(r.Context(), h.ID, in.MealTimes); err != nil {
+			return err
+		}
+		if h, err = s.getHousehold(r.Context(), h.ID); err != nil {
+			return err
+		}
 	}
 	// A changed sprint start day only affects sprints that haven't started yet.
 	if in.SprintStartDow != nil {
