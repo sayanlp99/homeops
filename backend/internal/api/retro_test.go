@@ -11,9 +11,9 @@ func TestRetroAndInsights(t *testing.T) {
 	}
 	_, ts, _ := startTestServer(t, 54332)
 	a := newClient(t, ts.URL)
-	a.do("POST", "/api/setup", map[string]any{"householdName": "Home", "username": "asha", "displayName": "Asha", "password": "hunter2hunter2"}, 204, nil)
-	var inv map[string]string
-	a.do("POST", "/api/invites", nil, 200, &inv)
+	a.do("POST", "/api/setup", map[string]any{"householdName": "Home", "email": "asha@example.com", "username": "asha", "displayName": "Asha", "password": "hunter2hunter2"}, 204, nil)
+	var inv map[string]any
+	a.do("POST", "/api/invites", map[string]string{"email": "ravi@example.com"}, 200, &inv)
 	b := newClient(t, ts.URL)
 	b.do("POST", "/api/auth/invite/accept", map[string]any{"code": inv["code"], "username": "ravi", "displayName": "Ravi", "password": "correcthorse"}, 204, nil)
 	var boot map[string]any

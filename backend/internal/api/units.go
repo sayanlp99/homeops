@@ -131,12 +131,12 @@ type parsedLine struct {
 var (
 	unicodeFractions = map[rune]string{'½': "1/2", '⅓': "1/3", '⅔': "2/3", '¼': "1/4", '¾': "3/4", '⅕': "1/5", '⅛': "1/8", '⅜': "3/8", '⅝': "5/8", '⅞': "7/8"}
 	// Leading amount: "1", "1.5", "1/2", "1 1/2", "1-2", "2 to 3"; unicode fractions are pre-expanded.
-	qtyRe       = regexp.MustCompile(`^(\d+/\d+|\d+(?:[.,]\d+)?(?:\s+\d+/\d+)?)(?:\s*(?:-|–|to)\s*(\d+/\d+|\d+(?:[.,]\d+)?))?\s*`)
-	sizeRe      = regexp.MustCompile(`(?i)^(small|medium|large|big|heaped|level|heaping)\s+`)
-	spaceRe     = regexp.MustCompile(`\s+`)
-	toTasteRe   = regexp.MustCompile(`(?i),?\s*(to taste|as needed|as required|as per taste|optional)\s*$`)
-	glued       = regexp.MustCompile(`^(\d+(?:[.,]\d+)?)([a-zA-Z]+)\b`) // "200g", "1kg"
-	articlesRe  = regexp.MustCompile(`(?i)^(of|a|an)\s+`)
+	qtyRe      = regexp.MustCompile(`^(\d+/\d+|\d+(?:[.,]\d+)?(?:\s+\d+/\d+)?)(?:\s*(?:-|–|to)\s*(\d+/\d+|\d+(?:[.,]\d+)?))?\s*`)
+	sizeRe     = regexp.MustCompile(`(?i)^(small|medium|large|big|heaped|level|heaping)\s+`)
+	spaceRe    = regexp.MustCompile(`\s+`)
+	toTasteRe  = regexp.MustCompile(`(?i),?\s*(to taste|as needed|as required|as per taste|optional)\s*$`)
+	glued      = regexp.MustCompile(`^(\d+(?:[.,]\d+)?)([a-zA-Z]+)\b`) // "200g", "1kg"
+	articlesRe = regexp.MustCompile(`(?i)^(of|a|an)\s+`)
 )
 
 func parseAmount(s string) (float64, bool) {
@@ -224,8 +224,20 @@ func parseIngredientLine(line string) parsedLine {
 		s = s[len(m[0]):]
 	}
 	if name, note, found := strings.Cut(s, ","); found {
-		s = name
-		notes = append([]string{strings.TrimSpace(note)}, notes...)
+		parts := strings.Split(s, ",")
+		last := strings.TrimSpace(parts[len(parts)-1])
+		if classifyAisle(name) == "Other" && classifyAisle(last) != "Other" {
+			// Leading adjectives: "fragrant, small-grained, aatop rice".
+			s = last
+			adj := make([]string, 0, len(parts)-1)
+			for _, p := range parts[:len(parts)-1] {
+				adj = append(adj, strings.TrimSpace(p))
+			}
+			notes = append([]string{strings.Join(adj, ", ")}, notes...)
+		} else {
+			s = name
+			notes = append([]string{strings.TrimSpace(note)}, notes...)
+		}
 	}
 	out.Name = cleanName(s)
 	out.Note = strings.Join(filterEmpty(notes), "; ")
@@ -308,18 +320,26 @@ var aisleRules = []aisleRule{
 	{aisle: "Household", keywords: []string{"detergent", "soap", "shampoo", "conditioner", "toothpaste", "toothbrush", "tissue", "napkin", "dishwash", "vim", "harpic", "phenyl", "garbage bag", "foil", "cling", "sponge", "scrub",
 		"wipes", "freshener", "face wash", "facewash", "handwash", "hand wash", "sanitizer", "sanitiser", "deodorant", "diaper", "sanitary", "razor", "toilet", "floor cleaner", "cleaner", "mosquito", "battery", "lotion", "moisturiser", "moisturizer", "sunscreen", "body wash"}},
 	{aisle: "Other", keywords: []string{"cigarette", "cigarettes", "gold flake", "marlboro", "classic milds", "bidi", "tobacco", "ice cubes", "ice cube"}},
-	{aisle: "Spices & Masala", keywords: []string{"powder", "masala", "turmeric", "haldi", "jeera", "cumin", "coriander seed", "dhania seed", "mustard seed", "rai", "fenugreek seed", "methi seed", "fennel", "saunf", "ajwain", "carom", "hing", "asafoetida", "cardamom", "elaichi", "clove", "laung", "cinnamon", "dalchini", "bay leaf", "tej patta", "peppercorn", "black pepper", "kasuri", "star anise", "nutmeg", "mace", "saffron", "kesar", "salt", "sugar", "jaggery", "gur", "chaat", "amchur", "kalonji", "nigella", "poppy", "sesame", "til", "red chilli", "kashmiri", "dry chilli", "dried chilli", "baking soda", "baking powder", "yeast", "vinegar", "soy sauce", "ketchup", "sauce"}},
-	{aisle: "Oils & Ghee", keywords: []string{"oil", "ghee", "vanaspati", "dalda"}},
-	{aisle: "Dairy & Eggs", keywords: []string{"milk", "curd", "dahi", "yogurt", "yoghurt", "paneer", "butter", "cheese", "cream", "malai", "khoya", "mawa", "buttermilk", "chaas", "egg"}},
-	{aisle: "Meat & Fish", keywords: []string{"chicken", "mutton", "lamb", "goat", "fish", "prawn", "shrimp", "crab", "pork", "beef", "keema", "mince", "salmon", "rohu", "hilsa", "ilish", "pomfret", "surmai", "bekti", "tuna", "bacon", "sausage", "ham"}},
-	{aisle: "Pulses & Lentils", keywords: []string{"dal", "daal", "lentil", "moong", "masoor", "toor", "arhar", "urad", "chana", "chickpea", "rajma", "kidney bean", "lobia", "black eyed", "matki", "kulthi", "soya chunk", "soybean"}},
-	{aisle: "Grains & Flour", keywords: []string{"rice", "basmati", "atta", "flour", "maida", "besan", "suji", "sooji", "rava", "semolina", "poha", "oats", "millet", "ragi", "bajra", "jowar", "quinoa", "dalia", "vermicelli", "sevai", "pasta", "noodle", "macaroni", "spaghetti", "cornflour", "corn starch", "sabudana", "sago", "murmura", "puffed rice", "idli rava"}},
+	// Exceptions to later generic words ("juice" is a drink, but lime juice is squeezed fresh).
+	{aisle: "Vegetables", keywords: []string{"lime juice", "lemon juice", "lebur rosh"}},
+	{aisle: "Spices & Masala", keywords: []string{"powder", "masala", "turmeric", "haldi", "jeera", "cumin", "coriander seed", "dhania seed", "mustard seed", "rai", "fenugreek seed", "methi seed", "fennel", "saunf", "ajwain", "carom", "hing", "asafoetida", "cardamom", "elaichi", "clove", "laung", "cinnamon", "dalchini", "bay leaf", "tej patta", "peppercorn", "black pepper", "kasuri", "star anise", "nutmeg", "mace", "saffron", "kesar", "salt", "sugar", "jaggery", "gur", "chaat", "amchur", "kalonji", "nigella", "poppy", "sesame", "til", "red chilli", "kashmiri", "dry chilli", "dried chilli", "baking soda", "baking powder", "yeast", "vinegar", "soy sauce", "ketchup", "sauce",
+		// Bengali
+		"jeere", "jire", "kaalo jeere", "kalo jire", "moshla", "gorom moshla", "posto", "radhuni", "panch phoron", "phoron", "shorshe", "sorshe", "dhone", "holud", "shukno lonka", "guro", "jowan", "noon", "chini", "nolen gur", "tejpata", "methi phoron", "pepper", "white pepper", "bay leaves", "soy", "mouri", "kababchini", "rose petals", "rose water", "kewra", "food colour", "food color", "tamarind", "tetul", "kacha tetul"}},
+	{aisle: "Oils & Ghee", keywords: []string{"oil", "ghee", "vanaspati", "dalda", "tel"}},
+	{aisle: "Dairy & Eggs", keywords: []string{"milk", "curd", "dahi", "yogurt", "yoghurt", "paneer", "butter", "cheese", "cream", "malai", "khoya", "mawa", "buttermilk", "chaas", "egg", "doi", "dudh", "chhana", "khoa", "dim"}},
+	{aisle: "Meat & Fish", keywords: []string{"chicken", "mutton", "lamb", "goat", "fish", "prawn", "shrimp", "crab", "pork", "beef", "keema", "mince", "salmon", "rohu", "hilsa", "ilish", "pomfret", "surmai", "bekti", "tuna", "bacon", "sausage", "ham",
+		// Bengali
+		"machh", "maach", "mach", "machher", "macher", "maacher", "chingri", "boal", "bowal", "rui", "katla", "pabda", "bhetki", "tangra", "koi", "magur", "parshe", "aar", "loitta", "shutki", "chitol", "topse", "mourala", "kankra", "mangsho", "murgi", "duck", "hans", "liver"}},
+	{aisle: "Pulses & Lentils", keywords: []string{"dal", "daal", "lentil", "moong", "masoor", "toor", "arhar", "urad", "chana", "chickpea", "rajma", "kidney bean", "lobia", "black eyed", "matki", "kulthi", "soya chunk", "soybean", "kalai", "mushur", "chholar", "motor dal", "mug dal"}},
+	{aisle: "Grains & Flour", keywords: []string{"rice", "basmati", "atta", "flour", "maida", "besan", "suji", "sooji", "rava", "semolina", "poha", "oats", "millet", "ragi", "bajra", "jowar", "quinoa", "dalia", "vermicelli", "sevai", "pasta", "noodle", "macaroni", "spaghetti", "cornflour", "corn starch", "sabudana", "sago", "murmura", "puffed rice", "idli rava", "chal", "chaler", "moyda", "gobindobhog", "chire", "muri"}},
 	{aisle: "Bakery", keywords: []string{"bread", "pav", "bun", "rusk", "toast", "croissant", "kulcha"}},
-	{aisle: "Fruits & Nuts", keywords: []string{"apple", "banana", "mango", "orange", "papaya", "grape", "pomegranate", "anar", "guava", "watermelon", "melon", "pineapple", "chikoo", "sapota", "pear", "kiwi", "strawberry", "strawberries", "litchi", "lychee", "dates", "khajur", "raisin", "kishmish", "almond", "badam", "cashew", "kaju", "walnut", "akhrot", "pistachio", "pista", "fig", "anjeer", "coconut", "peanut", "groundnut", "makhana", "foxnut"}},
+	{aisle: "Fruits & Nuts", keywords: []string{"apple", "banana", "mango", "orange", "papaya", "grape", "pomegranate", "anar", "guava", "watermelon", "melon", "pineapple", "chikoo", "sapota", "pear", "kiwi", "strawberry", "strawberries", "litchi", "lychee", "dates", "khajur", "raisin", "kishmish", "almond", "badam", "cashew", "kaju", "walnut", "akhrot", "pistachio", "pista", "fig", "anjeer", "coconut", "peanut", "groundnut", "makhana", "foxnut", "cashewnut", "charmagaz", "chironji", "taal", "palmyra"}},
 	{aisle: "Frozen", keywords: []string{"frozen", "ice cream"}},
 	{aisle: "Beverages", keywords: []string{"tea", "chai patti", "coffee", "juice", "soda", "cola", "water bottle"}},
 	{aisle: "Snacks & Packaged", keywords: []string{"biscuit", "chips", "namkeen", "chocolate", "jam", "honey", "pickle", "achar", "papad", "cornflakes", "muesli", "peanut butter", "maggi", "instant"}},
-	{aisle: "Vegetables", keywords: []string{"onion", "pyaz", "tomato", "tamatar", "potato", "aloo", "garlic", "lahsun", "ginger", "adrak", "chilli", "chili", "mirchi", "capsicum", "bell pepper", "carrot", "gajar", "peas", "matar", "beans", "cauliflower", "gobi", "cabbage", "spinach", "palak", "methi", "fenugreek", "coriander", "dhania", "cilantro", "mint", "pudina", "curry leaf", "curry leaves", "kadi patta", "brinjal", "baingan", "eggplant", "okra", "bhindi", "lady finger", "cucumber", "kheera", "bottle gourd", "lauki", "ridge gourd", "turai", "bitter gourd", "karela", "pumpkin", "kaddu", "radish", "mooli", "beetroot", "sweet potato", "shakarkandi", "drumstick", "moringa", "mushroom", "corn", "lettuce", "spring onion", "lemon", "lime", "nimbu", "zucchini", "broccoli", "raw banana", "plantain", "yam", "colocasia", "arbi", "jackfruit", "kathal", "tinda", "parwal", "pointed gourd", "cluster beans", "gawar", "celery", "leek", "avocado"}},
+	{aisle: "Vegetables", keywords: []string{"onion", "pyaz", "tomato", "tamatar", "potato", "aloo", "garlic", "lahsun", "ginger", "adrak", "chilli", "chili", "mirchi", "capsicum", "bell pepper", "carrot", "gajar", "peas", "matar", "beans", "cauliflower", "gobi", "cabbage", "spinach", "palak", "methi", "fenugreek", "coriander", "dhania", "cilantro", "mint", "pudina", "curry leaf", "curry leaves", "kadi patta", "brinjal", "baingan", "eggplant", "okra", "bhindi", "lady finger", "cucumber", "kheera", "bottle gourd", "lauki", "ridge gourd", "turai", "bitter gourd", "karela", "pumpkin", "kaddu", "radish", "mooli", "beetroot", "sweet potato", "shakarkandi", "drumstick", "moringa", "mushroom", "corn", "lettuce", "spring onion", "lemon", "lime", "nimbu", "zucchini", "broccoli", "raw banana", "plantain", "yam", "colocasia", "arbi", "jackfruit", "kathal", "tinda", "parwal", "pointed gourd", "cluster beans", "gawar", "celery", "leek", "avocado",
+		// Bengali
+		"peyaj", "piyaj", "pyaj", "rosun", "roshun", "ada", "lonka", "kancha lonka", "begun", "potol", "jhinge", "lau", "kumro", "chalkumro", "dumur", "mocha", "thor", "kanchkola", "shak", "phulkopi", "badhakopi", "dhonepata", "uchhe", "korola", "shim", "bok phul", "kochu", "mulo", "tomato", "aloo", "alu", "pepe", "jhinga", "data", "kakrol", "barbati", "lebu", "gondhoraj", "saag", "shaak", "greens", "bathua", "parsley", "peyajkoli", "sheem", "kolmi", "morning glory", "mooli ke patte"}},
 }
 
 func init() {

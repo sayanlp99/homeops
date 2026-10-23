@@ -3,7 +3,10 @@ import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
 import {
   CalendarRange,
+  Check,
   ChefHat,
+  ChevronsUpDown,
+  Eye,
   Home,
   KanbanSquare,
   ListChecks,
@@ -17,17 +20,20 @@ import {
   RotateCcw,
   Search,
   Settings,
+  ShieldCheck,
   WifiOff,
   Wallet,
 } from 'lucide-react'
 import { useEffect, useMemo, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import { post } from '@/lib/api'
 import { useHotkeys, useOnline } from '@/lib/hooks'
+import { switchHousehold } from '@/lib/households'
 import { syncPush } from '@/lib/push'
 import { clearLocalData } from '@/lib/queryClient'
 import { useRealtime, type LiveState } from '@/lib/realtime'
-import { useSession } from '@/lib/session'
+import { roleLabels, useSession } from '@/lib/session'
 import { openQuickAdd, openQuickExpense, palette } from '@/lib/ui'
 import { AddExpenseDialog } from '@/features/money/AddExpenseDialog'
 import { QuickAddTask } from '@/features/tasks/QuickAddTask'
@@ -75,6 +81,19 @@ export function AppShell() {
   // The service worker tells us when a push arrived, or that a notification was tapped.
   const navigate = useNavigate()
   const qc = useQueryClient()
+  // Notification links carry ?hh=<household>; open that household first if needed.
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const hh = params.get('hh')
+    if (!hh) return
+    params.delete('hh')
+    const rest = location.pathname + (params.size ? `?${params}` : '')
+    if (hh !== session.household.id && session.households.some((h) => h.id === hh)) {
+      switchHousehold(hh, rest).catch((e: Error) => toast.error(e.message))
+    } else {
+      navigate(rest, { replace: true })
+    }
+  }, [location.search]) // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => {
     const onMsg = (e: MessageEvent) => {
       if (e.data?.type === 'navigate') navigate(e.data.url)
@@ -102,6 +121,11 @@ export function AppShell() {
       <Sidebar live={live} />
       <div className="flex min-h-dvh flex-col">
         <Topbar />
+        {session.user.role === 'viewer' && (
+          <div className="flex items-center justify-center gap-2 bg-surface-3 px-4 py-1.5 text-[12px] font-medium text-muted">
+            <Eye className="size-3.5" /> View only — you can look around {session.household.name} but not change anything.
+          </div>
+        )}
         {!online && (
           <div className="flex items-center justify-center gap-2 bg-warning-soft px-4 py-1.5 text-[12px] font-medium text-warning">
             <WifiOff className="size-3.5" /> Offline — showing saved data. Changes will sync when you reconnect.
@@ -112,13 +136,15 @@ export function AppShell() {
         </main>
       </div>
       <MobileTabs />
-      <button
-        onClick={() => (location.pathname.startsWith('/budget') ? openQuickExpense() : openQuickAdd())}
-        aria-label={location.pathname.startsWith('/budget') ? 'Add expense' : 'New task'}
-        className="fixed right-4 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 flex size-13 items-center justify-center rounded-full bg-accent text-accent-fg shadow-pop active:scale-95 lg:hidden"
-      >
-        <Plus className="size-6" />
-      </button>
+      {session.user.role !== 'viewer' && (
+        <button
+          onClick={() => (location.pathname.startsWith('/budget') ? openQuickExpense() : openQuickAdd())}
+          aria-label={location.pathname.startsWith('/budget') ? 'Add expense' : 'New task'}
+          className="fixed right-4 bottom-[calc(72px+env(safe-area-inset-bottom))] z-30 flex size-13 items-center justify-center rounded-full bg-accent text-accent-fg shadow-pop active:scale-95 lg:hidden"
+        >
+          <Plus className="size-6" />
+        </button>
+      )}
       <QuickAddTask />
       <AddExpenseDialog />
       <TaskDrawer />
@@ -131,12 +157,19 @@ function Sidebar({ live }: { live: LiveState }) {
   const { household: h } = useSession()
   return (
     <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-border bg-surface lg:flex">
-      <div className="flex h-12 items-center gap-2.5 border-b border-border px-4">
-        <img src="/logo.svg" alt="" className="size-6" />
-        <div className="min-w-0">
-          <div className="truncate text-[13px] leading-tight font-semibold">HomeOps</div>
-          <div className="truncate text-[11px] leading-tight text-subtle">{h.name}</div>
-        </div>
+      <div className="flex h-12 items-center gap-1 border-b border-border px-2">
+        <HouseholdSwitcher
+          trigger={
+            <button className="flex min-w-0 flex-1 items-center gap-2.5 rounded-md px-2 py-1 text-left hover:bg-surface-2" aria-label="Switch household">
+              <img src="/logo.svg" alt="" className="size-6" />
+              <div className="min-w-0 flex-1">
+                <div className="truncate text-[13px] leading-tight font-semibold">{h.name}</div>
+                <div className="truncate text-[11px] leading-tight text-subtle">HomeOps</div>
+              </div>
+              <ChevronsUpDown className="size-3.5 shrink-0 text-subtle" />
+            </button>
+          }
+        />
         <LiveDot state={live} />
       </div>
       <nav className="flex-1 space-y-5 overflow-y-auto px-2 py-3 scrollbar-thin">
@@ -147,6 +180,35 @@ function Sidebar({ live }: { live: LiveState }) {
         <SideLink item={{ to: '/settings', label: 'Settings', icon: Settings }} />
       </div>
     </aside>
+  )
+}
+
+/** The person's households, plus administration for the platform admin. */
+function HouseholdSwitcher({ trigger }: { trigger: ReactNode }) {
+  const { household, households, user } = useSession()
+  const navigate = useNavigate()
+  const go = (id: string) => id !== household.id && switchHousehold(id).catch((e: Error) => toast.error(e.message))
+  return (
+    <Menu trigger={trigger} width="w-64">
+      <MenuLabel>Households</MenuLabel>
+      {households.map((h) => (
+        <MenuItem key={h.id} onSelect={() => go(h.id)} icon={h.id === household.id ? <Check className="size-4" /> : <span className="size-4" />}>
+          <span className="flex items-center gap-2">
+            <span className="min-w-0 flex-1 truncate">{h.name}</span>
+            {h.unread > 0 && h.id !== household.id && <span className="rounded-full bg-accent px-1.5 text-[10px] font-semibold text-accent-fg">{h.unread}</span>}
+            <span className="text-[11px] text-subtle">{roleLabels[h.role]}</span>
+          </span>
+        </MenuItem>
+      ))}
+      {user.isPlatformAdmin && (
+        <>
+          <MenuSeparator />
+          <MenuItem icon={<ShieldCheck className="size-4" />} onSelect={() => navigate('/admin')}>
+            Administration
+          </MenuItem>
+        </>
+      )}
+    </Menu>
   )
 }
 
@@ -195,9 +257,8 @@ function Topbar() {
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-surface/90 pt-safe backdrop-blur supports-[backdrop-filter]:bg-surface/75">
       <div className="flex h-12 items-center gap-2 px-3 lg:px-6">
-        <div className="flex items-center gap-2 lg:hidden">
-          <img src="/logo.svg" alt="" className="size-6" />
-          <span className="text-[14px] font-semibold">HomeOps</span>
+        <div className="min-w-0 lg:hidden">
+          <HouseholdSwitcherMobile />
         </div>
         <button
           onClick={() => palette.set(true)}
@@ -216,6 +277,21 @@ function Topbar() {
         </div>
       </div>
     </header>
+  )
+}
+
+function HouseholdSwitcherMobile() {
+  const { household, households } = useSession()
+  return (
+    <HouseholdSwitcher
+      trigger={
+        <button className="flex min-w-0 items-center gap-2 rounded-md py-1 pr-1" aria-label="Switch household">
+          <img src="/logo.svg" alt="" className="size-6" />
+          <span className="truncate text-[14px] font-semibold">{households.length > 1 ? household.name : 'HomeOps'}</span>
+          <ChevronsUpDown className="size-3.5 shrink-0 text-subtle" />
+        </button>
+      }
+    />
   )
 }
 
@@ -245,6 +321,11 @@ function UserMenu() {
       <MenuItem icon={<Settings className="size-4" />} onSelect={() => navigate('/settings/profile')}>
         Settings
       </MenuItem>
+      {user.isPlatformAdmin && (
+        <MenuItem icon={<ShieldCheck className="size-4" />} onSelect={() => navigate('/admin')}>
+          Administration
+        </MenuItem>
+      )}
       <MenuItem icon={<LogOut className="size-4" />} onSelect={signOut} danger>
         Sign out
       </MenuItem>

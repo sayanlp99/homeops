@@ -402,9 +402,9 @@ var (
 		"sent": true, "using": true, "paytm": false, "atm": true, "wdl": true, "atw": true, "nwd": true, "eaw": true, "vin": true, "vps": true,
 		"mmt": true, "int": true, "fund": true, "na": true, "null": true, "others": true, "other": true, "ok": true}
 	boilerplateRe = regexp.MustCompile(`^(payment from|paid via|sent using|payment to|upi payment|thank you|transfer to|transfer from)\b`)
-	atmRe      = regexp.MustCompile(`(?i)^(nwd|atw|eaw|atm|cash wdl|atm wdl)[-/ ]`)
-	bankCodeRe = regexp.MustCompile(`(?i)^[a-z]{4}0[a-z0-9]{6}$`) // IFSC
-	digitsRe   = regexp.MustCompile(`\d`)
+	atmRe         = regexp.MustCompile(`(?i)^(nwd|atw|eaw|atm|cash wdl|atm wdl)[-/ ]`)
+	bankCodeRe    = regexp.MustCompile(`(?i)^[a-z]{4}0[a-z0-9]{6}$`) // IFSC
+	digitsRe      = regexp.MustCompile(`\d`)
 )
 
 // Payee pulls a merchant or person name out of a bank narration:

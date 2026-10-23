@@ -201,7 +201,7 @@ func (s *Server) generateRecurring(ctx context.Context, tx pgx.Tx, h *Household,
 		return 0, err
 	}
 	var members []string
-	rows, _ = tx.Query(ctx, `SELECT id FROM users WHERE household_id = $1 ORDER BY created_at`, h.ID)
+	rows, _ = tx.Query(ctx, `SELECT id FROM members WHERE household_id = $1 ORDER BY created_at`, h.ID)
 	if members, err = pgx.CollectRows(rows, pgx.RowTo[string]); err != nil {
 		return 0, err
 	}

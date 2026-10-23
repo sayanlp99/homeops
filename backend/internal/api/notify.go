@@ -16,20 +16,27 @@ import (
 )
 
 type notification struct {
-	UserID    string
-	Kind      string // matches a notifyKinds preference key
-	DedupeKey string
-	Title     string
-	Body      string
-	URL       string
+	HouseholdID string
+	UserID      string
+	Kind        string // matches a notifyKinds preference key
+	DedupeKey   string
+	Title       string
+	Body        string
+	URL         string
 }
 
 // notify records an inbox entry and queues it for push, unless the user opted out of
 // this kind. Re-sending the same DedupeKey is a no-op, which makes scheduled jobs idempotent.
 func (s *Server) notify(ctx context.Context, n notification) error {
 	var prefs map[string]bool
-	var householdID string
-	if err := s.db.QueryRow(ctx, `SELECT notify_prefs, household_id FROM users WHERE id = $1`, n.UserID).Scan(&prefs, &householdID); err != nil {
+	householdID := n.HouseholdID
+	// Only current members hear about a household.
+	err := s.db.QueryRow(ctx, `SELECT u.notify_prefs FROM memberships m JOIN users u ON u.id = m.user_id
+		WHERE m.user_id = $1 AND m.household_id = $2`, n.UserID, householdID).Scan(&prefs)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil
+	}
+	if err != nil {
 		return err
 	}
 	if enabled, set := prefs[n.Kind]; set && !enabled {
@@ -38,9 +45,9 @@ func (s *Server) notify(ctx context.Context, n notification) error {
 	if n.URL == "" {
 		n.URL = "/"
 	}
-	tag, err := s.db.Exec(ctx, `INSERT INTO notifications (user_id, kind, dedupe_key, title, body, url)
-		VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (user_id, dedupe_key) DO NOTHING`,
-		n.UserID, n.Kind, n.DedupeKey, truncate(n.Title, 200), truncate(n.Body, 500), n.URL)
+	tag, err := s.db.Exec(ctx, `INSERT INTO notifications (user_id, household_id, kind, dedupe_key, title, body, url)
+		VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (user_id, household_id, dedupe_key) DO NOTHING`,
+		n.UserID, householdID, n.Kind, n.DedupeKey, truncate(n.Title, 200), truncate(n.Body, 500), n.URL)
 	if err != nil {
 		return err
 	}
@@ -52,12 +59,13 @@ func (s *Server) notify(ctx context.Context, n notification) error {
 }
 
 func (s *Server) notifyHousehold(ctx context.Context, householdID string, n notification) error {
-	rows, _ := s.db.Query(ctx, `SELECT id FROM users WHERE household_id = $1`, householdID)
+	rows, _ := s.db.Query(ctx, `SELECT id FROM members WHERE household_id = $1`, householdID)
 	ids, err := pgx.CollectRows(rows, pgx.RowTo[string])
 	if err != nil {
 		return err
 	}
 	var errs []error
+	n.HouseholdID = householdID
 	for _, id := range ids {
 		n.UserID = id
 		errs = append(errs, s.notify(ctx, n))
@@ -86,12 +94,14 @@ type inboxItem struct {
 func (s *Server) listNotifications(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	rows, _ := s.db.Query(r.Context(), `SELECT id, kind, title, body, url, created_at, read_at FROM notifications
-		WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`, u.ID)
+		WHERE user_id = $1 AND household_id = $2 ORDER BY created_at DESC LIMIT 50`, u.ID, u.HouseholdID)
 	items, err := pgx.CollectRows(rows, pgx.RowToStructByName[inboxItem])
 	if err != nil {
 		return err
 	}
-	unread, err := s.unreadCount(r.Context(), u.ID)
+	var unread int
+	err = s.db.QueryRow(r.Context(), `SELECT count(*) FROM notifications WHERE user_id = $1 AND household_id = $2 AND read_at IS NULL`,
+		u.ID, u.HouseholdID).Scan(&unread)
 	if err != nil {
 		return err
 	}
@@ -115,7 +125,7 @@ func (s *Server) markNotificationsRead(w http.ResponseWriter, r *http.Request) e
 	}
 	var err error
 	if in.All {
-		_, err = s.db.Exec(r.Context(), `UPDATE notifications SET read_at = now() WHERE user_id = $1 AND read_at IS NULL`, u.ID)
+		_, err = s.db.Exec(r.Context(), `UPDATE notifications SET read_at = now() WHERE user_id = $1 AND household_id = $2 AND read_at IS NULL`, u.ID, u.HouseholdID)
 	} else if len(in.IDs) > 0 {
 		_, err = s.db.Exec(r.Context(), `UPDATE notifications SET read_at = now() WHERE user_id = $1 AND id = ANY($2::uuid[]) AND read_at IS NULL`, u.ID, in.IDs)
 	}
@@ -253,8 +263,9 @@ func (p *pusher) deliverPending(ctx context.Context) {
 	_, err := p.db.Exec(ctx, `UPDATE notifications SET push_state = 'skipped' WHERE push_state = 'pending' AND created_at < now() - interval '12 hours'`)
 	logErr("expire pending pushes", err)
 
-	rows, _ := p.db.Query(ctx, `SELECT n.id, n.user_id, n.kind, n.title, n.body, n.url, u.quiet_start, u.quiet_end, h.timezone
-		FROM notifications n JOIN users u ON u.id = n.user_id JOIN households h ON h.id = u.household_id
+	rows, _ := p.db.Query(ctx, `SELECT n.id, n.user_id, n.kind, n.title, n.body, n.url || CASE WHEN n.url LIKE '%?%' THEN '&' ELSE '?' END || 'hh=' || n.household_id,
+			u.quiet_start, u.quiet_end, h.timezone
+		FROM notifications n JOIN users u ON u.id = n.user_id JOIN households h ON h.id = n.household_id
 		WHERE n.push_state = 'pending' ORDER BY n.created_at LIMIT 100`)
 	type pending struct {
 		id, userID, kind, title, body, url string
@@ -324,45 +335,116 @@ func (p *pusher) sendToUser(ctx context.Context, userID string, payload pushPayl
 			TTL:             12 * 60 * 60,
 			Urgency:         webpush.UrgencyHigh,
 		})
+		service := pushService(sb.Endpoint)
 		if err != nil {
 			res.Error = err.Error()
-			p.recordFailure(ctx, sb.Endpoint, false)
+			slog.Warn("push failed", "user", userID, "service", service, "device", res.Device, "err", err)
+			p.recordFailure(ctx, sb.Endpoint, false, res.Error)
 			results = append(results, res)
 			continue
 		}
-		io.Copy(io.Discard, resp.Body)
+		body, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
 		resp.Body.Close()
 		res.Status = resp.StatusCode
+		reason := strings.TrimSpace(string(body))
 		switch {
 		case resp.StatusCode < 300:
 			res.OK = true
-			_, err := p.db.Exec(ctx, `UPDATE push_subscriptions SET last_success_at = now(), failure_count = 0 WHERE endpoint = $1`, sb.Endpoint)
+			slog.Info("push sent", "user", userID, "service", service, "device", res.Device, "status", resp.StatusCode)
+			_, err := p.db.Exec(ctx, `UPDATE push_subscriptions SET last_success_at = now(), failure_count = 0, last_error = '' WHERE endpoint = $1`, sb.Endpoint)
 			logErr("record push success", err)
 		case resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusGone:
-			// The browser dropped this subscription; the client re-subscribes on next open.
+			// The push service says this subscription no longer exists; the device
+			// re-registers automatically the next time the app is opened there.
 			res.Error = "subscription expired"
-			p.recordFailure(ctx, sb.Endpoint, true)
+			slog.Warn("push subscription removed", "user", userID, "service", service, "device", res.Device, "status", resp.StatusCode, "reason", reason)
+			p.recordFailure(ctx, sb.Endpoint, true, res.Error)
 		default:
 			res.Error = resp.Status
-			slog.Warn("push rejected", "status", resp.StatusCode, "device", res.Device)
-			p.recordFailure(ctx, sb.Endpoint, false)
+			if reason != "" {
+				res.Error += ": " + truncate(reason, 160)
+			}
+			slog.Warn("push rejected", "user", userID, "service", service, "device", res.Device, "status", resp.StatusCode, "reason", reason)
+			p.recordFailure(ctx, sb.Endpoint, false, res.Error)
 		}
 		results = append(results, res)
 	}
 	return results, nil
 }
 
-func (p *pusher) recordFailure(ctx context.Context, endpoint string, gone bool) {
+func (p *pusher) recordFailure(ctx context.Context, endpoint string, gone bool, reason string) {
 	var err error
 	if gone {
 		_, err = p.db.Exec(ctx, `DELETE FROM push_subscriptions WHERE endpoint = $1`, endpoint)
 	} else {
-		_, err = p.db.Exec(ctx, `UPDATE push_subscriptions SET failure_count = failure_count + 1 WHERE endpoint = $1`, endpoint)
+		_, err = p.db.Exec(ctx, `UPDATE push_subscriptions SET failure_count = failure_count + 1, last_error = $2, last_failure_at = now()
+			WHERE endpoint = $1`, endpoint, truncate(reason, 300))
 		if err == nil {
 			_, err = p.db.Exec(ctx, `DELETE FROM push_subscriptions WHERE endpoint = $1 AND failure_count >= 20`, endpoint)
 		}
 	}
 	logErr("record push failure", err)
+}
+
+// pushService names the browser vendor's push service from a subscription endpoint.
+func pushService(endpoint string) string {
+	switch {
+	case strings.Contains(endpoint, "fcm.googleapis.com"):
+		return "Google (Chrome/Edge/Android)"
+	case strings.Contains(endpoint, "push.apple.com"):
+		return "Apple (Safari/iOS)"
+	case strings.Contains(endpoint, "mozilla.com"):
+		return "Mozilla (Firefox)"
+	case strings.Contains(endpoint, "notify.windows.com"):
+		return "Microsoft (Edge/Windows)"
+	}
+	return "Other"
+}
+
+// pushDevices lists the current user's registered devices, for Settings.
+func (s *Server) pushDevices(w http.ResponseWriter, r *http.Request) error {
+	rows, _ := s.db.Query(r.Context(), `SELECT endpoint, user_agent, created_at, last_success_at, failure_count, last_error, last_failure_at
+		FROM push_subscriptions WHERE user_id = $1 ORDER BY created_at`, currentUser(r).ID)
+	type device struct {
+		Endpoint      string     `json:"endpoint"`
+		Device        string     `json:"device"`
+		Browser       string     `json:"browser"`
+		Service       string     `json:"service"`
+		CreatedAt     time.Time  `json:"createdAt"`
+		LastSuccessAt *time.Time `json:"lastSuccessAt"`
+		Failures      int        `json:"failures"`
+		LastError     string     `json:"lastError"`
+		LastFailureAt *time.Time `json:"lastFailureAt"`
+	}
+	out, err := pgx.CollectRows(rows, func(row pgx.CollectableRow) (device, error) {
+		var d device
+		var ua string
+		err := row.Scan(&d.Endpoint, &ua, &d.CreatedAt, &d.LastSuccessAt, &d.Failures, &d.LastError, &d.LastFailureAt)
+		d.Device, d.Browser, d.Service = deviceName(ua), browserName(ua), pushService(d.Endpoint)
+		return d, err
+	})
+	if err != nil {
+		return err
+	}
+	return ok(w, out)
+}
+
+func browserName(ua string) string {
+	switch {
+	case strings.Contains(ua, "EdgA") || strings.Contains(ua, "Edg/"):
+		return "Edge"
+	case strings.Contains(ua, "CriOS"):
+		return "Chrome (iOS)"
+	case strings.Contains(ua, "FxiOS"), strings.Contains(ua, "Firefox/"):
+		return "Firefox"
+	case strings.Contains(ua, "SamsungBrowser"):
+		return "Samsung Internet"
+	case strings.Contains(ua, "Chrome/"):
+		return "Chrome"
+	case strings.Contains(ua, "Safari/"):
+		return "Safari"
+	}
+	return "Browser"
 }
 
 // inQuietHours handles ranges that cross midnight, e.g. 22:00–07:00.

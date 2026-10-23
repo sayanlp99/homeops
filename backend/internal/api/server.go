@@ -15,6 +15,7 @@ import (
 
 	"homeops/internal/blob"
 	"homeops/internal/config"
+	"homeops/internal/mail"
 	"homeops/internal/realtime"
 )
 
@@ -27,6 +28,7 @@ type Server struct {
 	limiter  *rateLimiter
 	push     *pusher
 	files    blob.Store
+	mailer   mail.Sender
 	stopping <-chan struct{} // closed on shutdown so long-lived SSE streams end
 }
 
@@ -60,6 +62,11 @@ func New(ctx context.Context, cfg config.Config, db *pgxpool.Pool) (*Server, err
 		return nil, err
 	}
 	slog.Info("file storage", "backend", s.files.Name())
+	s.mailer, err = mail.New(mail.Config{Host: cfg.SMTPHost, Port: cfg.SMTPPort, Username: cfg.SMTPUser, Password: cfg.SMTPPass, From: cfg.MailFrom})
+	if err != nil {
+		return nil, err
+	}
+	slog.Info("email", "smtp", cfg.SMTPHost != "", "from", cfg.MailFrom)
 	return s, nil
 }
 
@@ -80,10 +87,13 @@ func (s *Server) Routes() http.Handler {
 		r.Method("GET", "/auth/invite/{code}", handler(s.checkInvite))
 		r.Method("POST", "/auth/passkey/login/begin", handler(s.passkeyLoginBegin))
 		r.Method("POST", "/auth/passkey/login/finish", handler(s.passkeyLoginFinish))
+		r.Method("POST", "/auth/password/forgot", handler(s.forgotPassword))
+		r.Method("GET", "/auth/password/reset/{token}", handler(s.checkReset))
+		r.Method("POST", "/auth/password/reset", handler(s.resetPassword))
 
+		// Signed in, whether or not the person belongs to a household yet.
 		r.Group(func(r chi.Router) {
 			r.Use(s.requireAuth)
-			r.Method("GET", "/events", http.HandlerFunc(s.events))
 
 			r.Method("PATCH", "/me", handler(s.updateMe))
 			r.Method("POST", "/me/password", handler(s.changePassword))
@@ -93,9 +103,37 @@ func (s *Server) Routes() http.Handler {
 			r.Method("POST", "/me/passkeys/finish", handler(s.passkeyRegisterFinish))
 			r.Method("GET", "/me/sessions", handler(s.listSessions))
 			r.Method("DELETE", "/me/sessions/{id}", handler(s.revokeSession))
+			r.Method("POST", "/me/household", handler(s.switchHousehold))
+			r.Method("POST", "/invites/{code}/join", handler(s.joinWithInvite))
 
-			r.Method("PATCH", "/household", s.adminOnly(handler(s.updateHousehold)))
-			r.Method("POST", "/invites", s.adminOnly(handler(s.createInvite)))
+			r.Method("POST", "/push/subscribe", handler(s.pushSubscribe))
+			r.Method("POST", "/push/unsubscribe", handler(s.pushUnsubscribe))
+			r.Method("POST", "/push/test", handler(s.pushTest))
+			r.Method("GET", "/push/devices", handler(s.pushDevices))
+
+			r.Route("/admin", func(r chi.Router) {
+				r.Use(platformAdminOnly)
+				r.Method("GET", "/households", handler(s.adminListHouseholds))
+				r.Method("POST", "/households", handler(s.adminCreateHousehold))
+				r.Method("DELETE", "/households/{id}", handler(s.adminDeleteHousehold))
+				r.Method("POST", "/households/{id}/invites", handler(s.adminInvite))
+				r.Method("GET", "/users", handler(s.adminListUsers))
+				r.Method("PATCH", "/users/{id}", handler(s.adminUpdateUser))
+			})
+		})
+
+		// Household data. Viewers are limited to reads.
+		r.Group(func(r chi.Router) {
+			r.Use(s.requireAuth, s.requireHousehold)
+			r.Method("GET", "/events", http.HandlerFunc(s.events))
+
+			r.With(requireRole("admin")).Method("PATCH", "/household", handler(s.updateHousehold))
+			r.With(requireRole("owner")).Method("DELETE", "/household", handler(s.deleteHousehold))
+			r.With(requireRole("admin")).Method("GET", "/invites", handler(s.listInvites))
+			r.With(requireRole("admin")).Method("POST", "/invites", handler(s.createInvite))
+			r.With(requireRole("admin")).Method("DELETE", "/invites/{code}", handler(s.revokeInvite))
+			r.With(requireRole("admin")).Method("PATCH", "/members/{id}", handler(s.updateMember))
+			r.Method("DELETE", "/members/{id}", handler(s.removeMember))
 
 			r.Method("GET", "/labels", handler(s.listLabels))
 			r.Method("POST", "/labels", handler(s.createLabel))
@@ -195,9 +233,6 @@ func (s *Server) Routes() http.Handler {
 
 			r.Method("GET", "/notifications", handler(s.listNotifications))
 			r.Method("POST", "/notifications/read", handler(s.markNotificationsRead))
-			r.Method("POST", "/push/subscribe", handler(s.pushSubscribe))
-			r.Method("POST", "/push/unsubscribe", handler(s.pushUnsubscribe))
-			r.Method("POST", "/push/test", handler(s.pushTest))
 		})
 
 		r.NotFound(func(w http.ResponseWriter, r *http.Request) {

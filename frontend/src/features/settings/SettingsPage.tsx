@@ -1,8 +1,9 @@
 import clsx from 'clsx'
-import { Bell, Home, KeyRound, Palette, Tag, User } from 'lucide-react'
+import { Bell, Home, KeyRound, Palette, Tag, User, Users } from 'lucide-react'
 import { NavLink, Navigate, useParams } from 'react-router-dom'
 import { PageHeader } from '@/components/ui'
 import { AppearanceSettings, HouseholdSettings, LabelSettings, ProfileSettings } from './GeneralSettings'
+import { MembersSettings } from './MembersSettings'
 import { NotificationSettings } from './NotificationSettings'
 import { SecuritySettings } from './SecuritySettings'
 
@@ -11,6 +12,7 @@ const tabs = [
   { id: 'notifications', label: 'Notifications', icon: Bell, el: <NotificationSettings /> },
   { id: 'security', label: 'Sign-in & security', icon: KeyRound, el: <SecuritySettings /> },
   { id: 'household', label: 'Household', icon: Home, el: <HouseholdSettings /> },
+  { id: 'members', label: 'Members', icon: Users, el: <MembersSettings /> },
   { id: 'labels', label: 'Labels', icon: Tag, el: <LabelSettings /> },
   { id: 'appearance', label: 'Appearance', icon: Palette, el: <AppearanceSettings /> },
 ]

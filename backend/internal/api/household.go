@@ -11,12 +11,12 @@ import (
 )
 
 type Household struct {
-	ID             string `json:"id" db:"id"`
-	Name           string `json:"name" db:"name"`
-	Timezone       string `json:"timezone" db:"timezone"`
-	SprintStartDow int    `json:"sprintStartDow" db:"sprint_start_dow"`
-	PlanningDow    int    `json:"planningDow" db:"planning_dow"`
-	PlanningTime   string `json:"planningTime" db:"planning_time"`
+	ID             string            `json:"id" db:"id"`
+	Name           string            `json:"name" db:"name"`
+	Timezone       string            `json:"timezone" db:"timezone"`
+	SprintStartDow int               `json:"sprintStartDow" db:"sprint_start_dow"`
+	PlanningDow    int               `json:"planningDow" db:"planning_dow"`
+	PlanningTime   string            `json:"planningTime" db:"planning_time"`
 	AutoRoll       bool              `json:"autoRoll" db:"auto_roll"`
 	MealTimes      map[string]string `json:"mealTimes" db:"meal_times"`
 }
@@ -27,6 +27,7 @@ type Member struct {
 	ID          string `json:"id" db:"id"`
 	Username    string `json:"username" db:"username"`
 	DisplayName string `json:"displayName" db:"display_name"`
+	Email       string `json:"email" db:"email"`
 	Role        string `json:"role" db:"role"`
 	Color       string `json:"color" db:"color"`
 }
@@ -61,11 +62,26 @@ func (s *Server) bootstrap(w http.ResponseWriter, r *http.Request) error {
 		}
 		return ok(w, map[string]any{"setupRequired": !hasUsers, "user": nil})
 	}
+	households, err := s.myHouseholds(ctx, u.ID)
+	if err != nil {
+		return err
+	}
+	if u.HouseholdID == "" {
+		return ok(w, map[string]any{
+			"setupRequired":  false,
+			"user":           u,
+			"households":     households,
+			"mailEnabled":    s.mailer.Enabled(),
+			"vapidPublicKey": s.push.publicKey,
+			"serverTime":     time.Now(),
+		})
+	}
 	h, err := s.getHousehold(ctx, u.HouseholdID)
 	if err != nil {
 		return err
 	}
-	rows, _ := s.db.Query(ctx, `SELECT id, username, display_name, role, color FROM users WHERE household_id = $1 ORDER BY created_at`, u.HouseholdID)
+	rows, _ := s.db.Query(ctx, `SELECT id, username, display_name, coalesce(email, '') AS email, role, color
+		FROM members WHERE household_id = $1 ORDER BY created_at`, u.HouseholdID)
 	members, err := pgx.CollectRows(rows, pgx.RowToStructByName[Member])
 	if err != nil {
 		return err
@@ -80,6 +96,8 @@ func (s *Server) bootstrap(w http.ResponseWriter, r *http.Request) error {
 		"household":      h,
 		"members":        members,
 		"labels":         labels,
+		"households":     households,
+		"mailEnabled":    s.mailer.Enabled(),
 		"vapidPublicKey": s.push.publicKey,
 		"serverTime":     time.Now(),
 	})
@@ -92,11 +110,11 @@ func (s *Server) updateHousehold(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	var in struct {
-		Name           *string `json:"name"`
-		Timezone       *string `json:"timezone"`
-		SprintStartDow *int    `json:"sprintStartDow"`
-		PlanningDow    *int    `json:"planningDow"`
-		PlanningTime   *string `json:"planningTime"`
+		Name           *string           `json:"name"`
+		Timezone       *string           `json:"timezone"`
+		SprintStartDow *int              `json:"sprintStartDow"`
+		PlanningDow    *int              `json:"planningDow"`
+		PlanningTime   *string           `json:"planningTime"`
 		AutoRoll       *bool             `json:"autoRoll"`
 		MealTimes      map[string]string `json:"mealTimes"`
 	}

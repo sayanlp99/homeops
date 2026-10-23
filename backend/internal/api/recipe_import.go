@@ -82,13 +82,13 @@ func fetch(ctx context.Context, rawURL string, max int64) ([]byte, string, error
 }
 
 var (
-	ldJSONRe  = regexp.MustCompile(`(?is)<script[^>]+type=["']?application/ld\+json["']?[^>]*>(.*?)</script>`)
-	ogRe      = regexp.MustCompile(`(?is)<meta[^>]+property=["']og:(title|image|description)["'][^>]+content=["']([^"']*)["']`)
-	ogRevRe   = regexp.MustCompile(`(?is)<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:(title|image|description)["']`)
-	titleRe   = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
-	tagRe     = regexp.MustCompile(`<[^>]+>`)
-	durRe     = regexp.MustCompile(`(?i)^P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$`)
-	digitsRe  = regexp.MustCompile(`\d+`)
+	ldJSONRe = regexp.MustCompile(`(?is)<script[^>]+type=["']?application/ld\+json["']?[^>]*>(.*?)</script>`)
+	ogRe     = regexp.MustCompile(`(?is)<meta[^>]+property=["']og:(title|image|description)["'][^>]+content=["']([^"']*)["']`)
+	ogRevRe  = regexp.MustCompile(`(?is)<meta[^>]+content=["']([^"']*)["'][^>]+property=["']og:(title|image|description)["']`)
+	titleRe  = regexp.MustCompile(`(?is)<title[^>]*>(.*?)</title>`)
+	tagRe    = regexp.MustCompile(`<[^>]+>`)
+	durRe    = regexp.MustCompile(`(?i)^P(?:(\d+)D)?T?(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$`)
+	digitsRe = regexp.MustCompile(`\d+`)
 )
 
 type importedRecipe struct {
@@ -113,7 +113,8 @@ func (s *Server) importRecipe(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return errBadRequest("Couldn't open that page: " + err.Error())
 	}
-	out := parseRecipePage(string(page))
+	final, _ := url.Parse(finalURL)
+	out := parseRecipePage(string(page), final)
 	if out.Title == "" {
 		return errBadRequest("No recipe found on that page")
 	}
@@ -137,7 +138,22 @@ func (s *Server) importRecipe(w http.ResponseWriter, r *http.Request) error {
 	return ok(w, out)
 }
 
-func parseRecipePage(page string) importedRecipe {
+func parseRecipePage(page string, pageURL *url.URL) importedRecipe {
+	out := parseStructuredRecipe(page)
+	if applySiteParser(page, pageURL, &out) {
+		// The structured-data fallback warning doesn't apply when the page itself was read.
+		kept := out.Warnings[:0]
+		for _, w := range out.Warnings {
+			if !strings.HasPrefix(w, "This page has no structured recipe data") {
+				kept = append(kept, w)
+			}
+		}
+		out.Warnings = kept
+	}
+	return out
+}
+
+func parseStructuredRecipe(page string) importedRecipe {
 	var out importedRecipe
 	out.Diet = "veg"
 	out.Servings = 2
@@ -289,6 +305,11 @@ func imageURL(v any) string {
 	case string:
 		return t
 	case []any:
+		for _, x := range t { // a 4:3 crop suits recipe cards best
+			if s, ok := x.(string); ok && strings.Contains(s, "4x3") {
+				return s
+			}
+		}
 		if len(t) > 0 {
 			return imageURL(t[len(t)-1]) // sites list sizes smallest → largest
 		}
@@ -376,7 +397,33 @@ func guessMeal(text string) ([]string, string) {
 		}
 		return false
 	}
+	// Whole words, so "dalna" (a curry) isn't taken for "dal".
+	word := func(words ...string) bool {
+		for _, w := range words {
+			if regexp.MustCompile(`\b` + regexp.QuoteMeta(w) + `s?\b`).MatchString(text) {
+				return true
+			}
+		}
+		return false
+	}
 	switch {
+	// Bengali dish names, checked first because they're unambiguous.
+	case word("jhol", "dalna", "kalia", "kaliya", "jhal", "kosha", "bhuna", "rezala", "dopiyaza", "malaikari", "paturi", "bhapa", "tel koi", "dom", "korma"):
+		return []string{"lunch", "dinner"}, "curry"
+	case word("rosh bora", "malpoa", "chhanar"):
+		return []string{"lunch", "dinner"}, "dessert"
+	case word("bhaja", "chhechki", "chechki", "pora", "chorchori", "ghonto", "labra", "chachchori", "shukto", "bhaate", "bharta"):
+		return []string{"lunch", "dinner"}, "sabzi"
+	case word("bora", "chop", "telebhaja", "fuluri", "singara", "nimki", "kabiraji", "kabab", "kebab", "tikka", "tandoori", "pakoda"):
+		return []string{"snacks"}, "snack"
+	case word("payesh", "sandesh", "mishti", "misti", "rosogolla", "pitha", "malpua", "halua", "naru"):
+		return []string{"lunch", "dinner"}, "dessert"
+	case word("luchi", "porota", "rooti", "ruti", "kochuri"):
+		return []string{"breakfast", "dinner"}, "bread"
+	case word("polao", "khichuri", "bhaat", "biryani"):
+		return []string{"lunch", "dinner"}, "rice"
+	case word("dal", "daal", "dhal", "dali"):
+		return []string{"lunch", "dinner"}, "dal"
 	case has("breakfast", "poha", "upma", "idli", "dosa", "paratha", "uttapam", "cheela", "omelette", "pancake"):
 		return []string{"breakfast"}, "breakfast"
 	case has("snack", "starter", "appetizer", "pakora", "pakoda", "samosa", "chaat", "tikki", "vada", "bhaji", "cutlet"):
@@ -415,7 +462,7 @@ func guessDiet(ings []RecipeIngredient, declared string) string {
 		case "Meat & Fish":
 			return "nonveg"
 		}
-		if regexp.MustCompile(`(?i)\beggs?\b`).MatchString(i.Name) {
+		if regexp.MustCompile(`(?i)\b(?:eggs?|dim|deem)\b`).MatchString(i.Name) {
 			egg = true
 		}
 	}

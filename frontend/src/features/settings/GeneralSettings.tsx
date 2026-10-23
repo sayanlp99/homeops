@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Copy, Monitor, Moon, Plus, Share2, Sun, Trash2 } from 'lucide-react'
+import { Monitor, Moon, Sun, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Avatar, Badge, Button, Card, CardHeader, Field, IconButton, Input, Segmented, Select, Switch } from '@/components/ui'
+import { Avatar, Button, Card, CardHeader, Field, IconButton, Input, Segmented, Select, Switch } from '@/components/ui'
 import { del, patch, post } from '@/lib/api'
 import { weekdays } from '@/lib/format'
-import { bootstrapKey, useSession } from '@/lib/session'
+import { bootstrapKey, hasRole, useSession } from '@/lib/session'
 import { useTheme, type Theme } from '@/lib/theme'
 import type { Household, Label } from '@/lib/types'
 
@@ -41,6 +41,7 @@ export function ProfileSettings() {
             Save
           </Button>
         </div>
+        <EmailField />
         <Field label="Your colour" hint="Used for your avatar and charts.">
           <div className="flex flex-wrap gap-2">
             {COLORS.map((c) => (
@@ -59,24 +60,49 @@ export function ProfileSettings() {
   )
 }
 
+function EmailField() {
+  const { user } = useSession()
+  const [email, setEmail] = useState(user.email)
+  const [password, setPassword] = useState('')
+  const changed = email.trim().toLowerCase() !== user.email
+  const save = useSave((p: { email: string; password: string }) => patch('/me', p), 'Email updated')
+  return (
+    <form
+      className="space-y-2"
+      onSubmit={(e) => {
+        e.preventDefault()
+        save.mutate({ email, password }, { onSuccess: () => setPassword('') })
+      }}
+    >
+      <Field label="Email" hint="Used for invites and password resets.">
+        <Input type="email" autoCapitalize="none" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="name@example.com" required />
+      </Field>
+      {changed && (
+        <div className="flex items-end gap-2">
+          <Field label="Current password" className="flex-1">
+            <Input type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+          </Field>
+          <Button type="submit" loading={save.isPending}>
+            Save email
+          </Button>
+        </div>
+      )}
+    </form>
+  )
+}
+
 export function HouseholdSettings() {
-  const { household, members, user } = useSession()
-  const isAdmin = user.role === 'admin'
+  const { household, user } = useSession()
+  const isAdmin = hasRole(user, 'admin')
   const [h, setH] = useState<Household>(household)
   useEffect(() => setH(household), [household])
   const save = useSave((p: Partial<Household>) => patch('/household', p), 'Household settings saved')
-  const [invite, setInvite] = useState<{ url: string; expiresAt: string } | null>(null)
-  const createInvite = useMutation({
-    mutationFn: () => post<{ url: string; expiresAt: string }>('/invites'),
-    onSuccess: setInvite,
-    onError: (e: Error) => toast.error(e.message),
-  })
   const dirty = JSON.stringify(h) !== JSON.stringify(household)
 
   return (
     <>
       <Card>
-        <CardHeader title="Household" subtitle={isAdmin ? undefined : 'Only the admin can change these.'} />
+        <CardHeader title="Household" subtitle={isAdmin ? undefined : 'Only owners and admins can change these.'} />
         <fieldset disabled={!isAdmin} className="grid gap-4 p-4 sm:grid-cols-2">
           <Field label="Name" className="sm:col-span-2">
             <Input value={h.name} onChange={(e) => setH({ ...h, name: e.target.value })} />
@@ -132,52 +158,6 @@ export function HouseholdSettings() {
             </div>
           )}
         </fieldset>
-      </Card>
-      <Card>
-        <CardHeader
-          title="Members"
-          actions={
-            isAdmin && (
-              <Button size="sm" icon={<Plus className="size-3.5" />} loading={createInvite.isPending} onClick={() => createInvite.mutate()}>
-                Invite
-              </Button>
-            )
-          }
-        />
-        <ul>
-          {members.map((m) => (
-            <li key={m.id} className="flex items-center gap-3 border-b border-border px-4 py-2.5 last:border-b-0">
-              <Avatar name={m.displayName} color={m.color} size={28} />
-              <div className="min-w-0 flex-1">
-                <p className="text-[13px] font-medium">{m.displayName}</p>
-                <p className="text-[12px] text-subtle">@{m.username}</p>
-              </div>
-              {m.role === 'admin' && <Badge>Admin</Badge>}
-            </li>
-          ))}
-        </ul>
-        {invite && (
-          <div className="space-y-2 border-t border-border p-4">
-            <p className="text-[13px]">Send this link to your partner. It works once and expires in 7 days.</p>
-            <div className="flex gap-2">
-              <Input readOnly value={invite.url} onFocus={(e) => e.target.select()} className="font-mono text-[12px]" />
-              <IconButton
-                label="Copy"
-                onClick={() => {
-                  navigator.clipboard?.writeText(invite.url)
-                  toast.success('Invite link copied')
-                }}
-              >
-                <Copy className="size-4" />
-              </IconButton>
-              {'share' in navigator && (
-                <IconButton label="Share" onClick={() => navigator.share({ title: 'Join our HomeOps', url: invite.url }).catch(() => {})}>
-                  <Share2 className="size-4" />
-                </IconButton>
-              )}
-            </div>
-          </div>
-        )}
       </Card>
     </>
   )

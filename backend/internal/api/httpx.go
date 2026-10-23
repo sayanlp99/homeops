@@ -18,11 +18,13 @@ type apiError struct {
 
 func (e *apiError) Error() string { return e.Message }
 
-func errBadRequest(msg string) error   { return &apiError{http.StatusBadRequest, "bad_request", msg} }
-func errUnauthorized(msg string) error { return &apiError{http.StatusUnauthorized, "unauthorized", msg} }
-func errForbidden(msg string) error    { return &apiError{http.StatusForbidden, "forbidden", msg} }
-func errNotFound(msg string) error     { return &apiError{http.StatusNotFound, "not_found", msg} }
-func errConflict(msg string) error     { return &apiError{http.StatusConflict, "conflict", msg} }
+func errBadRequest(msg string) error { return &apiError{http.StatusBadRequest, "bad_request", msg} }
+func errUnauthorized(msg string) error {
+	return &apiError{http.StatusUnauthorized, "unauthorized", msg}
+}
+func errForbidden(msg string) error { return &apiError{http.StatusForbidden, "forbidden", msg} }
+func errNotFound(msg string) error  { return &apiError{http.StatusNotFound, "not_found", msg} }
+func errConflict(msg string) error  { return &apiError{http.StatusConflict, "conflict", msg} }
 
 // handler lets endpoints return errors instead of writing them by hand.
 type handler func(w http.ResponseWriter, r *http.Request) error

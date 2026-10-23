@@ -71,13 +71,13 @@ func (s *Server) createMeal(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	ctx := r.Context()
 	var in struct {
-		ID       string  `json:"id"`
-		Date     string  `json:"date"`
-		Slot     string  `json:"slot"`
-		RecipeID *string `json:"recipeId"`
-		Title    string  `json:"title"`
-		Servings int     `json:"servings"`
-		Note     string  `json:"note"`
+		ID       string   `json:"id"`
+		Date     string   `json:"date"`
+		Slot     string   `json:"slot"`
+		RecipeID *string  `json:"recipeId"`
+		Title    string   `json:"title"`
+		Servings int      `json:"servings"`
+		Note     string   `json:"note"`
 		Position *float64 `json:"position"`
 	}
 	if err := decode(r, &in); err != nil {

@@ -92,8 +92,8 @@ func TestCleanName(t *testing.T) {
 	cases := map[string]string{
 		"Sprite | Lemon-Lime Soft Drink | The Coca-Cola Company 1 pc (2.25 L)": "Sprite Lemon-Lime Soft Drink",
 		"Coca-Cola Soft Drink(PET Bottle) (HSN-22021010)":                      "Coca-Cola Soft Drink",
-		"Table White Eggs (6 pcs)(Pack)":                                        "Table White Eggs",
-		"Aashirvaad Atta 5 kg":                                                  "Aashirvaad Atta",
+		"Table White Eggs (6 pcs)(Pack)":                                       "Table White Eggs",
+		"Aashirvaad Atta 5 kg":                                                 "Aashirvaad Atta",
 	}
 	for in, want := range cases {
 		if got, _, _ := cleanName(in); got != want {

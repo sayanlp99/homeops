@@ -1,6 +1,7 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
 import { get as idbGet, set as idbSet, del as idbDel } from 'idb-keyval'
+import { toast } from 'sonner'
 import { ApiError } from './api'
 import { registerMealMutations } from './meals'
 import { registerMoneyMutations } from './money'
@@ -10,11 +11,19 @@ import { registerTaskMutations } from './tasks'
 // bootstrap so the app shows the sign-in screen.
 const onError = (err: unknown) => {
   if (err instanceof ApiError && err.status === 401) queryClient.invalidateQueries({ queryKey: ['bootstrap'] })
+  // Removed from the household, or it was deleted: reload into whatever's left.
+  if (err instanceof ApiError && err.code === 'no_household') queryClient.invalidateQueries({ queryKey: ['bootstrap'] })
+}
+
+// Viewers can't change anything; one clear message beats each screen's own error.
+const onMutationError = (err: unknown) => {
+  onError(err)
+  if (err instanceof ApiError && err.code === 'read_only') toast.error(err.message, { id: 'read-only' })
 }
 
 export const queryClient: QueryClient = new QueryClient({
   queryCache: new QueryCache({ onError }),
-  mutationCache: new MutationCache({ onError }),
+  mutationCache: new MutationCache({ onError: onMutationError }),
   defaultOptions: {
     queries: {
       // Show cached data instantly; realtime events invalidate what actually changed.

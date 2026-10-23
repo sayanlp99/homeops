@@ -188,7 +188,7 @@ func (s *Server) dueDigest(ctx context.Context, h *Household, today string, even
 		kind, prefix = "task_overdue", "open"
 	}
 	rows, _ := s.db.Query(ctx, `SELECT u.id, t.number, t.title, t.due_date < $2::date AS overdue
-		FROM users u JOIN tasks t ON t.household_id = u.household_id AND (t.assignee_id = u.id OR t.assignee_id IS NULL)
+		FROM members u JOIN tasks t ON t.household_id = u.household_id AND (t.assignee_id = u.id OR t.assignee_id IS NULL)
 		WHERE u.household_id = $1 AND t.status <> 'done' AND `+cond+`
 		ORDER BY u.id, t.priority DESC, t.rank`, h.ID, today)
 	type item struct {
@@ -243,7 +243,7 @@ func (s *Server) dueDigest(ctx context.Context, h *Household, today string, even
 			url = fmt.Sprintf("/tasks/%d", list[0].number)
 		}
 		if err := s.notify(ctx, notification{
-			UserID: uid, Kind: kind, DedupeKey: prefix + ":" + today, Title: title, Body: body, URL: url,
+			HouseholdID: h.ID, UserID: uid, Kind: kind, DedupeKey: prefix + ":" + today, Title: title, Body: body, URL: url,
 		}); err != nil {
 			return err
 		}

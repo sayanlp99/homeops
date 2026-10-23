@@ -1,11 +1,14 @@
-export type Role = 'admin' | 'member'
+export type Role = 'owner' | 'admin' | 'member' | 'viewer'
 
 export interface User {
   id: string
   householdId: string
   username: string
   displayName: string
-  role: Role
+  email: string
+  isPlatformAdmin: boolean
+  /** Role in the current household; empty when the person belongs to none. */
+  role: Role | ''
   color: string
   notifyPrefs: Partial<Record<NotifyKind, boolean>>
   quietStart: string | null
@@ -18,6 +21,7 @@ export interface Member {
   id: string
   username: string
   displayName: string
+  email: string
   role: Role
   color: string
 }
@@ -45,7 +49,34 @@ export interface Bootstrap {
   household?: Household
   members?: Member[]
   labels?: Label[]
+  households?: MyHousehold[]
+  mailEnabled?: boolean
   vapidPublicKey?: string
+}
+
+export interface MyHousehold {
+  id: string
+  name: string
+  role: Role
+  members: number
+  unread: number
+}
+
+export interface PendingInvite {
+  code: string
+  email: string
+  role: Role
+  invitedBy: string
+  createdAt: string
+  expiresAt: string
+  url: string
+}
+
+export interface InviteResult {
+  code: string
+  url: string
+  expiresAt: string
+  emailSent: boolean
 }
 
 export type TaskStatus = 'backlog' | 'todo' | 'in_progress' | 'done'

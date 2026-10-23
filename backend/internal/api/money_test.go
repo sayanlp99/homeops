@@ -26,9 +26,9 @@ func TestMoneyFlow(t *testing.T) {
 	}
 	s, ts, db := startTestServer(t, 54331)
 	a := newClient(t, ts.URL)
-	a.do("POST", "/api/setup", map[string]any{"householdName": "Home", "username": "asha", "displayName": "Asha", "password": "hunter2hunter2"}, 204, nil)
-	var inv map[string]string
-	a.do("POST", "/api/invites", nil, 200, &inv)
+	a.do("POST", "/api/setup", map[string]any{"householdName": "Home", "email": "asha@example.com", "username": "asha", "displayName": "Asha", "password": "hunter2hunter2"}, 204, nil)
+	var inv map[string]any
+	a.do("POST", "/api/invites", map[string]string{"email": "partner@example.com"}, 200, &inv)
 	b := newClient(t, ts.URL)
 	b.do("POST", "/api/auth/invite/accept", map[string]any{"code": inv["code"], "username": "partner", "displayName": "Partner", "password": "correcthorse"}, 204, nil)
 
@@ -176,7 +176,11 @@ func TestMoneyFlow(t *testing.T) {
 	}
 
 	// Bills: reminder 2 days ahead, paying records an expense and stops reminders.
-	h, _ := s.getHousehold(t.Context(), func() string { var id string; db.QueryRow(t.Context(), `SELECT id FROM households`).Scan(&id); return id }())
+	h, _ := s.getHousehold(t.Context(), func() string {
+		var id string
+		db.QueryRow(t.Context(), `SELECT id FROM households`).Scan(&id)
+		return id
+	}())
 	day := localToday(h, time.Now())
 	due := day.AddDate(0, 0, 2)
 	if due.Month() != day.Month() {

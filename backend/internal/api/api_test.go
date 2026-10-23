@@ -44,11 +44,11 @@ func TestAPI(t *testing.T) {
 		t.Fatalf("expected 403 without CSRF header, got %d", resp.StatusCode)
 	}
 
-	alice.do("POST", "/api/setup", map[string]any{"householdName": "Home", "username": "Sayan", "displayName": "Sayan", "password": "hunter2hunter2"}, 204, nil)
-	alice.do("POST", "/api/setup", map[string]any{"username": "xx", "displayName": "x", "password": "hunter2hunter2"}, 409, nil)
+	alice.do("POST", "/api/setup", map[string]any{"householdName": "Home", "email": "sayan@example.com", "username": "Sayan", "displayName": "Sayan", "password": "hunter2hunter2"}, 204, nil)
+	alice.do("POST", "/api/setup", map[string]any{"email": "xx@example.com", "username": "xx", "displayName": "x", "password": "hunter2hunter2"}, 409, nil)
 	alice.do("GET", "/api/bootstrap", nil, 200, &boot)
 	me := boot["user"].(map[string]any)
-	if me["username"] != "sayan" || me["role"] != "admin" {
+	if me["username"] != "sayan" || me["role"] != "owner" || me["isPlatformAdmin"] != true {
 		t.Fatalf("unexpected user %v", me)
 	}
 	if n := len(boot["labels"].([]any)); n != 7 {
@@ -82,12 +82,12 @@ func TestAPI(t *testing.T) {
 	s.limiter = newRateLimiter(10, 15*time.Minute)
 
 	// Invite the partner.
-	var inv map[string]string
-	alice.do("POST", "/api/invites", nil, 200, &inv)
-	bob.do("GET", "/api/auth/invite/"+inv["code"], nil, 200, nil)
+	var inv map[string]any
+	alice.do("POST", "/api/invites", map[string]string{"email": "partner@example.com"}, 200, &inv)
+	bob.do("GET", "/api/auth/invite/"+inv["code"].(string), nil, 200, nil)
 	bob.do("POST", "/api/auth/invite/accept", map[string]any{"code": inv["code"], "username": "partner", "displayName": "Partner", "password": "correcthorse"}, 204, nil)
 	bob.do("POST", "/api/auth/invite/accept", map[string]any{"code": inv["code"], "username": "p2", "displayName": "P", "password": "correcthorse"}, 404, nil)
-	bob.do("POST", "/api/invites", nil, 403, nil) // members can't invite
+	bob.do("POST", "/api/invites", map[string]string{"email": "x@example.com"}, 403, nil) // members can't invite
 	var bobBoot map[string]any
 	bob.do("GET", "/api/bootstrap", nil, 200, &bobBoot)
 	bobID := bobBoot["user"].(map[string]any)["id"].(string)

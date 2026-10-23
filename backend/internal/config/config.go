@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -20,6 +21,11 @@ type Config struct {
 	S3UseSSL    bool
 	VAPIDEmail  string // contact address sent to push services
 	DevMode     bool   // relaxes Secure cookies for http://localhost
+	SMTPHost    string // empty = log emails instead of sending (dev)
+	SMTPPort    int
+	SMTPUser    string
+	SMTPPass    string
+	MailFrom    string // e.g. "HomeOps <no-reply@example.com>"
 }
 
 func Load() (Config, error) {
@@ -36,6 +42,17 @@ func Load() (Config, error) {
 		S3UseSSL:    env("HOMEOPS_S3_USE_SSL", "") == "1",
 		VAPIDEmail:  env("HOMEOPS_VAPID_EMAIL", "admin@localhost"),
 		DevMode:     env("HOMEOPS_DEV", "") == "1",
+		SMTPHost:    env("HOMEOPS_SMTP_HOST", ""),
+		SMTPUser:    env("HOMEOPS_SMTP_USER", ""),
+		SMTPPass:    env("HOMEOPS_SMTP_PASSWORD", ""),
+		MailFrom:    env("HOMEOPS_MAIL_FROM", "HomeOps <no-reply@localhost>"),
+	}
+	if p := env("HOMEOPS_SMTP_PORT", "587"); p != "" {
+		n, err := strconv.Atoi(p)
+		if err != nil {
+			return c, fmt.Errorf("HOMEOPS_SMTP_PORT must be a number, got %q", p)
+		}
+		c.SMTPPort = n
 	}
 	u, err := url.Parse(c.PublicURL)
 	if err != nil || u.Host == "" {

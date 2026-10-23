@@ -197,9 +197,9 @@ func (s *Server) matchExisting(ctx context.Context, u *User, accountID string, r
 	}
 	type ex struct {
 		id, payee, source string
-		amount             int64
-		date               time.Time
-		used               bool
+		amount            int64
+		date              time.Time
+		used              bool
 	}
 	var existing []*ex
 	for q.Next() {

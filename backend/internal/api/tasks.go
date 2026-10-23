@@ -171,7 +171,7 @@ func (s *Server) applyTaskInput(ctx context.Context, q querier, householdID stri
 	for _, ref := range []struct {
 		key, table string
 		dst        **string
-	}{{"assigneeId", "users", &t.AssigneeID}, {"sprintId", "sprints", &t.SprintID}} {
+	}{{"assigneeId", "members", &t.AssigneeID}, {"sprintId", "sprints", &t.SprintID}} {
 		if !in.has(ref.key) {
 			continue
 		}
@@ -332,12 +332,13 @@ func (s *Server) deleteTask(w http.ResponseWriter, r *http.Request) error {
 
 func (s *Server) notifyAssigned(ctx context.Context, actor *User, t *Task) {
 	err := s.notify(ctx, notification{
-		UserID:    *t.AssigneeID,
-		Kind:      "task_assigned",
-		DedupeKey: fmt.Sprintf("assigned:%s:%d", t.ID, time.Now().Unix()),
-		Title:     fmt.Sprintf("%s assigned you HO-%d", actor.DisplayName, t.Number),
-		Body:      t.Title,
-		URL:       fmt.Sprintf("/tasks/%d", t.Number),
+		HouseholdID: actor.HouseholdID,
+		UserID:      *t.AssigneeID,
+		Kind:        "task_assigned",
+		DedupeKey:   fmt.Sprintf("assigned:%s:%d", t.ID, time.Now().Unix()),
+		Title:       fmt.Sprintf("%s assigned you HO-%d", actor.DisplayName, t.Number),
+		Body:        t.Title,
+		URL:         fmt.Sprintf("/tasks/%d", t.Number),
 	})
 	logErr("notify assigned", err)
 }

@@ -188,7 +188,7 @@ func (s *Server) billReminders(ctx context.Context, h *Household, today time.Tim
 		default:
 			continue
 		}
-		n := notification{Kind: "budget", DedupeKey: fmt.Sprintf("bill:%s:%s:%s", b.ID, month, phase), Title: title,
+		n := notification{HouseholdID: h.ID, Kind: "budget", DedupeKey: fmt.Sprintf("bill:%s:%s:%s", b.ID, month, phase), Title: title,
 			Body: fmt.Sprintf("Due on the %s. Mark it paid in HomeOps once done.", ordinal(due.Day())), URL: "/budget/bills"}
 		if b.OwnerID != nil {
 			n.UserID = *b.OwnerID

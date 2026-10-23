@@ -375,7 +375,7 @@ func (s *Server) checkRefs(ctx context.Context, u *User, in *txnInput) error {
 	}
 	if in.PaidBy != nil && *in.PaidBy != "" {
 		var exists bool
-		if err := s.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM users WHERE id = $1 AND household_id = $2)`, *in.PaidBy, u.HouseholdID).Scan(&exists); err != nil || !exists {
+		if err := s.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM members WHERE id = $1 AND household_id = $2)`, *in.PaidBy, u.HouseholdID).Scan(&exists); err != nil || !exists {
 			return errBadRequest("Unknown member")
 		}
 	} else {
@@ -645,7 +645,7 @@ func (s *Server) classify(ctx context.Context, u *User, text string, debit bool)
 // Only the payee is checked: NEFT narrations also carry the account holder's own name.
 func (s *Server) isMemberPayee(ctx context.Context, householdID, payee string) bool {
 	low := strings.ToLower(payee)
-	rows, err := s.db.Query(ctx, `SELECT display_name FROM users WHERE household_id = $1`, householdID)
+	rows, err := s.db.Query(ctx, `SELECT display_name FROM members WHERE household_id = $1`, householdID)
 	if err != nil {
 		return false
 	}
@@ -949,9 +949,10 @@ func (s *Server) checkBudgetAlerts(ctx context.Context, householdID string, cate
 		return
 	}
 	n := notification{
-		Kind:      "budget",
-		DedupeKey: fmt.Sprintf("budget:%s:%s:%d", *categoryID, month.Format("2006-01"), level),
-		URL:       "/budget",
+		HouseholdID: householdID,
+		Kind:        "budget",
+		DedupeKey:   fmt.Sprintf("budget:%s:%s:%d", *categoryID, month.Format("2006-01"), level),
+		URL:         "/budget",
 	}
 	if level == 100 {
 		n.Title = fmt.Sprintf("%s budget used up", name)

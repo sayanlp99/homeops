@@ -296,7 +296,7 @@ func (s *Server) giveKudos(w http.ResponseWriter, r *http.Request) error {
 		body = "For: " + taskTitle
 	}
 	logErr("kudos notify", s.notify(ctx, notification{
-		UserID: in.ToID, Kind: "kudos", DedupeKey: "kudos:" + id, Title: in.Emoji + " Kudos from " + u.DisplayName, Body: body, URL: "/retro",
+		HouseholdID: u.HouseholdID, UserID: in.ToID, Kind: "kudos", DedupeKey: "kudos:" + id, Title: in.Emoji + " Kudos from " + u.DisplayName, Body: body, URL: "/retro",
 	}))
 	s.hub.Publish(u.HouseholdID, eventRetro.from(r))
 	return ok(w, map[string]string{"id": id})

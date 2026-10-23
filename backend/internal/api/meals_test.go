@@ -9,6 +9,7 @@ import (
 	"mime/multipart"
 	"net"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
@@ -20,7 +21,7 @@ func TestMealsFlow(t *testing.T) {
 	}
 	s, ts, _ := startTestServer(t, 54330)
 	c := newClient(t, ts.URL)
-	c.do("POST", "/api/setup", map[string]any{"householdName": "Home", "username": "cook", "displayName": "Cook", "password": "hunter2hunter2"}, 204, nil)
+	c.do("POST", "/api/setup", map[string]any{"householdName": "Home", "email": "cook@example.com", "username": "cook", "displayName": "Cook", "password": "hunter2hunter2"}, 204, nil)
 
 	// Photo upload is re-encoded with a thumbnail.
 	photo := uploadTestImage(t, c)
@@ -35,7 +36,7 @@ func TestMealsFlow(t *testing.T) {
 	q := func(v float64) *float64 { return &v }
 	var dal, rice, rajma Recipe
 	c.do("POST", "/api/recipes", Recipe{Title: "Dal tadka", Category: "dal", Diet: "veg", Servings: 2, MealTypes: []string{"lunch", "dinner"}, Photo: photo,
-		Steps: []string{"Pressure cook dal", " ", "Temper"},
+		Steps:       []string{"Pressure cook dal", " ", "Temper"},
 		Ingredients: []RecipeIngredient{{Name: "toor dal", Quantity: q(1), Unit: "cup"}, {Name: "Ghee", Quantity: q(1), Unit: "tbsp"}, {Name: "Salt"}}}, 200, &dal)
 	if dal.ID == "" || len(dal.Ingredients) != 3 || len(dal.Steps) != 2 || dal.Ingredients[0].Name != "Toor dal" {
 		t.Fatalf("dal: %+v", dal)
@@ -276,7 +277,7 @@ func TestRecipeImportParsing(t *testing.T) {
 	"keywords":"paneer, curry","recipeIngredient":["250 g paneer, cubed","2 tbsp butter","1 cup tomato puree","Salt to taste"],
 	"recipeInstructions":[{"@type":"HowToSection","name":"Gravy","itemListElement":[{"@type":"HowToStep","text":"Heat <b>butter</b>."},{"@type":"HowToStep","text":"Add puree."}]},
 	{"@type":"HowToStep","text":"Add paneer."}]}]}</script></head></html>`
-	r := parseRecipePage(page)
+	r := parseRecipePage(page, nil)
 	if r.Title != "Paneer Butter Masala" || r.Description != "Rich & creamy" || r.Photo != "https://e.x/l.jpg" || r.Servings != 4 {
 		t.Fatalf("basics: %+v", r)
 	}
@@ -292,11 +293,11 @@ func TestRecipeImportParsing(t *testing.T) {
 	if len(r.Tags) != 2 {
 		t.Fatalf("tags: %v", r.Tags)
 	}
-	nonveg := parseRecipePage(`<script type="application/ld+json">{"@type":"Recipe","name":"Chicken curry","recipeIngredient":["500 g chicken"]}</script>`)
+	nonveg := parseRecipePage(`<script type="application/ld+json">{"@type":"Recipe","name":"Chicken curry","recipeIngredient":["500 g chicken"]}</script>`, nil)
 	if nonveg.Diet != "nonveg" {
 		t.Fatalf("diet: %s", nonveg.Diet)
 	}
-	og := parseRecipePage(`<meta property="og:title" content="Aloo Paratha"><meta property="og:image" content="https://e.x/a.jpg">`)
+	og := parseRecipePage(`<meta property="og:title" content="Aloo Paratha"><meta property="og:image" content="https://e.x/a.jpg">`, nil)
 	if og.Title != "Aloo Paratha" || og.Photo != "https://e.x/a.jpg" || len(og.Warnings) == 0 {
 		t.Fatalf("og fallback: %+v", og)
 	}
@@ -310,5 +311,52 @@ func TestPublicIP(t *testing.T) {
 		if got := publicIP(net.ParseIP(ip)); got != want {
 			t.Errorf("%s: got %v", ip, got)
 		}
+	}
+}
+
+// bongeats.com's JSON-LD leaves ingredients and steps empty; they're read from the page.
+func TestBongEatsImport(t *testing.T) {
+	page := `<script type="application/ld+json">{"@context":"https://schema.org/","@type":"Recipe","name":"Test Machher Jhol",
+		"description":"A light fish curry","image":["/x/a_1x1.jpg","/x/a_4x3.jpg","/x/a_16x9.jpg"],"prepTime":"PT10M","cookTime":"PT30M",
+		"recipeYield":"4","recipeCategory":"fish","recipeIngredient":[],"recipeInstructions":[]}</script>
+	<div class="recipe-info recipe-yield"><div>Serves</div><div>4</div></div>
+	<div class="rich-text-block recipe-ingredients shadow-1 w-richtext">
+		<h3>Marinate the fish</h3>
+		<ul role="list"><li><strong>500 g</strong> rui machh</li><li><strong>1 tsp </strong>salt</li></ul>
+		<h3>For the jhol</h3>
+		<ul role="list"><li><strong>½ tsp</strong> kaalo jeere (nigella seeds)</li><li><strong>100 g</strong> peyaj (sliced)</li>
+		<li><strong>200 g</strong> fragrant, small-grained, gobindobhog rice</li><li><strong>4 pcs</strong> bay leaves<strong>&#8205;</strong></li><li>water</li></ul>
+	</div>
+	<div class="rich-text-block recipe-process w-richtext"><ol role="list"><li>Smear the fish with salt.</li><li>Fry, then add <a href="/spices/x">the spices</a>.</li></ol></div>`
+	u, _ := url.Parse("https://www.bongeats.com/recipe/test-machher-jhol")
+	r := parseRecipePage(page, u)
+	if r.Title != "Test Machher Jhol" || r.Servings != 4 || r.Diet != "nonveg" || r.Category != "curry" || r.Photo != "/x/a_4x3.jpg" {
+		t.Fatalf("header: %+v", r.Recipe)
+	}
+	if len(r.Steps) != 2 || r.Steps[1] != "Fry, then add the spices." {
+		t.Fatalf("steps: %q", r.Steps)
+	}
+	want := []struct {
+		name, unit, note, aisle string
+		qty                     float64
+	}{
+		{"Rui machh", "g", "Marinate the fish", "Meat & Fish", 500},
+		{"Salt", "tsp", "Marinate the fish", "Spices & Masala", 1},
+		{"Kaalo jeere", "tsp", "For the jhol; nigella seeds", "Spices & Masala", 0.5},
+		{"Peyaj", "g", "For the jhol; sliced", "Vegetables", 100},
+		{"Gobindobhog rice", "g", "For the jhol; fragrant, small-grained", "Grains & Flour", 200},
+		{"Bay leaves", "pcs", "For the jhol", "Spices & Masala", 4},
+	}
+	if len(r.Ingredients) != len(want)+1 {
+		t.Fatalf("got %d ingredients: %+v", len(r.Ingredients), r.Ingredients)
+	}
+	for i, w := range want {
+		g := r.Ingredients[i]
+		if g.Name != w.name || g.Unit != w.unit || g.Note != w.note || g.Aisle != w.aisle || g.Quantity == nil || *g.Quantity != w.qty {
+			t.Errorf("ingredient %d: got %+v (qty %v), want %+v", i, g, g.Quantity, w)
+		}
+	}
+	if w := r.Ingredients[len(want)]; w.Name != "Water" || w.Quantity != nil {
+		t.Errorf("water: %+v", w)
 	}
 }

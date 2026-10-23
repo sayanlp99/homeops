@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/mail"
 	"strings"
 	"time"
 
@@ -21,19 +22,26 @@ const (
 	sessionLifetime = 90 * 24 * time.Hour
 )
 
+// User is the signed-in person. HouseholdID and Role describe the household this
+// session is currently in; both are empty when the person belongs to none yet.
 type User struct {
-	ID          string          `json:"id" db:"id"`
-	HouseholdID string          `json:"householdId" db:"household_id"`
-	Username    string          `json:"username" db:"username"`
-	DisplayName string          `json:"displayName" db:"display_name"`
-	Role        string          `json:"role" db:"role"`
-	Color       string          `json:"color" db:"color"`
-	NotifyPrefs map[string]bool `json:"notifyPrefs" db:"notify_prefs"`
-	QuietStart  *string         `json:"quietStart" db:"quiet_start"`
-	QuietEnd    *string         `json:"quietEnd" db:"quiet_end"`
+	ID              string          `json:"id"`
+	HouseholdID     string          `json:"householdId"`
+	Role            string          `json:"role"`
+	Username        string          `json:"username"`
+	DisplayName     string          `json:"displayName"`
+	Email           string          `json:"email"`
+	IsPlatformAdmin bool            `json:"isPlatformAdmin"`
+	Color           string          `json:"color"`
+	NotifyPrefs     map[string]bool `json:"notifyPrefs"`
+	QuietStart      *string         `json:"quietStart"`
+	QuietEnd        *string         `json:"quietEnd"`
 }
 
-const userColumns = `id, household_id, username, display_name, role, color, notify_prefs, quiet_start, quiet_end`
+// Household roles, lowest to highest.
+var roleRank = map[string]int{"viewer": 1, "member": 2, "admin": 3, "owner": 4}
+
+func (u *User) atLeast(role string) bool { return roleRank[u.Role] >= roleRank[role] }
 
 type ctxKey int
 
@@ -92,6 +100,15 @@ func validatePassword(pw string) error {
 	return nil
 }
 
+func normalizeEmail(e string) (string, error) {
+	e = strings.ToLower(strings.TrimSpace(e))
+	a, err := mail.ParseAddress(e)
+	if err != nil || a.Address != e || a.Name != "" || len(e) > 254 || !strings.Contains(e[strings.LastIndex(e, "@")+1:], ".") {
+		return "", errBadRequest("Enter a valid email address")
+	}
+	return e, nil
+}
+
 func normalizeUsername(u string) (string, error) {
 	u = strings.ToLower(strings.TrimSpace(u))
 	if len(u) < 2 || len(u) > 32 {
@@ -114,7 +131,9 @@ func hashToken(tok string) []byte {
 
 func (s *Server) startSession(ctx context.Context, w http.ResponseWriter, r *http.Request, userID string) error {
 	tok := randomToken(32)
-	_, err := s.db.Exec(ctx, `INSERT INTO sessions (token_hash, user_id, user_agent, expires_at) VALUES ($1, $2, $3, $4)`,
+	// Resume the household used last; authenticate falls back to any other membership.
+	_, err := s.db.Exec(ctx, `INSERT INTO sessions (token_hash, user_id, user_agent, expires_at, household_id)
+		SELECT $1, $2, $3, $4, last_household_id FROM users WHERE id = $2`,
 		hashToken(tok), userID, truncate(r.UserAgent(), 300), time.Now().Add(sessionLifetime))
 	if err != nil {
 		return err
@@ -144,16 +163,27 @@ func (s *Server) authenticate(r *http.Request) (*User, []byte, error) {
 	th := hashToken(c.Value)
 	var u User
 	var lastSeen time.Time
+	var sessionHousehold *string
+	// The session's household, or — if the person was removed from it — their oldest membership.
 	err = s.db.QueryRow(r.Context(), `
-		SELECT u.id, u.household_id, u.username, u.display_name, u.role, u.color, u.notify_prefs, u.quiet_start, u.quiet_end, s.last_seen_at
+		SELECT u.id, u.username, u.display_name, coalesce(u.email, ''), u.is_platform_admin, u.color, u.notify_prefs,
+			u.quiet_start, u.quiet_end, s.last_seen_at, s.household_id::text,
+			coalesce(m.household_id::text, ''), coalesce(m.role, '')
 		FROM sessions s JOIN users u ON u.id = s.user_id
+		LEFT JOIN LATERAL (SELECT household_id, role FROM memberships WHERE user_id = u.id
+			ORDER BY household_id = s.household_id DESC NULLS LAST, created_at LIMIT 1) m ON true
 		WHERE s.token_hash = $1 AND s.expires_at > now()`, th).
-		Scan(&u.ID, &u.HouseholdID, &u.Username, &u.DisplayName, &u.Role, &u.Color, &u.NotifyPrefs, &u.QuietStart, &u.QuietEnd, &lastSeen)
+		Scan(&u.ID, &u.Username, &u.DisplayName, &u.Email, &u.IsPlatformAdmin, &u.Color, &u.NotifyPrefs,
+			&u.QuietStart, &u.QuietEnd, &lastSeen, &sessionHousehold, &u.HouseholdID, &u.Role)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, nil, nil
 	}
 	if err != nil {
 		return nil, nil, err
+	}
+	if u.HouseholdID != "" && (sessionHousehold == nil || *sessionHousehold != u.HouseholdID) {
+		_, err := s.db.Exec(r.Context(), `UPDATE sessions SET household_id = $2 WHERE token_hash = $1`, th, u.HouseholdID)
+		logErr("move session household", err)
 	}
 	if time.Since(lastSeen) > time.Hour {
 		_, err := s.db.Exec(r.Context(), `UPDATE sessions SET last_seen_at = now(), expires_at = $2 WHERE token_hash = $1`,
@@ -190,10 +220,44 @@ func (s *Server) optionalAuth(next http.Handler) http.Handler {
 	})
 }
 
-func (s *Server) adminOnly(next http.Handler) http.Handler {
+// requireHousehold guards household data: the person must belong to one, and
+// viewers may only read.
+func (s *Server) requireHousehold(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if u := currentUser(r); u == nil || u.Role != "admin" {
-			writeJSON(w, http.StatusForbidden, &apiError{Code: "forbidden", Message: "Only the household admin can do that"})
+		u := currentUser(r)
+		if u.HouseholdID == "" {
+			writeJSON(w, http.StatusForbidden, &apiError{Code: "no_household", Message: "You're not part of a household yet"})
+			return
+		}
+		if u.Role == "viewer" && r.Method != http.MethodGet && r.Method != http.MethodHead && !viewerWritable[r.URL.Path] &&
+			!(r.Method == http.MethodDelete && r.URL.Path == "/api/members/"+u.ID) {
+			writeJSON(w, http.StatusForbidden, &apiError{Code: "read_only", Message: "You have view-only access to this household"})
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+// Writes a viewer may still make: they only touch the viewer's own state.
+var viewerWritable = map[string]bool{"/api/notifications/read": true}
+
+// requireRole limits a route to people with at least this role in the current household.
+func requireRole(role string) func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if !currentUser(r).atLeast(role) {
+				writeJSON(w, http.StatusForbidden, &apiError{Code: "forbidden", Message: "You need to be a household " + role + " to do that"})
+				return
+			}
+			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func platformAdminOnly(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if !currentUser(r).IsPlatformAdmin {
+			writeJSON(w, http.StatusForbidden, &apiError{Code: "forbidden", Message: "Only the HomeOps administrator can do that"})
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -232,11 +296,16 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request) error {
 		newUserInput
 		HouseholdName string `json:"householdName"`
 		Timezone      string `json:"timezone"`
+		Email         string `json:"email"`
 	}
 	if err := decode(r, &in); err != nil {
 		return err
 	}
 	if err := in.validate(); err != nil {
+		return err
+	}
+	var err error
+	if in.Email, err = normalizeEmail(in.Email); err != nil {
 		return err
 	}
 	in.HouseholdName = strings.TrimSpace(in.HouseholdName)
@@ -267,20 +336,19 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request) error {
 	if n > 0 {
 		return errConflict("Setup has already been completed")
 	}
-	var hid, uid string
-	if err := tx.QueryRow(ctx, `INSERT INTO households (name, timezone) VALUES ($1, $2) RETURNING id`,
-		in.HouseholdName, in.Timezone).Scan(&hid); err != nil {
+	// The first person administers the whole installation.
+	var uid string
+	if err := tx.QueryRow(ctx, `INSERT INTO users (username, display_name, email, password_hash, color, is_platform_admin)
+		VALUES ($1, $2, $3, $4, '#2563eb', true) RETURNING id`,
+		in.Username, in.DisplayName, in.Email, hashPassword(in.Password)).Scan(&uid); err != nil {
 		return err
 	}
-	if err := tx.QueryRow(ctx, `INSERT INTO users (household_id, username, display_name, password_hash, role, color)
-		VALUES ($1, $2, $3, $4, 'admin', '#2563eb') RETURNING id`,
-		hid, in.Username, in.DisplayName, hashPassword(in.Password)).Scan(&uid); err != nil {
+	hid, err := createHousehold(ctx, tx, in.HouseholdName, in.Timezone)
+	if err != nil {
 		return err
 	}
-	for _, l := range defaultLabels {
-		if _, err := tx.Exec(ctx, `INSERT INTO labels (household_id, name, color) VALUES ($1, $2, $3)`, hid, l.name, l.color); err != nil {
-			return err
-		}
+	if err := addMember(ctx, tx, hid, uid, "owner"); err != nil {
+		return err
 	}
 	if err := tx.Commit(ctx); err != nil {
 		return err
@@ -304,7 +372,7 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	var id, hash string
-	err := s.db.QueryRow(r.Context(), `SELECT id, password_hash FROM users WHERE username = $1`,
+	err := s.db.QueryRow(r.Context(), `SELECT id, password_hash FROM users WHERE username = $1 OR lower(email) = $1`,
 		strings.ToLower(strings.TrimSpace(in.Username))).Scan(&id, &hash)
 	if errors.Is(err, pgx.ErrNoRows) {
 		hashPassword(in.Password) // equalize timing
@@ -333,84 +401,6 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) error {
 	return noContent(w)
 }
 
-func (s *Server) createInvite(w http.ResponseWriter, r *http.Request) error {
-	u := currentUser(r)
-	code := randomCode(10)
-	exp := time.Now().Add(7 * 24 * time.Hour)
-	if _, err := s.db.Exec(r.Context(), `INSERT INTO invites (code, household_id, created_by, expires_at) VALUES ($1, $2, $3, $4)`,
-		code, u.HouseholdID, u.ID, exp); err != nil {
-		return err
-	}
-	return ok(w, map[string]any{"code": code, "url": s.cfg.PublicURL + "/join/" + code, "expiresAt": exp})
-}
-
-func (s *Server) checkInvite(w http.ResponseWriter, r *http.Request) error {
-	key := "invite:" + clientIP(r)
-	if s.limiter.Blocked(key) {
-		return errTooManyAttempts
-	}
-	var name, inviter string
-	err := s.db.QueryRow(r.Context(), `
-		SELECT h.name, u.display_name FROM invites i
-		JOIN households h ON h.id = i.household_id JOIN users u ON u.id = i.created_by
-		WHERE i.code = $1 AND i.used_at IS NULL AND i.expires_at > now()`, strings.ToUpper(chi.URLParam(r, "code"))).Scan(&name, &inviter)
-	if errors.Is(err, pgx.ErrNoRows) {
-		s.limiter.Fail(key)
-		return errNotFound("This invite link is invalid or has expired")
-	}
-	if err != nil {
-		return err
-	}
-	return ok(w, map[string]string{"householdName": name, "invitedBy": inviter})
-}
-
-func (s *Server) acceptInvite(w http.ResponseWriter, r *http.Request) error {
-	key := "invite:" + clientIP(r)
-	if s.limiter.Blocked(key) {
-		return errTooManyAttempts
-	}
-	var in struct {
-		newUserInput
-		Code string `json:"code"`
-	}
-	if err := decode(r, &in); err != nil {
-		return err
-	}
-	if err := in.validate(); err != nil {
-		return err
-	}
-	ctx := r.Context()
-	tx, err := s.db.Begin(ctx)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
-	var hid string
-	err = tx.QueryRow(ctx, `UPDATE invites SET used_at = now()
-		WHERE code = $1 AND used_at IS NULL AND expires_at > now() RETURNING household_id`, strings.ToUpper(in.Code)).Scan(&hid)
-	if errors.Is(err, pgx.ErrNoRows) {
-		s.limiter.Fail(key)
-		return errNotFound("This invite link is invalid or has expired")
-	}
-	if err != nil {
-		return err
-	}
-	var uid string
-	if err := tx.QueryRow(ctx, `INSERT INTO users (household_id, username, display_name, password_hash, role, color)
-		VALUES ($1, $2, $3, $4, 'member', '#db2777') RETURNING id`,
-		hid, in.Username, in.DisplayName, hashPassword(in.Password)).Scan(&uid); err != nil {
-		return err
-	}
-	if err := tx.Commit(ctx); err != nil {
-		return err
-	}
-	s.hub.Publish(hid, eventMembers.from(r))
-	if err := s.startSession(ctx, w, r, uid); err != nil {
-		return err
-	}
-	return noContent(w)
-}
-
 // ---- profile & sessions ----
 
 var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremony", "meals", "budget", "kudos"}
@@ -418,14 +408,38 @@ var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremon
 func (s *Server) updateMe(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	var in struct {
-		DisplayName *string          `json:"displayName"`
-		Color       *string          `json:"color"`
-		NotifyPrefs map[string]bool  `json:"notifyPrefs"`
-		QuietStart  *optionalString  `json:"quietStart"`
-		QuietEnd    *optionalString  `json:"quietEnd"`
+		DisplayName *string         `json:"displayName"`
+		Color       *string         `json:"color"`
+		NotifyPrefs map[string]bool `json:"notifyPrefs"`
+		QuietStart  *optionalString `json:"quietStart"`
+		QuietEnd    *optionalString `json:"quietEnd"`
+		Email       *string         `json:"email"`
+		Password    string          `json:"password"` // required to change the email
 	}
 	if err := decode(r, &in); err != nil {
 		return err
+	}
+	if in.Email != nil {
+		email, err := normalizeEmail(*in.Email)
+		if err != nil {
+			return err
+		}
+		if email != u.Email {
+			// The email can reset the password, so changing it needs the password.
+			var hash string
+			if err := s.db.QueryRow(r.Context(), `SELECT password_hash FROM users WHERE id = $1`, u.ID).Scan(&hash); err != nil {
+				return err
+			}
+			if !checkPassword(hash, in.Password) {
+				return errBadRequest("Enter your current password to change your email")
+			}
+			if taken, err := s.emailTaken(r.Context(), email, u.ID); err != nil {
+				return err
+			} else if taken {
+				return errConflict("Another account already uses that email")
+			}
+			u.Email = email
+		}
 	}
 	if in.DisplayName != nil {
 		name := strings.TrimSpace(*in.DisplayName)
@@ -464,11 +478,12 @@ func (s *Server) updateMe(w http.ResponseWriter, r *http.Request) error {
 		}
 		*f.dst = f.in.v
 	}
-	if _, err := s.db.Exec(r.Context(), `UPDATE users SET display_name = $2, color = $3, notify_prefs = $4, quiet_start = $5, quiet_end = $6 WHERE id = $1`,
-		u.ID, u.DisplayName, u.Color, u.NotifyPrefs, u.QuietStart, u.QuietEnd); err != nil {
+	if _, err := s.db.Exec(r.Context(), `UPDATE users SET display_name = $2, color = $3, notify_prefs = $4, quiet_start = $5, quiet_end = $6,
+		email = nullif($7, '') WHERE id = $1`,
+		u.ID, u.DisplayName, u.Color, u.NotifyPrefs, u.QuietStart, u.QuietEnd, u.Email); err != nil {
 		return err
 	}
-	s.hub.Publish(u.HouseholdID, eventMembers.from(r))
+	s.publishToUserHouseholds(r, u.ID, eventMembers)
 	return ok(w, u)
 }
 

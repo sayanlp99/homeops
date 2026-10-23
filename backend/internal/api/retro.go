@@ -169,7 +169,7 @@ func (s *Server) checkMember(ctx context.Context, householdID string, id *string
 		return nil
 	}
 	var exists bool
-	if err := s.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM users WHERE id = $1 AND household_id = $2)`, *id, householdID).Scan(&exists); err != nil || !exists {
+	if err := s.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM members WHERE id = $1 AND household_id = $2)`, *id, householdID).Scan(&exists); err != nil || !exists {
 		return errBadRequest("Unknown member")
 	}
 	return nil
@@ -387,7 +387,7 @@ func (s *Server) closeRetro(w http.ResponseWriter, r *http.Request) error {
 
 // notifyPartners notifies every household member except the actor.
 func (s *Server) notifyPartners(ctx context.Context, actor *User, n notification) {
-	rows, err := s.db.Query(ctx, `SELECT id FROM users WHERE household_id = $1 AND id <> $2`, actor.HouseholdID, actor.ID)
+	rows, err := s.db.Query(ctx, `SELECT id FROM members WHERE household_id = $1 AND id <> $2`, actor.HouseholdID, actor.ID)
 	if err != nil {
 		logErr("notify partners", err)
 		return
@@ -397,6 +397,7 @@ func (s *Server) notifyPartners(ctx context.Context, actor *User, n notification
 		logErr("notify partners", err)
 		return
 	}
+	n.HouseholdID = actor.HouseholdID
 	for _, id := range ids {
 		n.UserID = id
 		logErr("notify partner", s.notify(ctx, n))
