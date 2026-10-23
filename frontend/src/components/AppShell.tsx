@@ -131,7 +131,7 @@ export function AppShell() {
             <WifiOff className="size-3.5" /> Offline — showing saved data. Changes will sync when you reconnect.
           </div>
         )}
-        <main className={clsx('mx-auto w-full max-w-[1400px] flex-1 px-4 pt-4 pb-28 lg:px-6 lg:pt-5 lg:pb-8', fullHeight && 'lg:flex lg:h-[calc(100dvh-48px)] lg:flex-col lg:overflow-hidden')}>
+        <main className={clsx('mx-auto w-full max-w-[1400px] flex-1 px-4 pt-4 pb-28 lg:px-6 lg:pt-5 lg:pb-8', fullHeight && 'lg:flex lg:h-[calc(100dvh-48px-var(--titlebar-inset))] lg:flex-col lg:overflow-hidden')}>
           <Outlet />
         </main>
       </div>
@@ -156,7 +156,7 @@ export function AppShell() {
 function Sidebar({ live }: { live: LiveState }) {
   const { household: h } = useSession()
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-border bg-surface lg:flex">
+    <aside className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col border-r border-border bg-surface pt-safe lg:flex">
       <div className="flex h-12 items-center gap-1 border-b border-border px-2">
         <HouseholdSwitcher
           trigger={
@@ -253,6 +253,8 @@ function SideLink({ item }: { item: NavItem }) {
   )
 }
 
+const isMac = typeof navigator !== 'undefined' && /Mac/.test(navigator.platform || navigator.userAgent)
+
 function Topbar() {
   return (
     <header className="sticky top-0 z-20 border-b border-border bg-surface/90 pt-safe backdrop-blur supports-[backdrop-filter]:bg-surface/75">
@@ -267,7 +269,7 @@ function Topbar() {
           <Search className="size-3.5" />
           <span className="hidden lg:inline">Search or jump to…</span>
           <span className="ml-auto hidden items-center gap-0.5 lg:flex">
-            <Kbd>Ctrl</Kbd>
+            <Kbd>{isMac ? '⌘' : 'Ctrl'}</Kbd>
             <Kbd>K</Kbd>
           </span>
         </button>

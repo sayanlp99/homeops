@@ -133,8 +133,17 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* Top inset: the notch on phones, or the title-bar strip of a macOS Safari web app
+   (which draws the page under its window buttons; see index.html). */
+:root {
+  --titlebar-inset: 0px;
+}
+:root.mac-webapp {
+  --titlebar-inset: 28px;
+}
+
 @utility pt-safe {
-  padding-top: env(safe-area-inset-top);
+  padding-top: max(env(safe-area-inset-top), var(--titlebar-inset));
 }
 
 @utility tabular {

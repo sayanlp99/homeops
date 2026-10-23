@@ -12,6 +12,14 @@
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>HomeOps</title>
     <script>
+      // A Safari web app on macOS (Add to Dock) draws the page under its title bar,
+      // where the window buttons sit; reserve that strip. Phones use safe-area insets.
+      try {
+        var ua = navigator.userAgent
+        if (/Macintosh/.test(ua) && !/Chrome|Chromium|Edg|Firefox/.test(ua) && navigator.maxTouchPoints === 0 &&
+            (matchMedia('(display-mode: standalone)').matches || navigator.standalone))
+          document.documentElement.classList.add('mac-webapp')
+      } catch (e) {}
       // Apply the theme before first paint to avoid a flash.
       try {
         var t = localStorage.getItem('theme') || 'system'
