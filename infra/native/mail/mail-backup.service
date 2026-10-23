@@ -1,0 +1,6 @@
+[Unit]
+Description=Nightly mail backup (stops Stalwart for a few seconds)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/sh -c 'd=/var/lib/homeops/backups; day=$(date +%%F); umask 077; mkdir -p $d; systemctl stop stalwart; tar -czf $d/mail-$day.tar.gz.partial -C /var/lib stalwart -C /etc stalwart; rc=$?; systemctl start stalwart; [ $rc -eq 0 ] && mv $d/mail-$day.tar.gz.partial $d/mail-$day.tar.gz; find $d -name "mail-*.tar.gz" -mtime +14 -delete; exit $rc'

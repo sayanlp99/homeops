@@ -1,0 +1,37 @@
+[Unit]
+Description=Stalwart mail server (HomeOps)
+After=network-online.target
+Wants=network-online.target
+Conflicts=postfix.service sendmail.service exim4.service
+
+[Service]
+Type=simple
+User=stalwart
+Group=stalwart
+EnvironmentFile=/etc/stalwart/stalwart.env
+ExecStart=/usr/local/bin/stalwart --config=/etc/stalwart/config.json
+KillMode=process
+KillSignal=SIGINT
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65536
+# 587/993 are privileged ports; nothing else is allowed.
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
+ReadWritePaths=/var/lib/stalwart /etc/stalwart
+SystemCallArchitectures=native
+MemoryMax=800M
+
+[Install]
+WantedBy=multi-user.target

@@ -45,6 +45,21 @@ sudo ./infra/native/install.sh --prebuilt --port 8090     # re-run any time; dat
 
 The app listens on `127.0.0.1:<port>` only; point the tunnel's public hostname at `http://localhost:<port>`. Config is in `/etc/homeops/homeops.env`; logs via `journalctl -u homeops -f`; nightly backups in `/var/lib/homeops/backups` (`sudo systemctl start homeops-backup` runs one now). To update, build a new bundle, unpack it over `~/homeops` (keep `.env`) and run `sudo ./infra/native/update.sh`. Use `--storage disk` to skip SeaweedFS and keep uploads in `/var/lib/homeops/files`.
 
+### Hardening
+
+`sudo ./infra/native/security/harden.sh` sets a firewall that only accepts the LAN and ZeroTier (the tunnel is outbound-only, so the public sites keep working). It also makes SSH key-only and adds fail2ban, kernel hardening and a noexec `/dev/shm`. Last, it installs **homeguard**, a 10-minute watchdog for crypto miners, sustained CPU hogs, dropped executables and new users, keys, cron jobs, units or listening ports. Alerts go to the journal (`sudo journalctl -t homeguard`) and to email (`/etc/homeguard.conf`). After a deliberate system change, run `sudo homeguard --rebaseline`. The firewall comes up with a 5-minute auto-rollback; confirm access from a new SSH session, then run `sudo systemctl stop ufw-rollback.timer`.
+
+### Mail (`you@yourdomain`, webmail, invite emails)
+
+`sudo ./infra/native/mail/install-mail.sh --domain example.com` installs Stalwart (mailboxes, IMAP, SMTP), Roundcube webmail and a small bridge. Port 25 is never opened, and the home IP stays private:
+
+- **Receiving:** Cloudflare Email Routing → Email Worker (`infra/native/mail/email-worker.js`) → `https://mailin.<domain>` through the tunnel → bridge → Stalwart. If the server is down, the worker forwards the message to a fallback address.
+- **Sending:** a residential IP can't deliver mail directly, so Stalwart relays everything through Brevo. Put `BREVO_LOGIN` and `BREVO_SMTP_KEY` in `/etc/homeops/mail.env` and re-run the script.
+- **Reading:** webmail at `https://mail.<domain>` (tunnel → `127.0.0.1:8282`). Phone and desktop mail apps can use IMAPS 993 and submission 587 on the LAN or ZeroTier.
+- **HomeOps** sends invites and password resets as `no-reply@<domain>` (the `HOMEOPS_SMTP_*` settings are written for you).
+- **Admin:** `ssh -L 8480:127.0.0.1:8480 server`, then open http://localhost:8480/admin as `admin@<domain>`. The password is `STALWART_ADMIN_PASS` in `mail.env`.
+- **DNS:** run `sudo ./infra/native/mail/dns-records.sh` for the DKIM, SPF and DMARC records. The script is safe to re-run, and mail is backed up nightly by `mail-backup.timer`.
+
 ## Deploy with Docker
 
 ### 1. Install Docker (once)

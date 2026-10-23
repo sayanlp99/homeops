@@ -1,0 +1,10 @@
+# Deploy the Email Worker:  npx wrangler@4.148.0 deploy   (from this directory)
+name = "homeops-mail"
+main = "email-worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = false
+
+[vars]
+BRIDGE_URL = "https://mailin.sayan.fit/inbound"
+# FALLBACK_TO must be a verified Email Routing destination address:
+# npx wrangler@4.148.0 secret put FALLBACK_TO   (or set it in the dashboard)
