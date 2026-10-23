@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 	_ "time/tzdata" // household time zones work even in a minimal container
@@ -24,6 +27,15 @@ func main() {
 			os.Exit(1)
 		}
 		os.Exit(0)
+	}
+	// `homeops passwd <username|email>` reads a new password from stdin, for when
+	// someone is locked out and password-reset email isn't set up.
+	if len(os.Args) > 1 && os.Args[1] == "passwd" {
+		if err := passwd(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
 	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 	if err := run(); err != nil {
@@ -71,5 +83,30 @@ func run() error {
 	if err := httpSrv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		return err
 	}
+	return nil
+}
+
+func passwd(args []string) error {
+	if len(args) != 1 {
+		return errors.New("usage: homeops passwd <username or email>  (new password on stdin)")
+	}
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	db, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	line, err := bufio.NewReader(os.Stdin).ReadString('\n')
+	if err != nil && line == "" {
+		return errors.New("no password given on stdin")
+	}
+	if err := api.ResetPassword(ctx, db, args[0], strings.TrimRight(line, "\r\n")); err != nil {
+		return err
+	}
+	fmt.Printf("Password changed for %s; they've been signed out everywhere.\n", args[0])
 	return nil
 }

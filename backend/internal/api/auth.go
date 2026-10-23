@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"golang.org/x/crypto/argon2"
 )
 
@@ -595,4 +596,33 @@ func isHexColor(c string) bool {
 		}
 	}
 	return true
+}
+
+// ResetPassword sets a new password for a user and signs them out everywhere. It is
+// the server-side fallback (`homeops passwd`) when password-reset email isn't set up.
+func ResetPassword(ctx context.Context, db *pgxpool.Pool, username, password string) error {
+	if err := validatePassword(password); err != nil {
+		return err
+	}
+	tx, err := db.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+	var id string
+	err = tx.QueryRow(ctx, `UPDATE users SET password_hash = $2 WHERE username = $1 OR lower(email) = $1 RETURNING id`,
+		strings.ToLower(strings.TrimSpace(username)), hashPassword(password)).Scan(&id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return fmt.Errorf("no user %q", username)
+	}
+	if err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM sessions WHERE user_id = $1`, id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec(ctx, `DELETE FROM password_resets WHERE user_id = $1`, id); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
 }

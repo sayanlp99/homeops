@@ -175,10 +175,24 @@ func TestHouseholdsAndRoles(t *testing.T) {
 	owner.do("GET", "/api/tasks", nil, 401, nil) // old sessions signed out
 	owner.do("POST", "/api/auth/login", map[string]string{"username": "mum", "password": "brandnewpass"}, 204, nil)
 
+	// Server-side reset (homeops passwd) for when email isn't set up.
+	if err := ResetPassword(context.Background(), s.db, "MUM", "short"); err == nil {
+		t.Fatal("short password accepted")
+	}
+	if err := ResetPassword(context.Background(), s.db, "nobody", "longenough1"); err == nil {
+		t.Fatal("unknown user accepted")
+	}
+	if err := ResetPassword(context.Background(), s.db, "mum@example.com", "viaserver123"); err != nil {
+		t.Fatal(err)
+	}
+	owner.do("GET", "/api/tasks", nil, 401, nil)
+	owner.do("POST", "/api/auth/login", map[string]string{"username": "mum", "password": "viaserver123"}, 204, nil)
+	owner.do("PATCH", "/api/me", map[string]string{"password": "brandnewpass"}, 200, nil) // no-op patch still allowed
+
 	// Email changes need the password and must be unique.
 	owner.do("PATCH", "/api/me", map[string]string{"email": "mum2@example.com"}, 400, nil)
-	owner.do("PATCH", "/api/me", map[string]string{"email": "admin@example.com", "password": "brandnewpass"}, 409, nil)
-	owner.do("PATCH", "/api/me", map[string]string{"email": "mum2@example.com", "password": "brandnewpass"}, 200, nil)
+	owner.do("PATCH", "/api/me", map[string]string{"email": "admin@example.com", "password": "viaserver123"}, 409, nil)
+	owner.do("PATCH", "/api/me", map[string]string{"email": "mum2@example.com", "password": "viaserver123"}, 200, nil)
 
 	// Deleting a household needs its name.
 	owner.do("DELETE", "/api/household", map[string]string{"confirmName": "nope"}, 400, nil)
