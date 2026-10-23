@@ -6,6 +6,7 @@ import { Avatar, Button, Card, CardHeader, EmptyState, Progress, Stat } from '@/
 import { sprintRange, todayISO } from '@/lib/format'
 import { SLOTS, useMeals } from '@/lib/meals'
 import { monthKey, rupees, useMoneyCategories, useSummary } from '@/lib/money'
+import { useTeam } from '@/lib/retro'
 import { pushSupport } from '@/lib/push'
 import { useSession } from '@/lib/session'
 import { useSprints } from '@/lib/sprints'
@@ -22,6 +23,7 @@ export function HomePage() {
   const { user, members, partner } = useSession()
   const { active } = useSprints()
   const { data: tasks = [] } = useTasks()
+  const { data: team } = useTeam()
   const today = todayISO()
 
   const v = useMemo(() => {
@@ -141,7 +143,10 @@ export function HomePage() {
                       <Avatar name={m.displayName} color={m.color} size={24} />
                       <div className="min-w-0 flex-1">
                         <div className="flex justify-between text-[12px]">
-                          <span className="font-medium">{m.displayName}</span>
+                          <span className="font-medium">
+                            {m.displayName}
+                            {(team?.streaks[m.id]?.current ?? 0) > 0 && <span className="ml-1.5 font-normal text-warning">🔥 {team!.streaks[m.id]!.current}</span>}
+                          </span>
                           <span className="text-muted tabular">
                             {done}/{theirs.length}
                           </span>

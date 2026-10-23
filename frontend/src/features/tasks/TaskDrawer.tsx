@@ -1,7 +1,9 @@
-import { Link2, Repeat, Trash2, User } from 'lucide-react'
+import { Link2, PartyPopper, Repeat, Trash2, User } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
 import { toast } from 'sonner'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Sheet } from '@/components/Dialog'
+import { post } from '@/lib/api'
 import { Avatar, Button, EmptyState, IconButton, Textarea } from '@/components/ui'
 import { formatDateTime, sprintRange, taskKey } from '@/lib/format'
 import { useSession } from '@/lib/session'
@@ -18,7 +20,16 @@ export function TaskDrawer() {
   const task = findTask(tasks, value)
   const update = useUpdateTask()
   const remove = useDeleteTask()
-  const { memberById, labelById } = useSession()
+  const { memberById, labelById, user } = useSession()
+  const qc = useQueryClient()
+  const kudos = useMutation({
+    mutationFn: (v: { toId: string; taskId: string }) => post('/kudos', { ...v, emoji: '👏' }),
+    onSuccess: (_d, v) => {
+      toast.success(`👏 Kudos sent to ${memberById.get(v.toId)?.displayName}`)
+      qc.invalidateQueries({ queryKey: ['team'] })
+    },
+    onError: (e: Error) => toast.error(e.message),
+  })
   const { sprints } = useSprints()
   const [title, setTitle] = useState('')
   const [desc, setDesc] = useState('')
@@ -179,6 +190,13 @@ export function TaskDrawer() {
           <div className="mt-6 space-y-1 border-t border-border pt-3 text-[12px] text-subtle">
             {task.reporterId && <p>Created by {memberById.get(task.reporterId)?.displayName ?? 'someone'} · {formatDateTime(task.createdAt)}</p>}
             {!task.reporterId && <p>Created {formatDateTime(task.createdAt)}</p>}
+            {task.completedAt && task.completedBy && task.completedBy !== user.id && (
+              <div className="my-2">
+                <Button size="sm" icon={<PartyPopper className="size-3.5" />} loading={kudos.isPending} onClick={() => kudos.mutate({ toId: task.completedBy!, taskId: task.id })}>
+                  Give {memberById.get(task.completedBy)?.displayName ?? 'them'} kudos
+                </Button>
+              </div>
+            )}
             {task.completedAt && (
               <p className="text-success">
                 Completed {task.completedBy ? `by ${memberById.get(task.completedBy)?.displayName ?? 'someone'} ` : ''}· {formatDateTime(task.completedAt)}

@@ -52,7 +52,7 @@ const household: NavItem[] = [
   { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
   { to: '/pantry', label: 'Pantry', icon: Package },
   { to: '/budget', label: 'Budget', icon: Wallet },
-  { to: '/retro', label: 'Retro', icon: RotateCcw, soon: true },
+  { to: '/retro', label: 'Retro & kudos', icon: RotateCcw },
 ]
 const tabs: NavItem[] = [
   { to: '/', label: 'Home', icon: Home },

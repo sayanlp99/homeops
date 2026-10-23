@@ -11,6 +11,7 @@ import { useSession } from '@/lib/session'
 import type { TxnKind } from '@/lib/types'
 import { quickExpense } from '@/lib/ui'
 import { CategoryIcon } from './MoneyBits'
+import { uuid } from '@/lib/uuid'
 
 /** Three taps: amount → category → Save. Everything else is optional and defaults sensibly. */
 export function AddExpenseDialog() {
@@ -71,7 +72,7 @@ export function AddExpenseDialog() {
     if (!paise) return amountRef.current?.focus()
     add.mutate(
       {
-        id: crypto.randomUUID(), kind, amount: paise, date, payee: payee.trim(), note: note.trim(), categoryId: kind === 'transfer' ? null : categoryId,
+        id: uuid(), kind, amount: paise, date, payee: payee.trim(), note: note.trim(), categoryId: kind === 'transfer' ? null : categoryId,
         accountId: accountId || null, paidBy, receipt, personal,
       },
       { onSuccess: () => toast.success(`${kind === 'income' ? 'Income' : kind === 'transfer' ? 'Transfer' : 'Expense'} of ${rupees(paise, true)} saved`) },

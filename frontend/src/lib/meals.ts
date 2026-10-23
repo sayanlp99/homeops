@@ -3,6 +3,7 @@ import { addDays, format, parseISO } from 'date-fns'
 import { toast } from 'sonner'
 import { ApiError, clientId, del, get, patch, post } from './api'
 import type { Diet, GroceryItem, Ingredient, MealItem, PantryItem, Recipe, Slot, Suggestion } from './types'
+import { uuid } from './uuid'
 
 export const SLOTS: { value: Slot; label: string }[] = [
   { value: 'breakfast', label: 'Breakfast' },
@@ -199,7 +200,7 @@ export function useMealActions() {
   const update = useMutation<MealItem, Error, { id: string; changes: MealPatch }>({ mutationKey: ['meal.update'] })
   const remove = useMutation<void, Error, string>({ mutationKey: ['meal.delete'] })
   return {
-    add: (m: Omit<NewMeal, 'id'>) => create.mutate({ ...m, id: crypto.randomUUID() }),
+    add: (m: Omit<NewMeal, 'id'>) => create.mutate({ ...m, id: uuid() }),
     update: (id: string, changes: MealPatch) => update.mutate({ id, changes }),
     remove: (id: string) => remove.mutate(id),
   }
@@ -210,7 +211,7 @@ export function useGroceryActions() {
   const update = useMutation<GroceryItem, Error, { id: string; changes: GroceryPatch }>({ mutationKey: ['grocery.update'] })
   const remove = useMutation<void, Error, string>({ mutationKey: ['grocery.delete'] })
   return {
-    add: (text: string) => add.mutate({ id: crypto.randomUUID(), text }),
+    add: (text: string) => add.mutate({ id: uuid(), text }),
     update: (id: string, changes: GroceryPatch) => update.mutate({ id, changes }),
     remove: (id: string) => remove.mutate(id),
   }

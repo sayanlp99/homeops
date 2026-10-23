@@ -8,7 +8,7 @@ import { rupees, rupeesCompact } from '@/lib/money'
 // thin bars with 4px rounded data-ends, text in ink tokens (never series colour),
 // a tooltip on every chart, and a legend whenever there are two or more series.
 
-function useWidth<T extends HTMLElement>() {
+export function useWidth<T extends HTMLElement>() {
   const ref = useRef<T>(null)
   const [w, setW] = useState(0)
   useLayoutEffect(() => {
@@ -20,14 +20,14 @@ function useWidth<T extends HTMLElement>() {
   return [ref, w] as const
 }
 
-function niceMax(v: number) {
+export function niceMax(v: number) {
   if (v <= 0) return 100
   const p = Math.pow(10, Math.floor(Math.log10(v)))
   for (const m of [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10]) if (m * p >= v) return m * p
   return 10 * p
 }
 
-function Tooltip({ x, y, width, children }: { x: number; y: number; width: number; children: ReactNode }) {
+export function Tooltip({ x, y, width, children }: { x: number; y: number; width: number; children: ReactNode }) {
   const left = Math.min(Math.max(x - 80, 0), width - 160)
   return (
     <div className="pointer-events-none absolute z-10 w-40 rounded-md border border-border bg-surface px-2.5 py-2 text-[12px] shadow-pop" style={{ left, top: Math.max(0, y - 70) }}>
@@ -36,7 +36,7 @@ function Tooltip({ x, y, width, children }: { x: number; y: number; width: numbe
   )
 }
 
-function LegendKey({ color, dashed, label }: { color: string; dashed?: boolean; label: string }) {
+export function LegendKey({ color, dashed, label }: { color: string; dashed?: boolean; label: string }) {
   return (
     <span className="flex items-center gap-1.5 text-[12px] text-muted">
       <svg width="16" height="8" aria-hidden>

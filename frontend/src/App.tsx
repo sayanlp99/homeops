@@ -1,4 +1,4 @@
-import { RotateCcw, WifiOff } from 'lucide-react'
+import { WifiOff } from 'lucide-react'
 import { Navigate, Route, Routes, useParams } from 'react-router-dom'
 import { AppShell } from '@/components/AppShell'
 import { Button, Spinner } from '@/components/ui'
@@ -15,7 +15,7 @@ import { PantryPage } from '@/features/pantry/PantryPage'
 import { RecipeDetailPage } from '@/features/recipes/RecipeDetailPage'
 import { RecipeEditorPage } from '@/features/recipes/RecipeEditorPage'
 import { RecipesPage } from '@/features/recipes/RecipesPage'
-import { ComingSoon } from '@/features/placeholder/ComingSoon'
+import { RetroPage } from '@/features/retro/RetroPage'
 import { RecurringPage } from '@/features/recurring/RecurringPage'
 import { SettingsPage } from '@/features/settings/SettingsPage'
 import { SprintsPage } from '@/features/sprints/SprintsPage'
@@ -71,10 +71,7 @@ export function App() {
         <Route path="budget/bills" element={<BillsPage />} />
         <Route path="budget/import" element={<ImportPage />} />
         <Route path="budget/setup" element={<MoneySetupPage />} />
-        <Route
-          path="retro"
-          element={<ComingSoon title="Retro" phase={4} icon={<RotateCcw className="size-5" />} items={['Went well / Improve / Actions with private reveal & voting', 'Action items become next sprint’s tasks', 'Burndown, velocity & fairness charts', 'Kudos and streaks']} />}
-        />
+        <Route path="retro" element={<RetroPage />} />
         <Route path="settings" element={<Navigate to="/settings/profile" replace />} />
         <Route path="settings/:tab" element={<SettingsPage />} />
         <Route path="join/:code" element={<Navigate to="/" replace />} />

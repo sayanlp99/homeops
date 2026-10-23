@@ -181,6 +181,18 @@ func (s *Server) Routes() http.Handler {
 				r.Method("POST", "/bills/{id}/pay", handler(s.payBill))
 			})
 
+			r.Method("GET", "/retros", handler(s.listRetros))
+			r.Method("GET", "/retro", handler(s.getRetro))
+			r.Method("POST", "/retros/{id}/cards", handler(s.addRetroCard))
+			r.Method("POST", "/retros/{id}/reveal", handler(s.revealRetro))
+			r.Method("POST", "/retros/{id}/close", handler(s.closeRetro))
+			r.Method("PATCH", "/retro-cards/{id}", handler(s.updateRetroCard))
+			r.Method("DELETE", "/retro-cards/{id}", handler(s.deleteRetroCard))
+			r.Method("POST", "/retro-cards/{id}/vote", handler(s.voteRetroCard))
+			r.Method("GET", "/metrics/burndown", handler(s.burndown))
+			r.Method("GET", "/metrics/team", handler(s.teamMetrics))
+			r.Method("POST", "/kudos", handler(s.giveKudos))
+
 			r.Method("GET", "/notifications", handler(s.listNotifications))
 			r.Method("POST", "/notifications/read", handler(s.markNotificationsRead))
 			r.Method("POST", "/push/subscribe", handler(s.pushSubscribe))

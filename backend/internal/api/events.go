@@ -23,6 +23,7 @@ const (
 	eventGrocery       topic = "grocery"
 	eventPantry        topic = "pantry"
 	eventMoney         topic = "money"
+	eventRetro         topic = "retro"
 )
 
 // from builds an event attributed to the request's client (nil for background jobs).

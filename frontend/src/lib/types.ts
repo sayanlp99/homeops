@@ -12,7 +12,7 @@ export interface User {
   quietEnd: string | null
 }
 
-export type NotifyKind = 'task_assigned' | 'task_due' | 'task_overdue' | 'ceremony' | 'meals' | 'budget'
+export type NotifyKind = 'task_assigned' | 'task_due' | 'task_overdue' | 'ceremony' | 'meals' | 'budget' | 'kudos'
 
 export interface Member {
   id: string

@@ -1,5 +1,7 @@
+import { uuid } from './uuid'
+
 // Identifies this tab so it can ignore realtime echoes of its own writes.
-export const clientId = crypto.randomUUID()
+export const clientId = uuid()
 
 export class ApiError extends Error {
   constructor(

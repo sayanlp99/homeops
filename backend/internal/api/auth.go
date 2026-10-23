@@ -413,7 +413,7 @@ func (s *Server) acceptInvite(w http.ResponseWriter, r *http.Request) error {
 
 // ---- profile & sessions ----
 
-var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremony", "meals", "budget"}
+var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremony", "meals", "budget", "kudos"}
 
 func (s *Server) updateMe(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)

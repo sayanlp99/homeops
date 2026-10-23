@@ -10,6 +10,7 @@ import { type TaskPatch, useCreateTask } from '@/lib/tasks'
 import { quickAdd, useTaskParam } from '@/lib/ui'
 import { AssigneeMenu, ChipButton, LabelsMenu, PriorityIcon, PriorityMenu, SprintMenu, StatusIcon, StatusMenu } from './TaskBits'
 import { priorities, statuses } from '@/lib/tasks'
+import { uuid } from '@/lib/uuid'
 
 const POINTS = [1, 2, 3, 5, 8]
 
@@ -34,7 +35,7 @@ export function QuickAddTask() {
     e?.preventDefault()
     const title = form.title?.trim()
     if (!title) return titleRef.current?.focus()
-    const id = crypto.randomUUID()
+    const id = uuid()
     const status = form.sprintId ? (form.status === 'backlog' ? 'todo' : form.status) : 'backlog'
     create.mutate(
       { ...form, id, title, status },

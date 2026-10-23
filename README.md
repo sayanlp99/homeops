@@ -6,7 +6,7 @@ Runs on your home server and is published through a Cloudflare Tunnel, so no por
 **Phase 1 (done):** sign-in with password + passkeys, partner invite, installable PWA, push notifications, live sync, offline mode, Kanban board, sprint planning, recurring chores, notification inbox.
 **Phase 2 (done):** weekly meal plan (breakfast/lunch/snacks/dinner, several dishes per slot), recipe library with photos and import-from-link, rule-based suggestions and auto-fill, grocery list built from the plan, pantry with low-stock and expiry tracking, meal & prep notifications.
 **Phase 3 (done):** monthly budget envelopes (shared + private personal), 3-tap expense entry with receipt photos, bank statement import with learned categorisation, grocery invoice import (Zepto, Blinkit), bills with reminders, budget alerts.
-**Coming:** Phase 4 retro & charts.
+**Phase 4 (done):** sprint retros (private cards, reveal, votes, action items become next-sprint tasks), burndown, velocity and fairness charts, daily streaks and kudos.
 
 ## Stack
 
@@ -18,6 +18,16 @@ Runs on your home server and is published through a Cloudflare Tunnel, so no por
 | Web | React 19 + Vite + TanStack Query + Tailwind; Workbox service worker |
 | Realtime | Server-Sent Events (works through Cloudflare Tunnel) |
 | Push | Standard Web Push with VAPID keys generated on first start |
+
+## Try it on this PC (no Docker, no Cloudflare)
+
+```sh
+./run-local.sh          # or: make local      (add --reset to start from scratch)
+```
+
+It builds the app, starts an embedded Postgres (data in `backend/.devdata`) and serves everything on **http://localhost:8080**. The first visit creates the admin account; invite your partner from Settings → Household. Requires Go 1.27+ (the script also looks in `~/.local/go`) and Node 24+.
+
+Phones on the same Wi-Fi can open `http://<this-pc-ip>:8080` (the script prints it). Browsers only allow passkeys, push notifications and offline mode on https or localhost, so those are unavailable that way; everything else works. For the full experience on phones, deploy with the tunnel below.
 
 ## Deploy on the home server
 
@@ -84,6 +94,9 @@ Back up `./backups` somewhere off the server too (offsite target is still to be 
 - **Statement import:** CSV, XLSX, the HTML ".xls" many Indian banks serve, and HDFC's fixed-width text download. Columns are detected from headers (HDFC, ICICI, SBI, Axis and card layouts) with a manual column mapper as fallback, remembered per account. HDFC text statements are checked against the bank's own summary (debit/credit totals and counts). Rows are de-duplicated across overlapping imports, transfers (to yourselves, card bills, CRED, NPS/SIPs) are excluded from budgets, and fixing a category teaches a rule for next time. Every import can be undone.
 - **Grocery invoices:** upload the PDF from the Zepto or Blinkit order page: the total (summed across Blinkit's merged seller invoices), line items, pack sizes and fees are read, the PDF is kept as the receipt, and goods can go straight into the pantry. When the bank statement arrives later, the matching UPI payment is recognised and skipped.
 - **Bills:** due day, usual amount and reminder lead time; "Mark paid" records the expense and stops the month's reminders.
+- **Retro:** one per sprint, from the Retro page or the "Complete sprint" dialog. While collecting, each of you sees only your own cards (the API returns just a count of the other's). Reveal together, vote, give action items an owner, and closing the retro creates them as tasks in the next sprint (voted ones as high priority).
+- **Insights** (Sprints page): burndown of the current sprint against an ideal line, velocity (planned vs done) and fairness (who completed what) per sprint. Tasks without points count as 1.
+- **Streaks & kudos:** a streak is consecutive days with at least one task done (today only breaks it once it's over). Send kudos from a task your partner finished, or from the Retro page; they get a notification.
 - **Live sync:** one SSE stream per open app. A change on one phone shows up on the other in well under a second.
 
 ## Development

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { clientId } from './api'
 
 const topicKeys: Record<string, string[][]> = {
-  tasks: [['tasks'], ['sprints']],
+  tasks: [['tasks'], ['sprints'], ['team']],
   sprints: [['sprints'], ['tasks']],
   recurring: [['recurring']],
   labels: [['bootstrap']],
@@ -15,6 +15,7 @@ const topicKeys: Record<string, string[][]> = {
   grocery: [['grocery']],
   pantry: [['pantry'], ['suggest']],
   money: [['money']],
+  retro: [['retro'], ['team']],
 }
 
 export type LiveState = 'connecting' | 'live' | 'offline'

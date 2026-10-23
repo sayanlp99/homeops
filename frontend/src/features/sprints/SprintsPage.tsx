@@ -3,14 +3,18 @@ import { Link } from 'react-router-dom'
 import { Badge, Button, Card, CardHeader, EmptyState, PageHeader, Progress, Spinner } from '@/components/ui'
 import { sprintRange, weekdays } from '@/lib/format'
 import { useSession } from '@/lib/session'
+import { useBurndown, useTeam } from '@/lib/retro'
 import { useSprints } from '@/lib/sprints'
+import { BurndownChart, FairnessChart, VelocityChart } from './InsightCharts'
 import type { Sprint } from '@/lib/types'
 
 const tone = { active: 'success', planned: 'accent', completed: 'neutral' } as const
 
 export function SprintsPage() {
-  const { sprints, isLoading } = useSprints()
-  const { household } = useSession()
+  const { sprints, isLoading, active } = useSprints()
+  const { household, members } = useSession()
+  const { data: burn } = useBurndown(active?.id)
+  const { data: team } = useTeam()
   if (isLoading) return <Spinner className="mx-auto mt-16" />
   const completed = sprints.filter((s) => s.status === 'completed')
   const avgVelocity = completed.length ? Math.round(completed.slice(0, 4).reduce((s, x) => s + x.donePoints, 0) / Math.min(4, completed.length)) : null
@@ -40,8 +44,22 @@ export function SprintsPage() {
           <div className="mt-1 text-[13px]">{household.autoRoll ? 'On — sprints roll over automatically' : 'Off — start sprints manually'}</div>
         </Card>
       </div>
+      <div className="mb-4 grid gap-4 lg:grid-cols-3">
+        <Card>
+          <CardHeader title={active ? `Burndown · Sprint ${active.number}` : 'Burndown'} subtitle={burn?.unit === 'tasks' ? 'No points set, so counting tasks' : undefined} />
+          <div className="p-4">{burn && burn.total > 0 ? <BurndownChart data={burn} /> : <p className="py-8 text-center text-[13px] text-subtle">Add tasks to the sprint to see its burndown.</p>}</div>
+        </Card>
+        <Card>
+          <CardHeader title="Velocity" subtitle="Planned vs done per sprint" />
+          <div className="p-4">{team?.sprints?.length ? <VelocityChart sprints={team.sprints} /> : <p className="py-8 text-center text-[13px] text-subtle">Appears after your first sprint.</p>}</div>
+        </Card>
+        <Card>
+          <CardHeader title="Fairness" subtitle="Work done by each of you" />
+          <div className="p-4">{team?.sprints?.length ? <FairnessChart sprints={team.sprints} members={members} /> : <p className="py-8 text-center text-[13px] text-subtle">Appears once tasks get done.</p>}</div>
+        </Card>
+      </div>
       <Card>
-        <CardHeader title="History" subtitle="Burndown and velocity charts arrive with the retro in Phase 4." />
+        <CardHeader title="History" subtitle="Tasks without points count as 1 in velocity and fairness." />
         {sprints.length === 0 ? (
           <EmptyState icon={<CalendarClock className="size-5" />} title="No sprints yet" />
         ) : (

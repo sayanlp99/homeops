@@ -10,6 +10,7 @@ import { useCompleteSprint, useSprints, useStartSprint, useUpdateSprintGoal } fr
 import { byRank, useCreateTask, useTasks, useUpdateTask } from '@/lib/tasks'
 import type { Sprint, Task } from '@/lib/types'
 import { TaskRow } from './TaskList'
+import { uuid } from '@/lib/uuid'
 
 /**
  * Sprint planning: review the current sprint, pull work from the backlog into next week,
@@ -214,7 +215,7 @@ function InlineAdd({ sprintId }: { sprintId: string | null }) {
   const submit = () => {
     const t = title.trim()
     if (!t) return
-    create.mutate({ id: crypto.randomUUID(), title: t, sprintId, status: sprintId ? 'todo' : 'backlog', assigneeId: sprintId ? user.id : null })
+    create.mutate({ id: uuid(), title: t, sprintId, status: sprintId ? 'todo' : 'backlog', assigneeId: sprintId ? user.id : null })
     setTitle('')
   }
   return (
@@ -287,7 +288,13 @@ function CompleteSprintDialog({ open, onOpenChange, sprint, tasks, nextNumber }:
           ))}
         </fieldset>
       )}
-      <p className="mt-4 text-[12px] text-subtle">Tip: hold your retro now — the retrospective board arrives in a later phase.</p>
+      <p className="mt-4 text-[12px] text-subtle">
+        Tip: hold your retro first —{' '}
+        <a href={`/retro?sprint=${sprint.id}`} className="text-accent hover:underline">
+          open Sprint {sprint.number}'s retro
+        </a>
+        . Its action items become tasks in the next sprint.
+      </p>
     </Modal>
   )
 }
