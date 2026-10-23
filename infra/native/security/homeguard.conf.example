@@ -1,0 +1,9 @@
+# /etc/homeguard.conf — where homeguard emails alerts. Leave ALERT_TO empty to only log
+# (sudo journalctl -t homeguard).
+ALERT_TO=""
+MAIL_FROM="homeguard@sayan.fit"
+SMTP_URL="smtp://127.0.0.1:587"
+SMTP_USER=""
+SMTP_PASS=""
+# Extra busy-but-OK processes, as user:command (space separated), appended to the defaults:
+# CPU_ALLOW="$CPU_ALLOW plex:Plex"

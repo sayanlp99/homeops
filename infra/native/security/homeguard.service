@@ -1,0 +1,8 @@
+[Unit]
+Description=homeguard intrusion and crypto-miner check
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/homeguard
+Nice=10
+IOSchedulingClass=idle
