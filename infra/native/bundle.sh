@@ -22,7 +22,8 @@ for f in stalwart-x86_64-unknown-linux-gnu.tar.gz stalwart-cli-x86_64-unknown-li
 done
 cp -r "$REPO/frontend/dist" "$STAGE/homeops/frontend/dist"
 cp -r "$REPO/infra/native" "$STAGE/homeops/infra/native"
-cp "$REPO/README.md" "$STAGE/homeops/"
+cp "$REPO/README.md" "$REPO/.env.example" "$STAGE/homeops/"
+cp -r "$REPO/docs" "$STAGE/homeops/docs"
 mkdir -p "$(dirname "$OUT")"
 tar -czf "$OUT" -C "$STAGE" homeops
 echo "✔ $OUT ($(du -h "$OUT" | cut -f1))"
