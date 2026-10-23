@@ -1,0 +1,34 @@
+[Unit]
+Description=HomeOps household app
+Documentation=file:///opt/homeops/README.md
+After=network-online.target postgresql.service homeops-seaweedfs.service
+Wants=network-online.target
+Requires=postgresql.service
+
+[Service]
+Type=simple
+User=homeops
+Group=homeops
+EnvironmentFile=/etc/homeops/homeops.env
+ExecStart=/opt/homeops/homeops
+Restart=on-failure
+RestartSec=3
+# Sandboxing: the app only needs its data directory.
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+ReadWritePaths=/var/lib/homeops
+CapabilityBoundingSet=
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

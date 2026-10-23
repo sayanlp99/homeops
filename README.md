@@ -29,7 +29,23 @@ It builds the app, starts an embedded Postgres (data in `backend/.devdata`) and 
 
 Phones on the same Wi-Fi can open `http://<this-pc-ip>:8080` (the script prints it). Browsers only allow passkeys, push notifications and offline mode on https or localhost, so those are unavailable that way; everything else works. For the full experience on phones, deploy with the tunnel below.
 
-## Deploy on the home server
+## Deploy on the home server without Docker (recommended)
+
+Everything runs as plain systemd services: Postgres (distro package), SeaweedFS, the HomeOps binary and cloudflared. The server needs no Go or Node.
+
+```sh
+# on your PC
+make bundle                                   # → .local/homeops-bundle.tar.gz
+scp .local/homeops-bundle.tar.gz server:/tmp/
+# on the server
+tar xzf /tmp/homeops-bundle.tar.gz -C ~ && cd ~/homeops
+nano .env        # HOMEOPS_PUBLIC_URL, HOMEOPS_VAPID_EMAIL, POSTGRES_PASSWORD, S3_ACCESS_KEY, S3_SECRET_KEY, TUNNEL_TOKEN
+sudo ./infra/native/install.sh --prebuilt --port 8090     # re-run any time; data is kept
+```
+
+The app listens on `127.0.0.1:<port>` only; point the tunnel's public hostname at `http://localhost:<port>`. Config is in `/etc/homeops/homeops.env`; logs via `journalctl -u homeops -f`; nightly backups in `/var/lib/homeops/backups` (`sudo systemctl start homeops-backup` runs one now). To update, build a new bundle, unpack it over `~/homeops` (keep `.env`) and run `sudo ./infra/native/update.sh`. Use `--storage disk` to skip SeaweedFS and keep uploads in `/var/lib/homeops/files`.
+
+## Deploy with Docker
 
 ### 1. Install Docker (once)
 

@@ -1,0 +1,25 @@
+[Unit]
+Description=SeaweedFS object storage for HomeOps (S3 API on 127.0.0.1:8333)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=homeops
+Group=homeops
+# Explicit ports: SeaweedFS's volume server defaults to 8080, which home servers often
+# already use (qBittorrent, etc.). gRPC ports are these + 10000.
+ExecStart=/opt/homeops/bin/weed server -dir=/var/lib/homeops/seaweed -ip=127.0.0.1 -ip.bind=127.0.0.1 \
+  -master.port=9333 -volume.port=8381 -filer.port=8889 \
+  -master.volumeSizeLimitMB=1024 -volume.max=0 -s3 -s3.port=8333 -s3.config=/etc/homeops/s3.json
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ReadWritePaths=/var/lib/homeops/seaweed
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=multi-user.target

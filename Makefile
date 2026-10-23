@@ -8,6 +8,10 @@ backup-now:    ## take a backup immediately
 update:        ## pull latest code and redeploy
 	git pull && docker compose up -d --build
 
+# Native deploy (systemd, no Docker): see infra/native/
+bundle:        ## build a deploy bundle for a server without Go/Node
+	./infra/native/bundle.sh
+
 # Local testing on this machine, no Docker or Cloudflare: http://localhost:8080
 local:         ## build and run everything locally (data in backend/.devdata)
 	./run-local.sh
@@ -24,4 +28,4 @@ test:          ## backend tests (uses a throwaway embedded Postgres) + type-chec
 	cd backend && go test -race ./...
 	cd frontend && npx tsc -b
 
-.PHONY: local up logs backup-now update dev-db dev-api dev-web test
+.PHONY: bundle local up logs backup-now update dev-db dev-api dev-web test
