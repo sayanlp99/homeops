@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 import { addDays, format, isSameDay, parseISO } from 'date-fns'
-import { CheckCircle2, ChevronLeft, ChevronRight, Circle, ExternalLink, Minus, Plus, RotateCcw, ShoppingCart, Trash2, Users, Wand2 } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle, ExternalLink, ListTodo, Minus, Plus, RotateCcw, ShoppingCart, Trash2, Users, Wand2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { Modal } from '@/components/Dialog'
@@ -8,7 +8,9 @@ import { Menu, MenuItem, MenuLabel, MenuSeparator } from '@/components/Menu'
 import { Avatar, Button, Card, PageHeader, Switch } from '@/components/ui'
 import { post } from '@/lib/api'
 import { useIsDesktop } from '@/lib/hooks'
-import { SLOTS, isPast, useAction, useMealActions, useMeals, useRecipes, weekRange } from '@/lib/meals'
+import { SLOTS, isPast, slotLabel, useAction, useMealActions, useMeals, useRecipes, weekRange } from '@/lib/meals'
+import type { TaskPatch } from '@/lib/tasks'
+import { openQuickAdd } from '@/lib/ui'
 import { weekStart } from '@/lib/weeks'
 import { hasRole, useSession } from '@/lib/session'
 import { fmtAmount, useNutrition } from '@/lib/nutrition'
@@ -215,7 +217,7 @@ function SlotRow({ slot, label, time, days, cell, recipeById, onAdd }: { slot: S
 
 function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; large?: boolean }) {
   const { update, remove } = useMealActions()
-  const { members, memberById, user } = useSession()
+  const { members, memberById, user, household } = useSession()
   const navigate = useNavigate()
   const [portions, setPortions] = useState(false)
   const cooked = !!meal.cookedAt
@@ -269,6 +271,11 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
             Who's eating…
           </MenuItem>
         )}
+        {hasRole(user, 'member') && !cooked && !meal.leftover && (
+          <MenuItem icon={<ListTodo className="size-4" />} onSelect={() => openQuickAdd(cookingTask(meal, recipe, household.mealTimes?.[meal.slot]))}>
+            Add cooking task
+          </MenuItem>
+        )}
         <MenuItem keepOpen icon={<Plus className="size-4" />} onSelect={() => update(meal.id, { servings: Math.min(50, meal.servings + 1) })}>
           More servings
         </MenuItem>
@@ -288,6 +295,14 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
       <PortionsDialog open={portions} onOpenChange={setPortions} meal={meal} recipe={recipe} people={everyone} />
     </>
   )
+}
+
+/** A task to cook a planned dish, due that day; opened in quick add to pick who cooks it. */
+function cookingTask(meal: MealItem, recipe: Recipe | undefined, time?: string): TaskPatch {
+  const when = `${slotLabel(meal.slot)} on ${format(parseISO(meal.date), 'EEE d MMM')}${time ? ` at ${time}` : ''}`
+  const lines = [`${when} · ${meal.servings} ${meal.servings === 1 ? 'serving' : 'servings'}`]
+  if (recipe) lines.push(`Recipe: ${window.location.origin}/recipes/${recipe.id}?servings=${meal.servings}`)
+  return { title: `Cook ${meal.title}`.slice(0, 200), description: lines.join('\n\n'), dueDate: meal.date }
 }
 
 const portionLabel = (v: number) => {

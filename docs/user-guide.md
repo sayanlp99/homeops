@@ -166,6 +166,10 @@ food: fish goes only to the fish-eaters. Tap a dish → **Who's eating…** to s
 portions (½ katori rice for one, 2 for another) or mark it a **leftover**, which is
 eaten again but kept off the grocery list and pantry.
 
+**Cooking as a task.** Tap a dish → **Add cooking task** to open a new task already
+filled in ("Cook …", due that day, with the meal time, servings and a link to the
+recipe); pick who's cooking and save. It then shows on the board like any other task.
+
 **Auto-fill follows a Bengali home routine** when the recipes have the right tags
 (the *Bengali home kitchen* recipe pack has them):
 
