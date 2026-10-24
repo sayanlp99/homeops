@@ -1,14 +1,15 @@
 import clsx from 'clsx'
-import { Clock, Heart, Link2, Plus, Search } from 'lucide-react'
+import { Clock, Heart, Link2, Package, Plus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Modal } from '@/components/Dialog'
 import { Button, Card, EmptyState, Field, Input, PageHeader, Segmented, Spinner } from '@/components/ui'
-import { post } from '@/lib/api'
+import { get, post } from '@/lib/api'
 import { relativeDay } from '@/lib/format'
-import { SLOTS, categoryLabel, useRecipes } from '@/lib/meals'
-import type { Recipe, Slot } from '@/lib/types'
+import { SLOTS, categoryLabel, useAction, useRecipes } from '@/lib/meals'
+import { useQuery } from '@tanstack/react-query'
+import type { Recipe, RecipePack, Slot } from '@/lib/types'
 import { DietMark, MealsNav, RecipeImage, minutesLabel } from '../meals/MealBits'
 
 export const importDraft = { current: null as Recipe | null }
@@ -18,6 +19,7 @@ export function RecipesPage() {
   const [params, setParams] = useSearchParams()
   const [q, setQ] = useState('')
   const [importing, setImporting] = useState(false)
+  const [packs, setPacks] = useState(false)
   const slot = (params.get('slot') as Slot | 'all' | 'fav') || 'all'
   const setSlot = (v: string) =>
     setParams((p) => {
@@ -40,6 +42,9 @@ export function RecipesPage() {
         subtitle={`${recipes.length} recipes in your library`}
         actions={
           <>
+            <Button icon={<Package className="size-4" />} onClick={() => setPacks(true)}>
+              Recipe packs
+            </Button>
             <Button icon={<Link2 className="size-4" />} onClick={() => setImporting(true)}>
               Import from link
             </Button>
@@ -92,6 +97,7 @@ export function RecipesPage() {
         </div>
       )}
       <ImportDialog open={importing} onOpenChange={setImporting} />
+      <PacksDialog open={packs} onOpenChange={setPacks} />
     </div>
   )
 }
@@ -118,6 +124,11 @@ function RecipeCard({ r }: { r: Recipe }) {
           )}
           {r.lastCooked && <span>Last: {relativeDay(r.lastCooked)}</span>}
         </div>
+        {r.nutrition && r.nutrition.coverage >= 0.5 && (
+          <div className="mt-1 text-[11px] text-subtle tabular">
+            {Math.round(r.nutrition.perServing.kcal)} kcal · {Math.round(r.nutrition.perServing.protein)} g protein
+          </div>
+        )}
       </div>
     </Link>
   )
@@ -170,6 +181,39 @@ function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
         </Field>
       </form>
       <p className={clsx('mt-3 text-[12px] text-subtle')}>Tip: on your phone, use the site's Share button → Copy link, then paste here.</p>
+    </Modal>
+  )
+}
+
+function PacksDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const { data: packs = [] } = useQuery({ queryKey: ['recipe-packs'], queryFn: () => get<RecipePack[]>('/recipes/packs'), enabled: open, staleTime: Infinity })
+  const [shown, setShown] = useState<string | null>(null)
+  const add = useAction(
+    (name: string) => post<{ added: number; skipped: string[] }>(`/recipes/packs/${name}`, {}),
+    [['recipes'], ['nutrition']],
+    (r) => (r.added ? `Added ${r.added} recipes${r.skipped.length ? ` · ${r.skipped.length} you already had were skipped` : ''}` : 'You already have every recipe in this pack'),
+  )
+  return (
+    <Modal open={open} onOpenChange={onOpenChange} title="Recipe packs" description="Ready-made recipes with quantities, steps and nutrition. Recipes you already have (same name) are skipped.">
+      <div className="space-y-3">
+        {packs.map((p) => (
+          <div key={p.name} className="rounded-md border border-border p-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="font-medium">{p.title}</p>
+                <p className="mt-0.5 text-[12px] text-muted">{p.description}</p>
+                <button className="mt-1 text-[12px] text-accent hover:underline" onClick={() => setShown(shown === p.name ? null : p.name)}>
+                  {shown === p.name ? 'Hide' : 'Show'} {p.count} recipes
+                </button>
+              </div>
+              <Button size="sm" variant="primary" loading={add.isPending && add.variables === p.name} onClick={() => add.mutate(p.name, { onSuccess: () => onOpenChange(false) })}>
+                Add
+              </Button>
+            </div>
+            {shown === p.name && <p className="mt-2 text-[12px] leading-relaxed text-subtle">{p.titles.join(' · ')}</p>}
+          </div>
+        ))}
+      </div>
     </Modal>
   )
 }

@@ -83,6 +83,21 @@ POST `/{id}/start`, `/{id}/complete`); `/recurring` (CRUD); `/retros`, `/retro`,
 `/complete`, GET `/trips`); `/pantry` (CRUD, POST `/restock`); `/files` (POST upload,
 GET `/{id}`).
 
+Recipes carry `nutrition` (`perServing`, `coverage`, `missing`, `contains`) and
+`months` (in season; empty = all year). `PATCH /ingredients/{id}` takes `foodKey`
+(`""` = match by name, `"-"` = leave out). `GET /recipes/packs` lists the built-in
+recipe packs; `POST /recipes/packs/{name}` adds one, skipping titles you already have.
+Meal items carry `portions` (`{userId: servings}`, `null` = default), `leftover` and
+the resolved `eaters`.
+
+## Nutrition (member; viewers can't see or change it)
+
+`GET /health` lists each member's profile with computed and final daily `targets`;
+`PUT /health/{userId}` saves one (`sex`, `birthYear`, `heightCm`, `weightKg`,
+`activity`, `goal`, `avoid`, `overrides`) for **any** member of the household;
+`DELETE /health/{userId}`. `GET /nutrition?from&to` returns per-person daily totals,
+averages and gaps with recipe ideas. `GET /nutrition/foods` is the food table.
+
 ## Money (member; personal rows visible to their owner only)
 
 Under `/money`: `/categories` (+ `/{id}/months/{month}` budgets), `/accounts`,

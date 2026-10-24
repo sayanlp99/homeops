@@ -10,16 +10,17 @@ import { post, api } from '@/lib/api'
 import { CATEGORIES, DIETS, SLOTS, fileUrl, uploadPhoto, useRecipe } from '@/lib/meals'
 import type { Recipe, RecipeIngredient, Slot } from '@/lib/types'
 import { importDraft } from './RecipesPage'
+import { MonthPicker } from '../nutrition/NutritionBits'
 
 type Draft = Omit<Recipe, 'id' | 'createdAt' | 'updatedAt' | 'timesCooked' | 'lastCooked'> & { id?: string }
 
 const blank: Draft = {
   title: '', description: '', category: 'main', mealTypes: ['lunch', 'dinner'], diet: 'veg', cuisine: '', tags: [], servings: 2,
   prepMinutes: null, cookMinutes: null, prepNote: '', prepLeadHours: 0, steps: [''], sourceUrl: '', photo: '', favorite: false, rating: 0,
-  ingredients: [{ name: '', quantity: null, unit: '', note: '' }],
+  ingredients: [{ name: '', quantity: null, unit: '', note: '' }], months: [],
 }
 
-const UNITS = ['', 'g', 'kg', 'ml', 'l', 'tsp', 'tbsp', 'cup', 'pcs', 'clove', 'inch', 'bunch', 'pinch', 'packet', 'can', 'sprig']
+const UNITS = ['', 'g', 'kg', 'ml', 'l', 'tsp', 'tbsp', 'cup', 'pcs', 'clove', 'inch', 'bunch', 'pinch', 'packet', 'can', 'sprig', 'slice', 'handful', 'pod', 'stick', 'leaf']
 
 export function RecipeEditorPage() {
   const { id } = useParams()
@@ -176,7 +177,7 @@ export function RecipeEditorPage() {
             <Field label="Cook (min)">
               <Input type="number" min={0} value={d.cookMinutes ?? ''} onChange={(e) => set({ cookMinutes: e.target.value ? Number(e.target.value) : null })} />
             </Field>
-            <Field label="Tags" className="col-span-2" hint="Comma separated, e.g. quick, fasting, party">
+            <Field label="Tags" className="col-span-2" hint="Comma separated. Auto-fill reads: staple, protein, fried, quick, one-pot, simple-dinner, dinner-special, fruit, dairy, every:7">
               <Input value={d.tags.join(', ')} onChange={(e) => set({ tags: e.target.value.split(',').map((t) => t.trimStart()) })} />
             </Field>
             <Field label="Advance prep" className="col-span-2 sm:col-span-3" hint="You'll get a push reminder ahead of the meal">
@@ -190,6 +191,9 @@ export function RecipeEditorPage() {
                   </option>
                 ))}
               </Select>
+            </Field>
+            <Field label="In season" className="col-span-full" hint="Auto-fill only suggests it in these months">
+              <MonthPicker value={d.months ?? []} onChange={(months) => set({ months })} />
             </Field>
           </div>
         </Card>

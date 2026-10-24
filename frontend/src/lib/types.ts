@@ -165,6 +165,36 @@ export interface RecipeIngredient {
   quantity: number | null
   unit: string
   note: string
+  /** Chosen food-table entry: '' = matched by name, '-' = left out of nutrition. */
+  foodKey?: string
+  /** The entry used for nutrition, '' if none. */
+  food?: string
+}
+
+export interface Nutrients {
+  kcal: number
+  protein: number
+  carbs: number
+  fat: number
+  fibre: number
+  iron: number
+  calcium: number
+  vitC: number
+  vitA: number
+  folate: number
+  b12: number
+  zinc: number
+  magnesium: number
+  potassium: number
+  sodium: number
+}
+export type NutrientKey = keyof Nutrients
+
+export interface RecipeNutrition {
+  perServing: Nutrients
+  coverage: number
+  missing: string[]
+  contains: string[]
 }
 
 export interface Recipe {
@@ -191,6 +221,8 @@ export interface Recipe {
   timesCooked: number
   lastCooked: string | null
   ingredients: RecipeIngredient[]
+  months: number[]
+  nutrition?: RecipeNutrition
   warnings?: string[]
 }
 
@@ -206,6 +238,11 @@ export interface MealItem {
   cookedAt: string | null
   cookedBy: string | null
   createdAt: string
+  /** Who eats how many servings, as set by hand; null = default. */
+  portions: Record<string, number> | null
+  leftover: boolean
+  /** Resolved portions: the explicit ones, or one serving for each member who eats this food. */
+  eaters: Record<string, number>
 }
 
 export interface Suggestion {
@@ -375,4 +412,80 @@ export interface MoneyImport {
   imported: number
   createdBy: string | null
   createdAt: string
+}
+
+// ---- nutrition ----
+
+export type Sex = 'female' | 'male'
+export type Activity = 'sedentary' | 'light' | 'moderate' | 'active'
+export type Goal = 'lose' | 'maintain' | 'gain'
+
+export interface HealthProfile {
+  userId: string
+  sex: Sex
+  birthYear: number
+  heightCm: number
+  weightKg: number
+  activity: Activity
+  goal: Goal
+  avoid: string[]
+  overrides: Partial<Record<NutrientKey, number>>
+  updatedAt: string
+  updatedBy: string | null
+}
+
+export interface Targets extends Nutrients {
+  bmr: number
+  tdee: number
+}
+
+export interface MemberHealth {
+  userId: string
+  name: string
+  color: string
+  profile: HealthProfile | null
+  age?: number
+  computed: Targets | null
+  targets: Targets | null
+}
+
+export interface DayIntake {
+  date: string
+  totals: Nutrients
+  dishes: number
+  unknown: string[]
+}
+
+export interface NutrientGap {
+  nutrient: NutrientKey
+  kind: 'low' | 'high'
+  percent: number
+  ideas: { recipeId: string; title: string; amount: number; percent: number }[]
+}
+
+export interface PersonReport {
+  userId: string
+  name: string
+  color: string
+  targets: Targets | null
+  days: DayIntake[]
+  average: Nutrients
+  counted: number
+  partial: number
+  gaps: NutrientGap[]
+}
+
+export interface Food {
+  key: string
+  name: string
+  group?: string
+  per100g: Nutrients
+}
+
+export interface RecipePack {
+  name: string
+  title: string
+  description: string
+  count: number
+  titles: string[]
 }

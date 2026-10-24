@@ -9,6 +9,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"homeops/internal/nutrition"
 )
 
 // Suggestions are rule-based: every recipe gets a score for a given day and slot from
@@ -25,7 +27,11 @@ type Suggestion struct {
 }
 
 type suggestCtx struct {
+	hh       *householdHealth
+	targets  map[string]*nutrition.Targets // members with a health profile
+	weekDow  int                           // first day of the household's week
 	recipes  []Recipe
+	byID     map[string]*Recipe
 	history  []MealItem // last 180 days + upcoming plan
 	pantry   map[string]bool
 	today    time.Time
@@ -49,7 +55,7 @@ func (s *Server) loadSuggestCtx(ctx context.Context, h *Household) (*suggestCtx,
 	var history []MealItem
 	for rows.Next() {
 		var m MealItem
-		if err := rows.Scan(&m.ID, &m.Date, &m.Slot, &m.Position, &m.RecipeID, &m.Title, &m.Servings, &m.Note, &m.CookedAt, &m.CookedBy, &m.CreatedAt); err != nil {
+		if err := rows.Scan(&m.ID, &m.Date, &m.Slot, &m.Position, &m.RecipeID, &m.Title, &m.Servings, &m.Note, &m.CookedAt, &m.CookedBy, &m.CreatedAt, &m.Portions, &m.Leftover); err != nil {
 			rows.Close()
 			return nil, err
 		}
@@ -68,7 +74,21 @@ func (s *Server) loadSuggestCtx(ctx context.Context, h *Household) (*suggestCtx,
 	}
 	prow.Close()
 
-	c := &suggestCtx{recipes: recipes, history: history, pantry: pantry, today: today,
+	hh, err := s.loadHouseholdHealth(ctx, h.ID)
+	if err != nil {
+		return nil, err
+	}
+	targets := map[string]*nutrition.Targets{}
+	for _, m := range hh.members {
+		if p := hh.profiles[m.ID]; p != nil && m.Role != "viewer" {
+			_, t := p.targets(time.Now())
+			targets[m.ID] = &t
+		}
+	}
+	for i := range history {
+		history[i].Eaters = nil // resolved lazily by eatersOf
+	}
+	c := &suggestCtx{hh: hh, targets: targets, weekDow: h.SprintStartDow, recipes: recipes, history: history, pantry: pantry, today: today,
 		lastDate: map[string]time.Time{}, count: map[string]int{}, weekday: map[string]map[time.Weekday]int{}, pairs: map[[2]string]int{}}
 	slotGroups := map[string][]string{}
 	for _, m := range history {
@@ -145,6 +165,10 @@ func (c *suggestCtx) suggest(date time.Time, slot string, planned []MealItem, li
 		}
 	}
 
+	week := weekStart(date, c.weekDow)
+	days := date.Sub(week).Hours()/24 + 1
+	intake := c.intake(planned, week, date)
+
 	var out []Suggestion
 	for _, r := range c.recipes {
 		if slices.Contains(inSlot, r.ID) {
@@ -163,6 +187,28 @@ func (c *suggestCtx) suggest(date time.Time, slot string, planned []MealItem, li
 			reasons = append(reasons, "Favourite")
 		}
 		score += float64(r.Rating) * 0.3
+
+		if len(r.Months) > 0 && !slices.Contains(r.Months, int(date.Month())) {
+			score -= 6
+			reasons = append(reasons, "Out of season")
+		}
+		if gap := r.minGapDays(); gap > 0 {
+			if c.within(r.ID, date, gap, planned) {
+				score -= 8
+			} else if _, seen := c.lastDate[r.ID]; seen {
+				score += 1
+				reasons = append(reasons, "Due again")
+			}
+		}
+		if eaters := c.hh.defaultEaters(r.Nutrition.Contains); len(eaters) == 0 && len(c.hh.members) > 0 {
+			score -= 6 // nobody here eats it
+		}
+		if bonus, why := c.nutritionBonus(&r, c.hh.defaultEaters(r.Nutrition.Contains), intake, days); bonus != 0 {
+			score += bonus
+			if why != "" {
+				reasons = append(reasons, why)
+			}
+		}
 
 		if last, seen := c.lastDate[r.ID]; seen {
 			days := int(date.Sub(last).Hours() / 24)
@@ -339,75 +385,132 @@ func plannedBetween(items []MealItem, from, to time.Time) []MealItem {
 	return out
 }
 
-// autofillMeals plans the top suggestion into every empty slot in the range.
-func (s *Server) autofillMeals(w http.ResponseWriter, r *http.Request) error {
-	u := currentUser(r)
-	ctx := r.Context()
-	var in struct {
-		From  string   `json:"from"`
-		To    string   `json:"to"`
-		Slots []string `json:"slots"`
-	}
-	if err := decode(r, &in); err != nil {
-		return err
-	}
-	from, err := parseDate(in.From)
-	if err != nil {
-		return err
-	}
-	to, err := parseDate(in.To)
-	if err != nil {
-		return err
-	}
-	if to.Before(from) || to.Sub(from) > 14*24*time.Hour {
-		return errBadRequest("Pick at most two weeks")
-	}
-	if len(in.Slots) == 0 {
-		in.Slots = mealSlots
-	}
-	h, err := s.getHousehold(ctx, u.HouseholdID)
-	if err != nil {
-		return err
-	}
-	c, err := s.loadSuggestCtx(ctx, h)
-	if err != nil {
-		return err
-	}
-	planned := plannedBetween(c.history, weekStart(from, h.SprintStartDow), to.AddDate(0, 0, 6))
-	filled := map[string]bool{}
-	for _, m := range planned {
-		filled[m.Date+"/"+m.Slot] = true
-	}
-	created := 0
-	for d := from; !d.After(to); d = d.AddDate(0, 0, 1) {
-		if d.Before(c.today) {
-			continue
+// ---- nutrition-aware scoring ----
+
+// minGapDays reads an "every:N" tag: cook at most once every N days (prawns weekly,
+// khichdi fortnightly).
+func (r *Recipe) minGapDays() int {
+	for _, t := range r.Tags {
+		if v, ok := strings.CutPrefix(t, "every:"); ok {
+			var n int
+			fmt.Sscanf(v, "%d", &n)
+			return n
 		}
-		for _, slot := range mealSlots {
-			key := d.Format(time.DateOnly) + "/" + slot
-			if !slices.Contains(in.Slots, slot) || filled[key] {
+	}
+	return 0
+}
+
+func (r Recipe) hasTag(t string) bool { return slices.Contains(r.Tags, t) }
+
+// within reports whether the recipe is planned or was eaten less than `days` days from date.
+func (c *suggestCtx) within(recipeID string, date time.Time, days int, planned []MealItem) bool {
+	check := func(items []MealItem) bool {
+		for _, m := range items {
+			if m.RecipeID == nil || *m.RecipeID != recipeID || m.Leftover {
 				continue
 			}
-			picks := c.plate(d, slot, planned)
-			for _, best := range picks {
-				var servings int
-				for _, rc := range c.recipes {
-					if rc.ID == best.RecipeID {
-						servings = rc.Servings
-					}
-				}
-				m := MealItem{ID: randomUUID(), Date: d.Format(time.DateOnly), Slot: slot, RecipeID: &best.RecipeID, Title: best.Title, Servings: max(servings, 1), Position: float64(len(planned))}
-				if _, err := s.db.Exec(ctx, `INSERT INTO meal_plan_items (id, household_id, date, slot, position, recipe_id, title, servings)
-					VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`, m.ID, u.HouseholdID, m.Date, slot, m.Position, best.RecipeID, best.Title, m.Servings); err != nil {
-					return err
-				}
-				planned = append(planned, m)
-				created++
+			d, _ := time.Parse(time.DateOnly, m.Date)
+			if diff := math.Abs(d.Sub(date).Hours() / 24); diff < float64(days) && !d.Equal(date) {
+				return true
+			}
+		}
+		return false
+	}
+	return check(c.history) || check(planned)
+}
+
+func (c *suggestCtx) recipe(id string) *Recipe {
+	if c.byID == nil {
+		c.byID = map[string]*Recipe{}
+		for i := range c.recipes {
+			c.byID[c.recipes[i].ID] = &c.recipes[i]
+		}
+	}
+	return c.byID[id]
+}
+
+func (c *suggestCtx) eatersOf(m MealItem) map[string]float64 {
+	if m.Portions != nil {
+		return m.Portions
+	}
+	if m.RecipeID != nil {
+		if r := c.recipe(*m.RecipeID); r != nil {
+			return c.hh.defaultEaters(r.Nutrition.Contains)
+		}
+	}
+	return c.hh.defaultEaters(nil)
+}
+
+// intake sums what each person eats on the given days of the plan.
+func (c *suggestCtx) intake(planned []MealItem, from, to time.Time) map[string]*nutrition.Nutrients {
+	out := map[string]*nutrition.Nutrients{}
+	for id := range c.targets {
+		out[id] = &nutrition.Nutrients{}
+	}
+	for _, m := range plannedBetween(planned, from, to) {
+		if m.RecipeID == nil {
+			continue
+		}
+		r := c.recipe(*m.RecipeID)
+		if r == nil {
+			continue
+		}
+		for id, portion := range c.eatersOf(m) {
+			if n := out[id]; n != nil {
+				n.Add(r.Nutrition.PerServing, portion)
 			}
 		}
 	}
-	if created > 0 {
-		s.hub.Publish(u.HouseholdID, eventMeals.from(r))
+	return out
+}
+
+// Weights for nutrients worth chasing; protein, fibre and iron are the usual shortfalls
+// in Indian home diets (ICMR-NIN 2024 dietary guidelines).
+var nutrientWeights = map[string]float64{"protein": 2, "fibre": 1.5, "iron": 1.5, "calcium": 1.2, "b12": 1, "folate": 0.8, "vitC": 0.6, "vitA": 0.6, "zinc": 0.6, "magnesium": 0.5, "potassium": 0.5}
+
+var nutrientLabels = map[string]string{"protein": "protein", "fibre": "fibre", "iron": "iron", "calcium": "calcium", "b12": "vitamin B12", "folate": "folate", "vitC": "vitamin C", "vitA": "vitamin A", "zinc": "zinc", "magnesium": "magnesium", "potassium": "potassium"}
+
+// nutritionBonus scores how much a dish closes the eaters' nutrient gaps for the week so
+// far, and penalises calorie-dense dishes for anyone losing weight.
+func (c *suggestCtx) nutritionBonus(r *Recipe, eaters map[string]float64, intake map[string]*nutrition.Nutrients, days float64) (float64, string) {
+	if len(c.targets) == 0 || r.Nutrition.Coverage < 0.5 || r.Nutrition.PerServing.Kcal <= 0 {
+		return 0, ""
 	}
-	return ok(w, map[string]int{"created": created})
+	ps := r.Nutrition.PerServing
+	bonus, best, bestKey := 0.0, 0.0, ""
+	for id, portion := range eaters {
+		t := c.targets[id]
+		if t == nil || portion <= 0 {
+			continue
+		}
+		had := intake[id]
+		for k, w := range nutrientWeights {
+			target := t.Get(k)
+			if target <= 0 {
+				continue
+			}
+			deficit := math.Min(math.Max(0, target*days-had.Get(k))/target, 1.5)
+			share := ps.Get(k) * portion / target
+			gain := w * math.Min(share, deficit)
+			bonus += gain
+			if gain > best && share >= 0.2 {
+				best, bestKey = gain, k
+			}
+		}
+		if p := c.hh.profiles[id]; p != nil && p.Goal == "lose" && t.Kcal > 0 {
+			// One dish shouldn't take more than ~30% of a reduced-calorie day.
+			bonus -= math.Max(0, ps.Kcal*portion-0.3*t.Kcal) / t.Kcal * 6
+			if ps.Kcal > 0 && ps.Fat*9/ps.Kcal > 0.5 {
+				bonus -= 0.5
+			}
+		}
+		if t.Sodium > 0 && had.Sodium > t.Sodium*days {
+			bonus -= ps.Sodium * portion / t.Sodium
+		}
+	}
+	why := ""
+	if bestKey != "" {
+		why = "Good source of " + nutrientLabels[bestKey]
+	}
+	return bonus * 2, why
 }

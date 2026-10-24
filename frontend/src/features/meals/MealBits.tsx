@@ -35,6 +35,7 @@ const tabs = [
   { to: '/recipes', label: 'Recipes' },
   { to: '/grocery', label: 'Grocery' },
   { to: '/pantry', label: 'Pantry' },
+  { to: '/nutrition', label: 'Nutrition' },
 ]
 
 /** Sub-navigation shared by the four kitchen pages. */

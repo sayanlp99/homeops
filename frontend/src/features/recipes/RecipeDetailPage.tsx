@@ -11,6 +11,7 @@ import { formatDate, relativeDay } from '@/lib/format'
 import { SLOTS, categoryLabel, formatQty, useAction, useGroceryActions, useMealActions, usePantry, useRecipe } from '@/lib/meals'
 import type { Recipe, Slot } from '@/lib/types'
 import { DietMark, RecipeImage, minutesLabel } from '../meals/MealBits'
+import { RecipeNutritionCard, seasonLabel } from '../nutrition/NutritionBits'
 
 export function RecipeDetailPage() {
   const { id } = useParams()
@@ -113,6 +114,7 @@ export function RecipeDetailPage() {
               </div>
             )}
             <div className="mt-4 flex flex-wrap gap-1.5">
+              {seasonLabel(recipe.months) && <Badge tone="success">In season {seasonLabel(recipe.months)}</Badge>}
               {recipe.tags.map((t) => (
                 <Badge key={t}>{t}</Badge>
               ))}
@@ -133,39 +135,42 @@ export function RecipeDetailPage() {
       </Card>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        <Card className="h-fit">
-          <div className="flex items-center justify-between border-b border-border px-4 py-3">
-            <h2 className="text-[13px] font-semibold">Ingredients</h2>
-            {missing.length > 0 && (
-              <Button
-                size="sm"
-                icon={<ShoppingCart className="size-3.5" />}
-                onClick={() => {
-                  missing.forEach((i) => grocery.add(`${i.quantity != null ? formatQty(i.quantity * scale, i.unit) + ' ' : ''}${i.name}`))
-                  toast.success(`${missing.length} missing ${missing.length === 1 ? 'item' : 'items'} added to the grocery list`)
-                }}
-              >
-                Add {missing.length} missing
-              </Button>
-            )}
-          </div>
-          <ul className="divide-y divide-border">
-            {recipe.ingredients.map((i, idx) => {
-              const have = !!i.ingredientId && inStock.has(i.ingredientId)
-              return (
-                <li key={idx} className="flex items-baseline gap-3 px-4 py-2 text-[13px]">
-                  <span className="w-20 shrink-0 text-right font-medium tabular">{i.quantity != null ? formatQty(i.quantity * scale, i.unit) : i.unit}</span>
-                  <span className="min-w-0 flex-1">
-                    {i.name}
-                    {i.note && <span className="text-subtle">, {i.note}</span>}
-                  </span>
-                  {have && <Check className="size-3.5 shrink-0 text-success" aria-label="In pantry" />}
-                </li>
-              )
-            })}
-            {recipe.ingredients.length === 0 && <li className="px-4 py-5 text-[13px] text-subtle">No ingredients listed.</li>}
-          </ul>
-        </Card>
+        <div className="space-y-4">
+          <Card className="h-fit">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3">
+              <h2 className="text-[13px] font-semibold">Ingredients</h2>
+              {missing.length > 0 && (
+                <Button
+                  size="sm"
+                  icon={<ShoppingCart className="size-3.5" />}
+                  onClick={() => {
+                    missing.forEach((i) => grocery.add(`${i.quantity != null ? formatQty(i.quantity * scale, i.unit) + ' ' : ''}${i.name}`))
+                    toast.success(`${missing.length} missing ${missing.length === 1 ? 'item' : 'items'} added to the grocery list`)
+                  }}
+                >
+                  Add {missing.length} missing
+                </Button>
+              )}
+            </div>
+            <ul className="divide-y divide-border">
+              {recipe.ingredients.map((i, idx) => {
+                const have = !!i.ingredientId && inStock.has(i.ingredientId)
+                return (
+                  <li key={idx} className="flex items-baseline gap-3 px-4 py-2 text-[13px]">
+                    <span className="w-20 shrink-0 text-right font-medium tabular">{i.quantity != null ? formatQty(i.quantity * scale, i.unit) : i.unit}</span>
+                    <span className="min-w-0 flex-1">
+                      {i.name}
+                      {i.note && <span className="text-subtle">, {i.note}</span>}
+                    </span>
+                    {have && <Check className="size-3.5 shrink-0 text-success" aria-label="In pantry" />}
+                  </li>
+                )
+              })}
+              {recipe.ingredients.length === 0 && <li className="px-4 py-5 text-[13px] text-subtle">No ingredients listed.</li>}
+            </ul>
+          </Card>
+          <RecipeNutritionCard recipe={recipe} />
+        </div>
         <Card className="h-fit">
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-[13px] font-semibold">Method</h2>

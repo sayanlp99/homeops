@@ -24,9 +24,14 @@ type MealItem struct {
 	CookedAt  *time.Time `json:"cookedAt" db:"cooked_at"`
 	CookedBy  *string    `json:"cookedBy" db:"cooked_by"`
 	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+	// Portions is who eats how many servings, as set by hand; nil = the default.
+	Portions map[string]float64 `json:"portions" db:"portions"`
+	Leftover bool               `json:"leftover" db:"leftover"`
+	// Eaters is Portions, or the default: one serving for each member who eats this food.
+	Eaters map[string]float64 `json:"eaters" db:"-"`
 }
 
-const mealColumns = `id, date::text AS date, slot, position, recipe_id, title, servings, note, cooked_at, cooked_by, created_at`
+const mealColumns = `id, date::text AS date, slot, position, recipe_id, title, servings, note, cooked_at, cooked_by, created_at, portions, leftover`
 
 func parseDate(s string) (time.Time, error) {
 	d, err := time.Parse(time.DateOnly, s)
@@ -51,8 +56,11 @@ func (s *Server) listMeals(w http.ResponseWriter, r *http.Request) error {
 	rows, _ := s.db.Query(r.Context(), `SELECT `+mealColumns+` FROM meal_plan_items
 		WHERE household_id = $1 AND date BETWEEN $2 AND $3
 		ORDER BY date, array_position(ARRAY['breakfast','lunch','snacks','dinner'], slot), position, created_at`, currentUser(r).HouseholdID, from, to)
-	items, err := pgx.CollectRows(rows, pgx.RowToStructByName[MealItem])
+	items, err := pgx.CollectRows(rows, pgx.RowToStructByNameLax[MealItem])
 	if err != nil {
+		return err
+	}
+	if err := s.resolveEaters(r.Context(), currentUser(r).HouseholdID, items); err != nil {
 		return err
 	}
 	return ok(w, items)
@@ -64,23 +72,37 @@ func (s *Server) getMeal(ctx context.Context, q querier, householdID, id string,
 		sql += ` FOR UPDATE`
 	}
 	rows, _ := q.Query(ctx, sql, id, householdID)
-	return pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[MealItem])
+	m, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByNameLax[MealItem])
+	if err != nil {
+		return nil, err
+	}
+	items := []MealItem{*m}
+	if err := s.resolveEaters(ctx, householdID, items); err != nil {
+		return nil, err
+	}
+	return &items[0], nil
 }
 
 func (s *Server) createMeal(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	ctx := r.Context()
 	var in struct {
-		ID       string   `json:"id"`
-		Date     string   `json:"date"`
-		Slot     string   `json:"slot"`
-		RecipeID *string  `json:"recipeId"`
-		Title    string   `json:"title"`
-		Servings int      `json:"servings"`
-		Note     string   `json:"note"`
-		Position *float64 `json:"position"`
+		ID       string             `json:"id"`
+		Date     string             `json:"date"`
+		Slot     string             `json:"slot"`
+		RecipeID *string            `json:"recipeId"`
+		Title    string             `json:"title"`
+		Servings int                `json:"servings"`
+		Note     string             `json:"note"`
+		Position *float64           `json:"position"`
+		Portions map[string]float64 `json:"portions"`
+		Leftover bool               `json:"leftover"`
 	}
 	if err := decode(r, &in); err != nil {
+		return err
+	}
+	portions, err := s.cleanPortions(ctx, u.HouseholdID, in.Portions)
+	if err != nil {
 		return err
 	}
 	if in.ID != "" {
@@ -122,9 +144,9 @@ func (s *Server) createMeal(w http.ResponseWriter, r *http.Request) error {
 		WHERE household_id = $1 AND date = $2 AND slot = $3`, u.HouseholdID, in.Date, in.Slot).Scan(&pos); err != nil {
 		return err
 	}
-	if _, err := s.db.Exec(ctx, `INSERT INTO meal_plan_items (id, household_id, date, slot, position, recipe_id, title, servings, note)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
-		in.ID, u.HouseholdID, in.Date, in.Slot, pos, in.RecipeID, in.Title, in.Servings, truncate(in.Note, 300)); err != nil {
+	if _, err := s.db.Exec(ctx, `INSERT INTO meal_plan_items (id, household_id, date, slot, position, recipe_id, title, servings, note, portions, leftover)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+		in.ID, u.HouseholdID, in.Date, in.Slot, pos, in.RecipeID, in.Title, in.Servings, truncate(in.Note, 300), portions, in.Leftover); err != nil {
 		return err
 	}
 	item, err := s.getMeal(ctx, s.db, u.HouseholdID, in.ID, false)
@@ -139,15 +161,29 @@ func (s *Server) updateMeal(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	ctx := r.Context()
 	var in struct {
-		Date     *string  `json:"date"`
-		Slot     *string  `json:"slot"`
-		Servings *int     `json:"servings"`
-		Note     *string  `json:"note"`
-		Position *float64 `json:"position"`
-		Cooked   *bool    `json:"cooked"`
+		Date     *string         `json:"date"`
+		Slot     *string         `json:"slot"`
+		Servings *int            `json:"servings"`
+		Note     *string         `json:"note"`
+		Position *float64        `json:"position"`
+		Cooked   *bool           `json:"cooked"`
+		Leftover *bool           `json:"leftover"`
+		Portions json.RawMessage `json:"portions"` // null resets to the default
 	}
 	if err := decode(r, &in); err != nil {
 		return err
+	}
+	setPortions := len(in.Portions) > 0
+	var portions map[string]float64
+	if setPortions {
+		var raw map[string]float64
+		if err := json.Unmarshal(in.Portions, &raw); err != nil {
+			return errBadRequest("Portions must map members to servings")
+		}
+		var err error
+		if portions, err = s.cleanPortions(ctx, u.HouseholdID, raw); err != nil {
+			return err
+		}
 	}
 	tx, err := s.db.Begin(ctx)
 	if err != nil {
@@ -182,8 +218,14 @@ func (s *Server) updateMeal(w http.ResponseWriter, r *http.Request) error {
 	if in.Position != nil {
 		m.Position = *in.Position
 	}
-	if _, err := tx.Exec(ctx, `UPDATE meal_plan_items SET date = $2, slot = $3, servings = $4, note = $5, position = $6 WHERE id = $1`,
-		m.ID, m.Date, m.Slot, m.Servings, m.Note, m.Position); err != nil {
+	if setPortions {
+		m.Portions = portions
+	}
+	if in.Leftover != nil {
+		m.Leftover = *in.Leftover
+	}
+	if _, err := tx.Exec(ctx, `UPDATE meal_plan_items SET date = $2, slot = $3, servings = $4, note = $5, position = $6, portions = $7, leftover = $8 WHERE id = $1`,
+		m.ID, m.Date, m.Slot, m.Servings, m.Note, m.Position, m.Portions, m.Leftover); err != nil {
 		return err
 	}
 	pantryChanged := false
@@ -222,7 +264,7 @@ type deduction struct {
 // the units are compatible, remembering exactly what was taken so it can be undone.
 func (s *Server) markCooked(ctx context.Context, tx pgx.Tx, u *User, m *MealItem) error {
 	deds := []deduction{}
-	if m.RecipeID != nil {
+	if m.RecipeID != nil && !m.Leftover { // a leftover was taken from the pantry when first cooked
 		rows, err := tx.Query(ctx, `SELECT p.id, p.quantity, p.unit, ri.quantity, ri.unit, r.servings
 			FROM recipe_ingredients ri
 			JOIN recipes r ON r.id = ri.recipe_id

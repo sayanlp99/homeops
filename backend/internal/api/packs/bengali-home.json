@@ -1,0 +1,6545 @@
+{
+ "name": "bengali-home",
+ "title": "Bengali home kitchen",
+ "description": "Sangita's everyday Bengali home menu: breakfasts, dals, torkari, bhaja, fish/chicken/egg/paneer curries, dinners, weekend specials and seasonal fruit.",
+ "recipes": [
+  {
+   "title": "Idli with peanut-coconut chutney",
+   "description": "Ready-made batter, 3–4 idlis each, with peanut + coconut chutney.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Grease the idli plates lightly and fill each mould three-quarters with batter.",
+    "Steam for 10–12 minutes until a toothpick comes out clean; rest 2 minutes before unmoulding.",
+    "Chutney: grind roasted peanuts, coconut, green chilli, ginger and salt with a little water until smooth.",
+    "Temper with mustard seeds and curry leaves in 1 tsp oil and pour over the chutney."
+   ],
+   "ingredients": [
+    {
+     "name": "Idli batter",
+     "quantity": 300,
+     "unit": "g",
+     "note": "ready-made"
+    },
+    {
+     "name": "Peanuts",
+     "quantity": 30,
+     "unit": "g",
+     "note": "dry roasted"
+    },
+    {
+     "name": "Grated coconut",
+     "quantity": 40,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": "for tempering"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Curry leaves",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Dosa with peanut-coconut chutney",
+   "description": "Ready-made batter, 2–3 thin dosas each, with peanut + coconut chutney.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Heat a tawa, wipe with a few drops of oil, and spread a ladle of batter thinly in circles.",
+    "Drizzle a little oil at the edges and cook until golden and crisp; fold and serve.",
+    "Chutney: grind roasted peanuts, coconut, green chilli, ginger and salt with a little water until smooth.",
+    "Temper with mustard seeds and curry leaves in 1 tsp oil and pour over the chutney."
+   ],
+   "ingredients": [
+    {
+     "name": "Dosa batter",
+     "quantity": 300,
+     "unit": "g",
+     "note": "ready-made"
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": "for the tawa"
+    },
+    {
+     "name": "Peanuts",
+     "quantity": 30,
+     "unit": "g",
+     "note": "dry roasted"
+    },
+    {
+     "name": "Grated coconut",
+     "quantity": 40,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": "for tempering"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Curry leaves",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Moong dal chilla with coriander chutney",
+   "description": "High-protein lentil pancakes, 3 each.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "protein-rich"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "Soak moong dal",
+   "prepLeadHours": 4,
+   "months": [],
+   "steps": [
+    "Drain the soaked dal and grind with ginger, green chillies and a little water to a thick, pourable batter.",
+    "Stir in onion, cumin and salt.",
+    "Spread a ladle thinly on a hot greased tawa; cook both sides with a little oil until golden.",
+    "Chutney: blend coriander, mint, green chilli, lemon juice and salt with 2–3 tbsp water."
+   ],
+   "ingredients": [
+    {
+     "name": "Moong dal",
+     "quantity": 120,
+     "unit": "g",
+     "note": "soaked 3–4 hours"
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": "finely chopped"
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "bunch",
+     "note": "for chutney"
+    },
+    {
+     "name": "Mint",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "for chutney"
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": "for chutney"
+    }
+   ]
+  },
+  {
+   "title": "Boiled eggs with peri peri",
+   "description": "2 eggs each.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick",
+    "protein-rich"
+   ],
+   "servings": 2,
+   "prepMinutes": 2,
+   "cookMinutes": 10,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Lower the eggs into boiling water and cook 10 minutes (8 for jammy).",
+    "Cool in cold water, peel, halve and sprinkle with peri peri and pepper."
+   ],
+   "ingredients": [
+    {
+     "name": "Eggs",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Peri peri seasoning",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Protein bread toast",
+   "description": "2 slices each.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 1,
+   "cookMinutes": 4,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Toast the slices and spread thinly with butter."
+   ],
+   "ingredients": [
+    {
+     "name": "Protein bread",
+     "quantity": 4,
+     "unit": "slice",
+     "note": ""
+    },
+    {
+     "name": "Butter",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Cheese protein bread toast",
+   "description": "2 slices each.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 2,
+   "cookMinutes": 5,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Butter the bread lightly, top with cheese and a pinch of pepper.",
+    "Toast on a covered pan or in the oven until the cheese melts."
+   ],
+   "ingredients": [
+    {
+     "name": "Protein bread",
+     "quantity": 4,
+     "unit": "slice",
+     "note": ""
+    },
+    {
+     "name": "Cheese slice",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Butter",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Poha with carrot, beans & peanuts",
+   "description": "Vegetable poha with roasted peanuts.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rinse the poha in a colander until soft but not mushy; leave to drain.",
+    "Roast the peanuts in the oil until crunchy; take them out.",
+    "Crackle mustard seeds and curry leaves, add onion and green chilli and soften.",
+    "Add carrot and beans with a splash of water; cover and cook 4–5 minutes until just tender.",
+    "Add turmeric, salt, sugar and the poha; toss gently 2 minutes. Finish with peanuts, lemon and coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Poha",
+     "quantity": 120,
+     "unit": "g",
+     "note": "thick"
+    },
+    {
+     "name": "Carrot",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "small dice"
+    },
+    {
+     "name": "French beans",
+     "quantity": 50,
+     "unit": "g",
+     "note": "chopped"
+    },
+    {
+     "name": "Peanuts",
+     "quantity": 25,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Curry leaves",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo paratha with pickle & curd",
+   "description": "2 parathas each, with pickle and curd.",
+   "category": "breakfast",
+   "mealTypes": [
+    "breakfast",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dinner-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 25,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Knead atta with water and a pinch of salt to a soft dough; rest 15 minutes.",
+    "Mash potatoes with green chilli, coriander, cumin, chilli powder and salt.",
+    "Stuff each dough ball with filling, seal and roll out gently.",
+    "Roast on a hot tawa, 1 tsp ghee per paratha, until golden spots on both sides.",
+    "Serve with pickle and curd."
+   ],
+   "ingredients": [
+    {
+     "name": "Atta",
+     "quantity": 160,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "boiled"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    },
+    {
+     "name": "Roasted cumin powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 4,
+     "unit": "tsp",
+     "note": "for roasting"
+    },
+    {
+     "name": "Pickle",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 200,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Banana",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Banana",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Papaya",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Papaya",
+     "quantity": 300,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Apple",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Apple",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Guava",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    8,
+    9,
+    10,
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Guava",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Orange (kamla lebu)",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    11,
+    12,
+    1,
+    2
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Orange",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Sweet lime (mosambi)",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    9,
+    10,
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Sweet lime",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Pomegranate",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    9,
+    10,
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Pomegranate",
+     "quantity": 200,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Watermelon",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    3,
+    4,
+    5,
+    6
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Watermelon",
+     "quantity": 500,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Mango",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    4,
+    5,
+    6,
+    7
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Mango",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Litchi",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    5,
+    6
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Litchi",
+     "quantity": 20,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Jamun",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    6,
+    7
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Jamun",
+     "quantity": 30,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Pineapple",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    5,
+    6,
+    7,
+    8,
+    9
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Pineapple",
+     "quantity": 300,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Pear (nashpati)",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    7,
+    8,
+    9,
+    10
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Pear",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Sapota (chikoo)",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    11,
+    12,
+    1,
+    2,
+    3
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Sapota",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Custard apple (ata)",
+   "description": "One seasonal fruit per person per day.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fruit"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    8,
+    9,
+    10,
+    11
+   ],
+   "steps": [
+    "Wash, cut and share: one portion each."
+   ],
+   "ingredients": [
+    {
+     "name": "Custard apple",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Doi (bowl of curd)",
+   "description": "Calcium and probiotics. Alternates with milk and ghol.",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dairy"
+   ],
+   "servings": 2,
+   "prepMinutes": 1,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "A bowl of plain curd with lunch, one each."
+   ],
+   "ingredients": [
+    {
+     "name": "Curd",
+     "quantity": 300,
+     "unit": "g",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Glass of milk",
+   "description": "Calcium and B12. Alternates with curd and ghol.",
+   "category": "drink",
+   "mealTypes": [
+    "breakfast"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dairy"
+   ],
+   "servings": 2,
+   "prepMinutes": 1,
+   "cookMinutes": 3,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Warm a glass each; no sugar, or just a little."
+   ],
+   "ingredients": [
+    {
+     "name": "Milk",
+     "quantity": 500,
+     "unit": "ml",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Ghol (buttermilk)",
+   "description": "Cooling after lunch. Alternates with curd and milk.",
+   "category": "drink",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dairy"
+   ],
+   "servings": 2,
+   "prepMinutes": 3,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Whisk curd with cold water, roasted cumin and a pinch of salt; add torn mint."
+   ],
+   "ingredients": [
+    {
+     "name": "Curd",
+     "quantity": 300,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 300,
+     "unit": "ml",
+     "note": ""
+    },
+    {
+     "name": "Roasted cumin powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mint",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Steamed rice",
+   "description": "One serving is about 1½ katori cooked (75 g raw). The planner sizes each person's portion to their calorie target.",
+   "category": "rice",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "staple"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wash the rice 2–3 times.",
+    "Boil in plenty of water until just tender (12–15 min) and drain, or cook absorption-style with 2 cups water."
+   ],
+   "ingredients": [
+    {
+     "name": "Rice",
+     "quantity": 150,
+     "unit": "g",
+     "note": "gobindobhog / sona masoori / aatop"
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chapati",
+   "description": "One serving is 3 chapatis (60 g atta).",
+   "category": "bread",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "staple"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Knead atta with water and salt to a soft dough; rest 15 minutes.",
+    "Roll thin rounds and cook on a hot tawa, then puff directly over the flame. No ghee needed."
+   ],
+   "ingredients": [
+    {
+     "name": "Atta",
+     "quantity": 120,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 80,
+     "unit": "ml",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.125,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Moong dal (Bengali style)",
+   "description": "Roasted moong dal with a cumin-bay leaf tempering.",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Dry-roast the moong dal until fragrant and light golden; wash.",
+    "Pressure cook with water, turmeric and ginger for 2 whistles; whisk lightly.",
+    "Heat oil and ghee, add cumin, bay leaf, dry red chilli and green chillies.",
+    "Pour in the dal, add salt and sugar and simmer 5 minutes."
+   ],
+   "ingredients": [
+    {
+     "name": "Moong dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "dry-roasted till aromatic"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": "grated"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "slit"
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Masoor dal with kalo jeere",
+   "description": "Everyday thin masoor dal; good for iron and folate.",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wash the dal and boil with water and turmeric until soft (or 2 whistles).",
+    "Heat mustard oil, splutter kalonji and green chillies, add tomato and cook soft.",
+    "Add the dal and salt, simmer 5 minutes, finish with coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Masoor dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Green moong dal tadka",
+   "description": "Whole green moong: high fibre and protein.",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner",
+    "protein-rich"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 30,
+   "prepNote": "Soak green moong",
+   "prepLeadHours": 4,
+   "months": [],
+   "steps": [
+    "Pressure cook soaked green moong with turmeric and water, 3–4 whistles.",
+    "Heat oil and ghee, crackle cumin, add garlic, ginger and onion and brown.",
+    "Add tomato and chilli powder; cook to a soft masala.",
+    "Add the dal and salt, simmer 5 minutes; top with coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Green moong",
+     "quantity": 100,
+     "unit": "g",
+     "note": "soaked 4 hours"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garlic",
+     "quantity": 3,
+     "unit": "clove",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Toor dal tadka",
+   "description": "",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Pressure cook toor dal with turmeric and water, 3 whistles; mash.",
+    "Temper cumin, dry chilli, hing and garlic in oil and ghee; add onion and tomato and cook down.",
+    "Add dal and salt, simmer 5 minutes; finish with coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Toor dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garlic",
+     "quantity": 3,
+     "unit": "clove",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Hing",
+     "quantity": 0.125,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Palong shaak diye masoor dal",
+   "description": "Dal and greens in one pot for busy days. Iron + folate.",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "one-pot",
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Boil masoor dal with turmeric until soft.",
+    "Add the spinach and cook 3–4 minutes.",
+    "Temper garlic, kalonji and green chilli in mustard oil; pour over and add salt."
+   ],
+   "ingredients": [
+    {
+     "name": "Masoor dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Spinach",
+     "quantity": 150,
+     "unit": "g",
+     "note": "chopped"
+    },
+    {
+     "name": "Garlic",
+     "quantity": 3,
+     "unit": "clove",
+     "note": "sliced"
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Jhinge diye moong dal",
+   "description": "",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "one-pot",
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Cook roasted moong dal with turmeric and ginger until soft.",
+    "Add the jhinge and simmer until tender.",
+    "Temper cumin, bay leaf and dry chilli in oil and ghee; pour in, salt and serve."
+   ],
+   "ingredients": [
+    {
+     "name": "Moong dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "dry-roasted"
+    },
+    {
+     "name": "Ridge gourd",
+     "quantity": 200,
+     "unit": "g",
+     "note": "peeled, cubed"
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Lau diye moong dal",
+   "description": "",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "one-pot",
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Cook roasted moong dal with turmeric, ginger and lau until both are soft.",
+    "Temper cumin, bay leaf and dry chilli in oil and ghee; pour in, add salt and sugar."
+   ],
+   "ingredients": [
+    {
+     "name": "Moong dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "dry-roasted"
+    },
+    {
+     "name": "Bottle gourd",
+     "quantity": 250,
+     "unit": "g",
+     "note": "peeled, cubed"
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 2.5,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Bengali veg dal (carrot, beans, peas)",
+   "description": "",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "one-pot",
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Cook roasted moong dal with turmeric and ginger.",
+    "Add carrot, beans and peas and simmer until tender.",
+    "Temper cumin, bay leaf and dry chilli in oil and ghee; pour in, season."
+   ],
+   "ingredients": [
+    {
+     "name": "Moong dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "dry-roasted"
+    },
+    {
+     "name": "Carrot",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "diced"
+    },
+    {
+     "name": "French beans",
+     "quantity": 60,
+     "unit": "g",
+     "note": "chopped"
+    },
+    {
+     "name": "Green peas",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chholar dal",
+   "description": "Classic with luchi or chapati.",
+   "category": "dal",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 30,
+   "prepNote": "Soak chana dal",
+   "prepLeadHours": 2,
+   "months": [],
+   "steps": [
+    "Pressure cook the soaked chana dal with turmeric, 3 whistles (it should hold shape).",
+    "Fry coconut pieces golden in the oil; add cumin, bay leaf, dry chilli and ginger.",
+    "Add dal, raisins, salt and sugar; simmer 5 minutes. Finish with ghee and garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Chana dal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "soaked 2 hours"
+    },
+    {
+     "name": "Grated coconut",
+     "quantity": 20,
+     "unit": "g",
+     "note": "small pieces"
+    },
+    {
+     "name": "Raisins",
+     "quantity": 10,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 0.5,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Dry red chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 3,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Dherosh bhaja (okra fry)",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wipe the okra dry before cutting.",
+    "Toss with turmeric, chilli and salt; fry in oil on medium heat, uncovered, 12–15 minutes until crisp-edged."
+   ],
+   "ingredients": [
+    {
+     "name": "Okra",
+     "quantity": 250,
+     "unit": "g",
+     "note": "sliced into rounds"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo dherosh shorshe posto",
+   "description": "Potato and ladies finger in mustard-poppy paste.",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Grind mustard and poppy seeds with a green chilli and a little water to a smooth paste.",
+    "Lightly fry potato wedges and okra in mustard oil; set aside.",
+    "Splutter kalonji, add the paste, turmeric, salt and 1/2 cup water.",
+    "Return the vegetables, cover and cook until the potato is done; finish with slit chillies and a drizzle of mustard oil."
+   ],
+   "ingredients": [
+    {
+     "name": "Okra",
+     "quantity": 200,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "wedges"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": "ground to paste"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": "ground to paste"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Jhinge aloo posto",
+   "description": "",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Grind poppy seeds with 2 green chillies and a little water.",
+    "Splutter kalonji in mustard oil, add potato and cook 5 minutes.",
+    "Add jhinge, salt and turmeric; cover — it releases water.",
+    "When tender, stir in the posto paste and cook until it coats the vegetables."
+   ],
+   "ingredients": [
+    {
+     "name": "Ridge gourd",
+     "quantity": 300,
+     "unit": "g",
+     "note": "peeled, cubed"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "ground to paste"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo phulkopi koraishutir torkari",
+   "description": "Winter torkari with fresh peas.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    11,
+    12,
+    1,
+    2
+   ],
+   "steps": [
+    "Lightly fry potato and cauliflower with a pinch of turmeric; set aside.",
+    "Temper cumin seeds and bay leaf, add ginger paste, tomato and the powdered spices; cook until oil separates.",
+    "Add vegetables, peas, salt, sugar and 1/2 cup water; cover and cook until tender.",
+    "Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Cauliflower",
+     "quantity": 300,
+     "unit": "g",
+     "note": "florets"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Green peas",
+     "quantity": 75,
+     "unit": "g",
+     "note": "fresh"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Palong shaak ghonto",
+   "description": "Mixed greens and vegetables; with khichdi once a month.",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "with-khichdi"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry the bori in mustard oil until golden; set aside.",
+    "Splutter panch phoron, add potato, pumpkin and brinjal; cook covered 5 minutes.",
+    "Add spinach, turmeric, salt and sugar; cook until soft and mushy.",
+    "Stir in crushed bori and green chillies."
+   ],
+   "ingredients": [
+    {
+     "name": "Spinach",
+     "quantity": 1,
+     "unit": "bunch",
+     "note": "chopped"
+    },
+    {
+     "name": "Brinjal",
+     "quantity": 100,
+     "unit": "g",
+     "note": "cubed"
+    },
+    {
+     "name": "Pumpkin",
+     "quantity": 100,
+     "unit": "g",
+     "note": "cubed"
+    },
+    {
+     "name": "Potato",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Bori",
+     "quantity": 10,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Panch phoron",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Shukto",
+   "description": "Mildly bitter mixed vegetables; traditionally first course.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 20,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry bori and bitter gourd lightly; set aside.",
+    "Splutter panch phoron, add the other vegetables and sauté 5 minutes.",
+    "Add mustard-poppy and ginger pastes, salt, sugar and 1/2 cup water; cover and cook until tender.",
+    "Add bitter gourd, bori and milk; simmer 3 minutes, finish with ghee."
+   ],
+   "ingredients": [
+    {
+     "name": "Bitter gourd",
+     "quantity": 50,
+     "unit": "g",
+     "note": "sliced"
+    },
+    {
+     "name": "Raw banana",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "batons"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "batons"
+    },
+    {
+     "name": "Sweet potato",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Brinjal",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Drumstick",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "pieces"
+    },
+    {
+     "name": "Bori",
+     "quantity": 10,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": "paste"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": "paste"
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Panch phoron",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Milk",
+     "quantity": 100,
+     "unit": "ml",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Mixed veg torkari",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Cut all vegetables into even cubes.",
+    "Sauté ginger, tomato and spices in oil until soft.",
+    "Add vegetables, salt, sugar and a splash of water; cover and cook until tender. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cauliflower",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Carrot",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "French beans",
+     "quantity": 60,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Green peas",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Echor er torkari",
+   "description": "Raw jackfruit curry — summer only.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 30,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    3,
+    4,
+    5,
+    6
+   ],
+   "steps": [
+    "Oil your hands and knife; peel and cube the jackfruit. Boil with salt and turmeric 10 minutes, drain.",
+    "Fry potato and the boiled echor lightly in mustard oil.",
+    "Add bay leaf, onion, then ginger-garlic paste, tomato and the spices; cook until oil separates.",
+    "Add vegetables and 1 cup water; cook covered until soft. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Raw jackfruit",
+     "quantity": 400,
+     "unit": "g",
+     "note": "cleaned, cubed"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Mochar ghonto",
+   "description": "Banana flower — fibre, potassium and iron.",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 45,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Clean the mocha (remove the stiff stamen and plastic-like petal), chop and boil with salt and turmeric; drain and squeeze.",
+    "Fry the potato in oil, add bay leaf, ginger paste and cumin powder.",
+    "Add mocha, coconut, salt and sugar; cook dry on low heat 10 minutes.",
+    "Finish with ghee and garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Banana flower",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cleaned, chopped"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "small cubes"
+    },
+    {
+     "name": "Grated coconut",
+     "quantity": 30,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Badhakopir torkari",
+   "description": "",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Temper cumin seeds and bay leaf, fry potato 3 minutes.",
+    "Add ginger, tomato and spices, then cabbage and peas with salt.",
+    "Cover and cook on low until soft and dry (cabbage releases water). Finish with ghee and garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Cabbage",
+     "quantity": 400,
+     "unit": "g",
+     "note": "shredded"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Green peas",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo bori lau",
+   "description": "",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry the bori golden; set aside.",
+    "Splutter kalonji and green chilli, add potato and cook 4 minutes.",
+    "Add lau, salt and turmeric; cover and cook in its own water.",
+    "Add the bori in the last 5 minutes."
+   ],
+   "ingredients": [
+    {
+     "name": "Bottle gourd",
+     "quantity": 400,
+     "unit": "g",
+     "note": "peeled, diced"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "diced"
+    },
+    {
+     "name": "Bori",
+     "quantity": 15,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Begun bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 12,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub the slices with turmeric, chilli and salt; rest 10 minutes.",
+    "Shallow-fry in a non-stick pan with a lid, turning once, until soft inside and golden."
+   ],
+   "ingredients": [
+    {
+     "name": "Brinjal",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "large, round slices"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo peyajkoli",
+   "description": "Onion stalks — winter only.",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    12,
+    1,
+    2
+   ],
+   "steps": [
+    "Splutter kalonji and chilli, add potato and cook 5 minutes.",
+    "Add peyajkoli, turmeric and salt; cover and cook until tender, then dry it out."
+   ],
+   "ingredients": [
+    {
+     "name": "Peyajkoli",
+     "quantity": 250,
+     "unit": "g",
+     "note": "cut 1 inch"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Korola bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 12,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub with turmeric and salt, rest 10 minutes and squeeze out the juice.",
+    "Fry on medium heat until crisp and brown."
+   ],
+   "ingredients": [
+    {
+     "name": "Bitter gourd",
+     "quantity": 150,
+     "unit": "g",
+     "note": "thin rounds"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Kanchkolar kofta curry",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 25,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Mash boiled raw banana with besan, grated ginger, chilli, salt and half the garam masala; shape small balls.",
+    "Shallow-fry (or air-fry) the koftas until golden.",
+    "Make a gravy with tomato, ginger and the spices in oil; add 1 cup water and simmer.",
+    "Add koftas just before serving; finish with ghee and garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Raw banana",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "boiled, mashed"
+    },
+    {
+     "name": "Besan",
+     "quantity": 20,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "shallow fry + gravy"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Kumro bhorta",
+   "description": "Mashed pumpkin with raw mustard oil — vitamin A.",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Steam or boil the pumpkin until soft; mash.",
+    "Fry garlic, chilli and kalonji briefly in mustard oil and mix into the mash with salt and coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Pumpkin",
+     "quantity": 300,
+     "unit": "g",
+     "note": "cubed"
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garlic",
+     "quantity": 2,
+     "unit": "clove",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Potol bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Scrape the potol lightly, halve and rub with turmeric and salt.",
+    "Fry covered on low heat, turning, until soft and browned."
+   ],
+   "ingredients": [
+    {
+     "name": "Pointed gourd",
+     "quantity": 6,
+     "unit": "pcs",
+     "note": "halved lengthwise"
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chichinge aloo posto",
+   "description": "",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Splutter kalonji in mustard oil, cook potato 5 minutes.",
+    "Add chichinge, salt and turmeric; cover until tender.",
+    "Stir in posto paste and slit chillies; cook until coated."
+   ],
+   "ingredients": [
+    {
+     "name": "Snake gourd",
+     "quantity": 300,
+     "unit": "g",
+     "note": "rounds"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "ground to paste"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Posto diye aloo bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry kalonji and green chilli, add potato with turmeric and salt.",
+    "Cook on medium, stirring, until crisp at the edges.",
+    "Sprinkle dry poppy seeds and toss 2 minutes."
+   ],
+   "ingredients": [
+    {
+     "name": "Potato",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "thin matchsticks"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Daaler bora bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "Soak masoor dal",
+   "prepLeadHours": 2,
+   "months": [],
+   "steps": [
+    "Grind the soaked dal coarsely with little water.",
+    "Mix in onion, chilli, kalonji and salt; beat for a minute to aerate.",
+    "Drop small spoonfuls into hot oil and fry until crisp."
+   ],
+   "ingredients": [
+    {
+     "name": "Masoor dal",
+     "quantity": 80,
+     "unit": "g",
+     "note": "soaked 2 hours"
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "absorbed when frying"
+    }
+   ]
+  },
+  {
+   "title": "Aloo chokha",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Mash the boiled potatoes with everything else. Quick and comforting."
+   ],
+   "ingredients": [
+    {
+     "name": "Potato",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "boiled"
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": "raw"
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": "finely chopped"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Papad (roasted)",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 1,
+   "cookMinutes": 3,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Roast directly over a low flame with tongs, turning, until blistered all over."
+   ],
+   "ingredients": [
+    {
+     "name": "Papad",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Macher jhol (rui)",
+   "description": "Light Bengali fish curry. Sangita only — usually two meals' worth.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub the fish with salt and turmeric; fry lightly in mustard oil and set aside.",
+    "Splutter kalonji and green chillies, fry the potato wedges.",
+    "Add ginger, tomato and spices; cook 2 minutes, then 1½ cups water.",
+    "When the potato is nearly done, slide in the fish and simmer 5 minutes. Finish with coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Rohu",
+     "quantity": 250,
+     "unit": "g",
+     "note": "4 curry-cut pieces"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "wedges"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Shorshe maach (fish in mustard gravy)",
+   "description": "Sangita only — usually two meals' worth.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Grind mustard seeds with 2 green chillies, a pinch of salt and a little water.",
+    "Rub the fish with salt and turmeric; fry lightly in mustard oil and set aside.",
+    "Splutter kalonji, add the mustard paste, turmeric and 3/4 cup water; simmer gently 3 minutes.",
+    "Slide in the fish and slit chillies; cook 5 minutes and finish with raw mustard oil."
+   ],
+   "ingredients": [
+    {
+     "name": "Rohu",
+     "quantity": 250,
+     "unit": "g",
+     "note": "4 curry-cut pieces"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "soaked, for paste"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Doi maach",
+   "description": "Fish in a mildly sweet curd gravy. Sangita only.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub the fish with salt and turmeric; fry lightly and set aside.",
+    "Add bay leaf and whole spices, then onion and ginger pastes; cook until the oil separates.",
+    "Lower the heat, stir in the curd mixed with chilli powder and sugar; add 1/2 cup water.",
+    "Add the fish and simmer 6–8 minutes until the gravy is thick."
+   ],
+   "ingredients": [
+    {
+     "name": "Rohu",
+     "quantity": 250,
+     "unit": "g",
+     "note": "4 curry-cut pieces"
+    },
+    {
+     "name": "Curd",
+     "quantity": 100,
+     "unit": "g",
+     "note": "whisked"
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "paste"
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cardamom",
+     "quantity": 2,
+     "unit": "pod",
+     "note": ""
+    },
+    {
+     "name": "Cinnamon",
+     "quantity": 1,
+     "unit": "stick",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kashmiri chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Macher kalia",
+   "description": "Rich festive fish curry. Sangita only.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub the fish with salt and turmeric; fry well and set aside.",
+    "Cook bay leaf, onion and ginger-garlic pastes until golden; add tomato, curd and spices and cook down.",
+    "Add 3/4 cup water, then the fish; simmer 8 minutes. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Rohu",
+     "quantity": 250,
+     "unit": "g",
+     "note": "4 curry-cut pieces"
+    },
+    {
+     "name": "Onion",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "paste"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kashmiri chilli powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Ilish bhapa (steamed hilsa in mustard)",
+   "description": "Monsoon only, when hilsa is in season. Sangita only.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [
+    6,
+    7,
+    8,
+    9
+   ],
+   "steps": [
+    "Grind mustard and poppy seeds with 2 chillies and a pinch of salt.",
+    "Mix the paste with curd, turmeric, salt and mustard oil; coat the hilsa.",
+    "Put in a steel tiffin box with slit chillies and more mustard oil; close and steam 15 minutes (or pressure cook 1 whistle)."
+   ],
+   "ingredients": [
+    {
+     "name": "Hilsa",
+     "quantity": 300,
+     "unit": "g",
+     "note": "4 pieces"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": "soaked, for paste"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": "soaked, for paste"
+    },
+    {
+     "name": "Curd",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Bengali chicken curry",
+   "description": "Murgir jhol — the everyday Bengali chicken curry.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 40,
+   "cookMinutes": 40,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Marinate chicken with curd, ginger-garlic, turmeric and salt for 30 minutes.",
+    "Fry potato in mustard oil; set aside. Add bay leaf and onions and brown well.",
+    "Add chicken and the spices; cook on high, stirring, 10 minutes until it browns.",
+    "Add potato, tomato and 1½ cups warm water; simmer covered until tender. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Chicken",
+     "quantity": 500,
+     "unit": "g",
+     "note": "curry cut"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "halved"
+    },
+    {
+     "name": "Onion",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "sliced"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Grilled chicken",
+   "description": "Sayan's go-to protein. ~45 g protein.",
+   "category": "main",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 1,
+   "prepMinutes": 35,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Score the chicken and marinate with everything for 30 minutes (or overnight).",
+    "Grill, air-fry at 200 °C or pan-grill 6–7 minutes a side until cooked through. Rest 3 minutes."
+   ],
+   "ingredients": [
+    {
+     "name": "Chicken breast",
+     "quantity": 200,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Air-fried chicken popcorn",
+   "description": "",
+   "category": "snack",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 1,
+   "prepMinutes": 25,
+   "cookMinutes": 12,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Marinate chicken with ginger-garlic, chilli, pepper and salt for 15 minutes.",
+    "Toss in cornflour, dip in beaten egg, roll in breadcrumbs.",
+    "Spray with oil and air-fry at 200 °C for 10–12 minutes, shaking halfway."
+   ],
+   "ingredients": [
+    {
+     "name": "Chicken breast",
+     "quantity": 200,
+     "unit": "g",
+     "note": "bite-size"
+    },
+    {
+     "name": "Egg",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cornflour",
+     "quantity": 15,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Breadcrumbs",
+     "quantity": 25,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": "spray"
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Meghana-style chicken curry",
+   "description": "Spicy Andhra-style boneless curry in the style of Meghana Foods.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 30,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Marinate chicken with curd, half the ginger-garlic, chilli powder and salt.",
+    "Fry curry leaves and green chillies, then onion until golden; add the rest of the ginger-garlic and tomato.",
+    "Add chicken and the powders; cook on high until browned.",
+    "Stir in cashew paste and a little water; simmer until thick and glossy. Top with coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Boneless chicken",
+     "quantity": 250,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Curry leaves",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cashew",
+     "quantity": 8,
+     "unit": "pcs",
+     "note": "ground to paste"
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chicken kofta curry",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 25,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Mix mince with chopped onion, chilli, half the ginger-garlic, besan, garam masala and salt; shape walnut-size balls.",
+    "Pan-fry or air-fry the koftas until browned.",
+    "Make a gravy: onion, ginger-garlic, tomato, curd and powders cooked down in oil, then 1 cup water.",
+    "Simmer the koftas in the gravy 8–10 minutes."
+   ],
+   "ingredients": [
+    {
+     "name": "Chicken mince",
+     "quantity": 250,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1.5,
+     "unit": "pcs",
+     "note": "half for koftas"
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Besan",
+     "quantity": 15,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Curd",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Paneer curry",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "protein"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Crackle cumin, cook onion golden, add ginger-garlic and tomato and the powders; cook to a thick masala.",
+    "Add capsicum and 1/2 cup water; simmer 3 minutes.",
+    "Add paneer and kasuri methi; simmer 2–3 minutes (soak paneer in warm water first to keep it soft)."
+   ],
+   "ingredients": [
+    {
+     "name": "Paneer",
+     "quantity": 200,
+     "unit": "g",
+     "note": "cubed"
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Capsicum",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kasuri methi",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chhanar dalna",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "protein"
+   ],
+   "servings": 2,
+   "prepMinutes": 20,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Knead chhana with maida and a pinch of salt and sugar until smooth; shape small cakes and fry golden.",
+    "Fry potato; add bay leaf, ginger, tomato and spices.",
+    "Add 1 cup water and cook until the potato is done; add chhana cakes and simmer 3 minutes. Finish with ghee and garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Chhana",
+     "quantity": 200,
+     "unit": "g",
+     "note": "from 1 litre milk"
+    },
+    {
+     "name": "Maida",
+     "quantity": 10,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Egg curry (dimer dalna)",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry boiled eggs (rubbed with turmeric and salt) and potato lightly; set aside.",
+    "Brown onions with bay leaf; add ginger-garlic, tomato and spices and cook down.",
+    "Add potato and 1½ cups water; when tender, add eggs and simmer 5 minutes. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Eggs",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": "boiled"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "halved"
+    },
+    {
+     "name": "Onion",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Egg omelette",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "breakfast",
+    "lunch",
+    "dinner"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 1,
+   "prepMinutes": 3,
+   "cookMinutes": 5,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Beat eggs with onion, chilli, coriander, salt and pepper.",
+    "Cook in a hot greased pan; fold when set."
+   ],
+   "ingredients": [
+    {
+     "name": "Eggs",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.25,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "sprig",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.125,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.125,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chingri shorshe posto (prawns in mustard-poppy gravy)",
+   "description": "Weekly prawns in mustard and poppy seed gravy — for both of us, 2 servings.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [
+    "every:7"
+   ],
+   "servings": 2,
+   "prepMinutes": 20,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Grind mustard and poppy seeds with 2 green chillies, a pinch of salt and a little water to a smooth paste.",
+    "Rub prawns with salt and turmeric; sear 1 minute a side in mustard oil and set aside (don't overcook).",
+    "Splutter kalonji, add the paste, turmeric and 1/2 cup water; simmer 3–4 minutes without letting it boil hard (mustard turns bitter).",
+    "Add prawns, a slit chilli and the sugar; cook 3 minutes and finish with a drizzle of raw mustard oil."
+   ],
+   "ingredients": [
+    {
+     "name": "Prawns",
+     "quantity": 250,
+     "unit": "g",
+     "note": "peeled, deveined"
+    },
+    {
+     "name": "Mustard seeds",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": "soaked, for paste"
+    },
+    {
+     "name": "Poppy seeds",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": "soaked, for paste"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Soyabean aloo curry",
+   "description": "Plant protein: about 15 g per serving.",
+   "category": "curry",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "protein"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 25,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Boil soya chunks 5 minutes, rinse in cold water and squeeze dry.",
+    "Cook onion, ginger-garlic, tomato and spices in oil to a masala.",
+    "Add potato, soya and 1 cup water; simmer until the potato is done. Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Soya chunks",
+     "quantity": 60,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Peyaj aloo dim bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner",
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 5,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Fry potato slices with turmeric and salt until cooked; add onion and chilli and soften.",
+    "Pour in beaten eggs, scramble until just set."
+   ],
+   "ingredients": [
+    {
+     "name": "Eggs",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "thin slices"
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "sliced"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chilli chicken",
+   "description": "",
+   "category": "main",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner"
+   ],
+   "servings": 2,
+   "prepMinutes": 20,
+   "cookMinutes": 20,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Coat chicken with cornflour, a little soy and salt; pan-fry or air-fry until golden.",
+    "Stir-fry garlic, ginger, chillies, onion and capsicum on high heat.",
+    "Add sauces, vinegar and 1/4 cup water with a teaspoon of cornflour; toss the chicken in and finish with spring onion."
+   ],
+   "ingredients": [
+    {
+     "name": "Boneless chicken",
+     "quantity": 250,
+     "unit": "g",
+     "note": "cubes"
+    },
+    {
+     "name": "Cornflour",
+     "quantity": 15,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Capsicum",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "petals"
+    },
+    {
+     "name": "Garlic",
+     "quantity": 4,
+     "unit": "clove",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": ""
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Soy sauce",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Chilli sauce",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Vinegar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Spring onion",
+     "quantity": 30,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Kumro aloo chholar torkari",
+   "description": "",
+   "category": "sabzi",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 30,
+   "prepNote": "Soak kala chana",
+   "prepLeadHours": 10,
+   "months": [],
+   "steps": [
+    "Boil the soaked chana until tender.",
+    "Splutter panch phoron, add potato and pumpkin and cook 5 minutes.",
+    "Add ginger, spices, salt, sugar and the chana; cover and cook until the pumpkin breaks down."
+   ],
+   "ingredients": [
+    {
+     "name": "Pumpkin",
+     "quantity": 250,
+     "unit": "g",
+     "note": "cubed"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "cubed"
+    },
+    {
+     "name": "Kala chana",
+     "quantity": 40,
+     "unit": "g",
+     "note": "soaked overnight, boiled"
+    },
+    {
+     "name": "Panch phoron",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Ghugni",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "dinner",
+    "snacks",
+    "breakfast"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "simple-dinner",
+    "protein-rich"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 35,
+   "prepNote": "Soak dried white peas",
+   "prepLeadHours": 10,
+   "months": [],
+   "steps": [
+    "Pressure cook the soaked peas with salt and turmeric, 4 whistles.",
+    "Cook onion, ginger-garlic, tomato and the powders in oil; add potato.",
+    "Add peas with their water; simmer until thick. Finish with bhaja moshla, onion and coriander."
+   ],
+   "ingredients": [
+    {
+     "name": "Dried white peas",
+     "quantity": 100,
+     "unit": "g",
+     "note": "soaked overnight"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "small cubes"
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Red chilli powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Roasted cumin powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": "bhaja moshla, to finish"
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "handful",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Aloo karela bhaja",
+   "description": "",
+   "category": "side",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "fried",
+    "simple-dinner"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Rub bitter gourd with salt, rest and squeeze.",
+    "Fry kalonji, add potato and bitter gourd with turmeric; cook on medium until crisp."
+   ],
+   "ingredients": [
+    {
+     "name": "Bitter gourd",
+     "quantity": 150,
+     "unit": "g",
+     "note": "thin rounds"
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "thin slices"
+    },
+    {
+     "name": "Kalonji",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Egg chowmein",
+   "description": "",
+   "category": "main",
+   "mealTypes": [
+    "dinner"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dinner-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 15,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Boil noodles until just done; rinse cold and toss with a drop of oil.",
+    "Scramble the eggs in a hot wok; set aside.",
+    "Stir-fry garlic, onion, cabbage, carrot and capsicum on high heat 2 minutes.",
+    "Add noodles, sauces, vinegar, pepper and eggs; toss well and finish with spring onion."
+   ],
+   "ingredients": [
+    {
+     "name": "Hakka noodles",
+     "quantity": 150,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Eggs",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cabbage",
+     "quantity": 100,
+     "unit": "g",
+     "note": "shredded"
+    },
+    {
+     "name": "Carrot",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "julienned"
+    },
+    {
+     "name": "Capsicum",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Spring onion",
+     "quantity": 30,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Garlic",
+     "quantity": 3,
+     "unit": "clove",
+     "note": ""
+    },
+    {
+     "name": "Soy sauce",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Chilli sauce",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Vinegar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Naan",
+   "description": "Goes with paneer curry or chicken curry.",
+   "category": "bread",
+   "mealTypes": [
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dinner-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 1,
+   "cookMinutes": 5,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Warm on a tawa or in the oven; brush with a little butter if you like."
+   ],
+   "ingredients": [
+    {
+     "name": "Naan",
+     "quantity": 4,
+     "unit": "pcs",
+     "note": "ready-made"
+    }
+   ]
+  },
+  {
+   "title": "Homemade veg pizza",
+   "description": "",
+   "category": "main",
+   "mealTypes": [
+    "dinner"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "dinner-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 12,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Spread sauce on the bases; top with vegetables and cheese.",
+    "Bake at 220 °C for 10–12 minutes (or on a covered tawa) until the cheese bubbles."
+   ],
+   "ingredients": [
+    {
+     "name": "Pizza base",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Pizza sauce",
+     "quantity": 4,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Mozzarella",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Capsicum",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Mushroom",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Oregano",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Chilli flakes",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Soyabean egg pulao",
+   "description": "Weekend special with chicken kasha and salad.",
+   "category": "rice",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "egg",
+   "cuisine": "Bengali",
+   "tags": [
+    "weekend-special",
+    "every:14"
+   ],
+   "servings": 2,
+   "prepMinutes": 25,
+   "cookMinutes": 30,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Wash and soak the rice 20 minutes. Boil and squeeze the soya chunks.",
+    "Fry cashew and raisins in ghee; set aside. Fry halved boiled eggs briefly.",
+    "Add whole spices and onion; brown. Add ginger-garlic, vegetables and soya.",
+    "Add drained rice, salt, sugar and water; cook covered on low until done.",
+    "Fold in eggs, cashews and raisins."
+   ],
+   "ingredients": [
+    {
+     "name": "Basmati rice",
+     "quantity": 150,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Soya chunks",
+     "quantity": 40,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Eggs",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "boiled"
+    },
+    {
+     "name": "Carrot",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "French beans",
+     "quantity": 40,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Green peas",
+     "quantity": 40,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "sliced"
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Cardamom",
+     "quantity": 2,
+     "unit": "pod",
+     "note": ""
+    },
+    {
+     "name": "Cloves",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cinnamon",
+     "quantity": 1,
+     "unit": "stick",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Raisins",
+     "quantity": 10,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Cashew",
+     "quantity": 8,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 1.75,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Chicken kasha",
+   "description": "",
+   "category": "curry",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "nonveg",
+   "cuisine": "Bengali",
+   "tags": [
+    "weekend-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 60,
+   "cookMinutes": 45,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Marinate chicken in curd, ginger-garlic, spices and salt, 1 hour or overnight.",
+    "Caramelise sugar lightly in mustard oil, add bay leaf, cardamom and onions; brown deeply.",
+    "Add the chicken and kasha (stir-fry) on medium for 25–30 minutes, adding splashes of water, until dark and dry.",
+    "Finish with garam masala."
+   ],
+   "ingredients": [
+    {
+     "name": "Chicken",
+     "quantity": 500,
+     "unit": "g",
+     "note": "curry cut"
+    },
+    {
+     "name": "Onion",
+     "quantity": 3,
+     "unit": "pcs",
+     "note": "sliced"
+    },
+    {
+     "name": "Curd",
+     "quantity": 75,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Ginger garlic paste",
+     "quantity": 1.5,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Cumin powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Coriander powder",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Kashmiri chilli powder",
+     "quantity": 1.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Garam masala",
+     "quantity": 0.75,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cardamom",
+     "quantity": 2,
+     "unit": "pod",
+     "note": ""
+    },
+    {
+     "name": "Mustard oil",
+     "quantity": 2,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Green salad",
+   "description": "",
+   "category": "salad",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [
+    "weekend-special"
+   ],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Slice everything, toss with lemon, pepper and chaat masala just before serving."
+   ],
+   "ingredients": [
+    {
+     "name": "Cucumber",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Onion",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Carrot",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Chaat masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Bhuna khichuri",
+   "description": "Twice a month; with palong shaak ghonto once a month, otherwise a bhaja or papad.",
+   "category": "rice",
+   "mealTypes": [
+    "lunch"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "khichdi",
+    "every:14"
+   ],
+   "servings": 2,
+   "prepMinutes": 15,
+   "cookMinutes": 35,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Dry-roast the moong dal; wash with the rice.",
+    "Temper cumin, bay leaves and whole spices in oil; fry potato and cauliflower lightly.",
+    "Add ginger, tomato, turmeric, rice and dal; stir-fry 3 minutes.",
+    "Add hot water, salt and sugar; cook covered, stirring now and then, until soft. Add peas halfway. Finish with ghee."
+   ],
+   "ingredients": [
+    {
+     "name": "Gobindobhog rice",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Moong dal",
+     "quantity": 80,
+     "unit": "g",
+     "note": "dry-roasted"
+    },
+    {
+     "name": "Cauliflower",
+     "quantity": 100,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Potato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Green peas",
+     "quantity": 50,
+     "unit": "g",
+     "note": ""
+    },
+    {
+     "name": "Carrot",
+     "quantity": 0.5,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Tomato",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Ginger",
+     "quantity": 1,
+     "unit": "inch",
+     "note": "paste"
+    },
+    {
+     "name": "Cumin seeds",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Bay leaf",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": ""
+    },
+    {
+     "name": "Cardamom",
+     "quantity": 2,
+     "unit": "pod",
+     "note": ""
+    },
+    {
+     "name": "Cinnamon",
+     "quantity": 1,
+     "unit": "stick",
+     "note": ""
+    },
+    {
+     "name": "Turmeric powder",
+     "quantity": 0.5,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Ghee",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Oil",
+     "quantity": 2,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Sugar",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Water",
+     "quantity": 4,
+     "unit": "cup",
+     "note": ""
+    }
+   ]
+  }
+ ]
+}

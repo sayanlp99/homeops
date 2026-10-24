@@ -90,7 +90,7 @@ export function useIngredients() {
 // ---- offline-capable mutations (registered on the client so they survive restarts) ----
 
 type NewMeal = { id: string; date: string; slot: Slot; recipeId?: string | null; title: string; servings?: number; note?: string }
-type MealPatch = Partial<Pick<MealItem, 'date' | 'slot' | 'servings' | 'note' | 'position'>> & { cooked?: boolean }
+type MealPatch = Partial<Pick<MealItem, 'date' | 'slot' | 'servings' | 'note' | 'position' | 'portions' | 'leftover'>> & { cooked?: boolean }
 type NewGrocery = { id: string; text: string }
 type GroceryPatch = { checked?: boolean; quantity?: number | null; unit?: string; note?: string }
 
@@ -107,7 +107,7 @@ export function registerMealMutations(qc: QueryClient) {
     mutationFn: (m: NewMeal) => post<MealItem>('/meals', m),
     onMutate: async (m: NewMeal) => {
       await qc.cancelQueries({ queryKey: ['meals'] })
-      const draft: MealItem = { position: 999, recipeId: null, servings: 2, note: '', cookedAt: null, cookedBy: null, createdAt: new Date().toISOString(), ...m } as MealItem
+      const draft: MealItem = { position: 999, recipeId: null, servings: 2, note: '', cookedAt: null, cookedBy: null, createdAt: new Date().toISOString(), portions: null, leftover: false, eaters: {}, ...m } as MealItem
       mealsKeys(qc).forEach((k) => {
         const [, from, to] = k as [string, string, string]
         if (m.date >= from && m.date <= to) qc.setQueryData<MealItem[]>(k, (old) => (old ? [...old, draft] : old))
@@ -127,13 +127,19 @@ export function registerMealMutations(qc: QueryClient) {
         ms.map((m) => {
           if (m.id !== id) return m
           const { cooked, ...rest } = changes
-          return { ...m, ...rest, ...(cooked === undefined ? {} : { cookedAt: cooked ? new Date().toISOString() : null }) }
+          return {
+            ...m,
+            ...rest,
+            ...(changes.portions ? { eaters: changes.portions } : {}),
+            ...(cooked === undefined ? {} : { cookedAt: cooked ? new Date().toISOString() : null }),
+          }
         }),
       )
     },
     onError: fail("Couldn't update dish"),
     onSettled: (_d, _e, v) => {
       qc.invalidateQueries({ queryKey: ['meals'] })
+      qc.invalidateQueries({ queryKey: ['nutrition'] })
       if (v.changes.cooked !== undefined) {
         qc.invalidateQueries({ queryKey: ['pantry'] })
         qc.invalidateQueries({ queryKey: ['recipes'] })

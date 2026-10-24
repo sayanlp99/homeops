@@ -1,29 +1,7 @@
 import * as RD from '@radix-ui/react-dialog'
 import { useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import {
-  CalendarRange,
-  Check,
-  ChefHat,
-  ChevronsUpDown,
-  Eye,
-  Home,
-  KanbanSquare,
-  ListChecks,
-  LogOut,
-  Menu as MenuIcon,
-  Package,
-  ShoppingCart,
-  UtensilsCrossed,
-  Plus,
-  Repeat,
-  RotateCcw,
-  Search,
-  Settings,
-  ShieldCheck,
-  WifiOff,
-  Wallet,
-} from 'lucide-react'
+import { CalendarRange, Check, ChefHat, ChevronsUpDown, Eye, HeartPulse, Home, KanbanSquare, ListChecks, LogOut, Menu as MenuIcon, Package, Plus, Repeat, RotateCcw, Search, Settings, ShieldCheck, ShoppingCart, UtensilsCrossed, Wallet, WifiOff } from 'lucide-react'
 import { useEffect, useMemo, type ReactNode } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -57,6 +35,7 @@ const household: NavItem[] = [
   { to: '/recipes', label: 'Recipes', icon: ChefHat },
   { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
   { to: '/pantry', label: 'Pantry', icon: Package },
+  { to: '/nutrition', label: 'Nutrition', icon: HeartPulse },
   { to: '/budget', label: 'Budget', icon: Wallet },
   { to: '/retro', label: 'Retro & kudos', icon: RotateCcw },
 ]
@@ -350,7 +329,7 @@ function MobileTabs() {
 
 function TabLink({ to, label, icon }: { to: string; label: string; icon: ReactNode }) {
   const { pathname } = useLocation()
-  const kitchen = to === '/meals' && ['/recipes', '/grocery', '/pantry'].some((k) => pathname.startsWith(k))
+  const kitchen = to === '/meals' && ['/recipes', '/grocery', '/pantry', '/nutrition'].some((k) => pathname.startsWith(k))
   return (
     <NavLink
       to={to}
@@ -365,7 +344,7 @@ function TabLink({ to, label, icon }: { to: string; label: string; icon: ReactNo
 
 function MoreSheet() {
   const more = [...workspace.slice(3), ...household.filter((h) => h.to !== '/meals'), { to: '/settings', label: 'Settings', icon: Settings }]
-  const kitchen = ['/recipes', '/grocery', '/pantry']
+  const kitchen = ['/recipes', '/grocery', '/pantry', '/nutrition']
   const location = useLocation()
   const active = more.some((m) => location.pathname.startsWith(m.to) && !kitchen.some((k) => location.pathname.startsWith(k)))
   return (

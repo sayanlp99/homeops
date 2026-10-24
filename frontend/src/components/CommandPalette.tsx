@@ -1,6 +1,6 @@
 import * as RD from '@radix-ui/react-dialog'
 import { Command } from 'cmdk'
-import { Bell, CalendarRange, ChefHat, Home, KanbanSquare, ListChecks, Moon, Package, Plus, Repeat, RotateCcw, Settings, ShoppingCart, Sun, UtensilsCrossed, Wallet } from 'lucide-react'
+import { Bell, CalendarRange, ChefHat, HeartPulse, Home, KanbanSquare, ListChecks, Moon, Package, Plus, Repeat, RotateCcw, Settings, ShoppingCart, Sun, UtensilsCrossed, Wallet } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { taskKey } from '@/lib/format'
 import { useRecipes } from '@/lib/meals'
@@ -20,6 +20,8 @@ const nav = [
   { to: '/recipes/new', label: 'New recipe', icon: Plus },
   { to: '/grocery', label: 'Grocery list', icon: ShoppingCart },
   { to: '/pantry', label: 'Pantry', icon: Package },
+  { to: '/nutrition', label: 'Nutrition', icon: HeartPulse },
+  { to: '/settings/health', label: 'Health & nutrition settings', icon: HeartPulse },
   { to: '/budget', label: 'Budget overview', icon: Wallet },
   { to: '/budget/transactions', label: 'Transactions', icon: Wallet },
   { to: '/budget/import', label: 'Import statement or invoice', icon: Wallet },

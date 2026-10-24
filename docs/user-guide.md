@@ -8,6 +8,7 @@ pantry and budget, shared live between everyone in a household.
 - [Phones and notifications](#phones-and-notifications)
 - [Tasks, sprints and chores](#tasks-sprints-and-chores)
 - [Meals, recipes, grocery and pantry](#meals-recipes-grocery-and-pantry)
+- [Nutrition](#nutrition)
 - [Budget](#budget)
 - [Retro, insights and kudos](#retro-insights-and-kudos)
 - [Offline use](#offline-use)
@@ -139,6 +140,58 @@ they end. The bell icon (inbox) always has everything.
   and can record the bill as an expense.
 - **Pantry:** marking a meal cooked deducts its ingredients (undo restores them).
   Low-stock and expiry badges, and one-tap restock to the grocery list.
+
+## Nutrition
+
+**Set up each person** in **Settings → Health & nutrition**: sex, age, height (cm
+or ft/in), weight, activity, goal (lose gently, maintain, gain) and foods they don't
+eat (fish, prawns, chicken, mutton, egg, dairy). Anyone in the household except
+viewers can edit anyone's details, so you can keep each other's up to date. Daily
+targets are calculated (Mifflin-St Jeor for calories; vitamins and minerals from
+ICMR-NIN 2020), and **Daily targets** lets you type your own, for example on a
+dietitian's advice.
+
+**Every recipe** shows calories, protein, carbs, fat, fibre, iron, calcium, vitamins
+A, C, B12, folate, zinc, magnesium, potassium and sodium per serving, as a share of
+the chosen person's target. Values come from the Indian Food Composition Tables
+(IFCT 2017) and USDA data. If an ingredient isn't recognised, the recipe lists it
+under *Left out of the estimate*; pick what it is and every recipe using it updates.
+
+**Who eats what.** Each planned dish counts one serving for everyone who eats that
+food: fish goes only to the fish-eaters. Tap a dish → **Who's eating…** to set
+portions (½ katori rice for one, 2 for another) or mark it a **leftover**, which is
+eaten again but kept off the grocery list and pantry.
+
+**Auto-fill follows a Bengali home routine** when the recipes have the right tags
+(the *Bengali home kitchen* recipe pack has them):
+
+- breakfast dish; one seasonal fruit per person;
+- one dairy item a day for calcium, a different one each day: curd or ghol
+  (buttermilk) with lunch, or a glass of milk at breakfast;
+- lunch of rice + dal + vegetable + protein. Anyone who doesn't eat that day's
+  protein (fish) gets their own;
+- Wednesday is a quick one-pot dal-with-vegetables plus a bhaja;
+- Saturday lunch is khichdi when due (twice a month, with palong shaak ghonto once a
+  month);
+- Sunday lunch is the weekend special (pulao set) every two weeks; prawns at most
+  weekly;
+- dinners are chapati + a simple curry, lunch leftovers on Tuesday and Thursday, a
+  special on Friday and eating out on Saturday. This is only a starting point: swap
+  any night for leftovers (Who's eating… → leftover) or a fresh dish as the fridge
+  allows.
+
+Seasonal dishes (echor in summer, peyajkoli in winter) are only planned in season.
+Each pick favours what closes the week's nutrient gaps, and each person's portions
+are then sized to their calorie target: rice/chapati first, then fried sides, then
+dal and vegetables, protein last.
+
+Salt is counted from each recipe's ingredient list, so set the salt in a recipe to
+what you actually use for that quantity and the sodium figures follow.
+
+**Kitchen → Nutrition** shows each person's week: daily average against targets, a
+calories-by-day chart, vitamins and minerals, and what to balance with recipes you
+already cook. Days with a meal out are left out of averages. These are estimates,
+not medical advice.
 
 ## Budget
 

@@ -12,6 +12,7 @@ import { BudgetPage } from '@/features/money/BudgetPage'
 import { ImportPage } from '@/features/money/ImportPage'
 import { MoneySetupPage } from '@/features/money/MoneySetupPage'
 import { TransactionsPage } from '@/features/money/TransactionsPage'
+import { NutritionPage } from '@/features/nutrition/NutritionPage'
 import { PantryPage } from '@/features/pantry/PantryPage'
 import { RecipeDetailPage } from '@/features/recipes/RecipeDetailPage'
 import { RecipeEditorPage } from '@/features/recipes/RecipeEditorPage'
@@ -91,6 +92,7 @@ export function App() {
         <Route path="recipes/:id/edit" element={<RecipeEditorPage key="edit" />} />
         <Route path="grocery" element={<GroceryPage />} />
         <Route path="pantry" element={<PantryPage />} />
+        <Route path="nutrition" element={<NutritionPage />} />
         <Route path="budget" element={<BudgetPage />} />
         <Route path="budget/transactions" element={<TransactionsPage />} />
         <Route path="budget/bills" element={<BillsPage />} />

@@ -161,6 +161,8 @@ func (s *Server) Routes() http.Handler {
 			r.Method("GET", "/recipes", handler(s.listRecipes))
 			r.Method("POST", "/recipes", handler(s.saveRecipe))
 			r.Method("POST", "/recipes/import", handler(s.importRecipe))
+			r.Method("GET", "/recipes/packs", handler(s.listPacks))
+			r.Method("POST", "/recipes/packs/{name}", handler(s.importPack))
 			r.Method("GET", "/recipes/{id}", handler(s.getRecipe))
 			r.Method("PUT", "/recipes/{id}", handler(s.saveRecipe))
 			r.Method("PATCH", "/recipes/{id}", handler(s.patchRecipe))
@@ -168,6 +170,12 @@ func (s *Server) Routes() http.Handler {
 			r.Method("GET", "/ingredients", handler(s.listIngredients))
 			r.Method("PATCH", "/ingredients/{id}", handler(s.updateIngredient))
 			r.Method("POST", "/ingredients/parse", handler(s.parseIngredients))
+
+			r.With(requireRole("member")).Method("GET", "/health", handler(s.listHealth))
+			r.Method("PUT", "/health/{userId}", handler(s.saveHealth))
+			r.Method("DELETE", "/health/{userId}", handler(s.deleteHealth))
+			r.Method("GET", "/nutrition/foods", handler(s.listFoods))
+			r.With(requireRole("member")).Method("GET", "/nutrition", handler(s.nutritionReport))
 
 			r.Method("GET", "/meals", handler(s.listMeals))
 			r.Method("POST", "/meals", handler(s.createMeal))

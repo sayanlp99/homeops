@@ -56,7 +56,7 @@ func (s *Server) prepReminders(ctx context.Context, h *Household, now time.Time)
 	today := localToday(h, now)
 	rows, err := s.db.Query(ctx, `SELECT m.id, m.date, m.slot, m.title, r.prep_note, r.prep_lead_hours
 		FROM meal_plan_items m JOIN recipes r ON r.id = m.recipe_id
-		WHERE m.household_id = $1 AND m.date BETWEEN $2 AND $3 AND r.prep_lead_hours > 0 AND m.cooked_at IS NULL`,
+		WHERE m.household_id = $1 AND m.date BETWEEN $2 AND $3 AND r.prep_lead_hours > 0 AND m.cooked_at IS NULL AND NOT m.leftover`,
 		h.ID, today, today.AddDate(0, 0, 4))
 	if err != nil {
 		return err

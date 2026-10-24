@@ -44,4 +44,5 @@ export async function api<T = void>(method: string, path: string, body?: unknown
 export const get = <T>(path: string) => api<T>('GET', path)
 export const post = <T = void>(path: string, body?: unknown) => api<T>('POST', path, body ?? {})
 export const patch = <T = void>(path: string, body: unknown) => api<T>('PATCH', path, body)
+export const put = <T = void>(path: string, body: unknown) => api<T>('PUT', path, body)
 export const del = (path: string) => api('DELETE', path)

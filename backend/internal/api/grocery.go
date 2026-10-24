@@ -184,7 +184,7 @@ func (s *Server) generateGrocery(w http.ResponseWriter, r *http.Request) error {
 		JOIN recipes r ON r.id = m.recipe_id
 		JOIN recipe_ingredients ri ON ri.recipe_id = r.id
 		JOIN ingredients i ON i.id = ri.ingredient_id
-		WHERE m.household_id = $1 AND m.date BETWEEN $2 AND $3 AND m.cooked_at IS NULL`, u.HouseholdID, from, to)
+		WHERE m.household_id = $1 AND m.date BETWEEN $2 AND $3 AND m.cooked_at IS NULL AND NOT m.leftover`, u.HouseholdID, from, to)
 	if err != nil {
 		return err
 	}

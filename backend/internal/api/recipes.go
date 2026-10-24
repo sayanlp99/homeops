@@ -10,6 +10,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
+
+	"homeops/internal/nutrition"
 )
 
 type RecipeIngredient struct {
@@ -19,6 +21,8 @@ type RecipeIngredient struct {
 	Quantity     *float64 `json:"quantity"`
 	Unit         string   `json:"unit"`
 	Note         string   `json:"note"`
+	FoodKey      string   `json:"foodKey"` // chosen food-table entry: "" = by name, "-" = left out
+	Food         string   `json:"food"`    // the entry used for nutrition, "" if none
 }
 
 type Recipe struct {
@@ -44,7 +48,9 @@ type Recipe struct {
 	UpdatedAt     time.Time          `json:"updatedAt" db:"updated_at"`
 	TimesCooked   int                `json:"timesCooked" db:"times_cooked"`
 	LastCooked    *string            `json:"lastCooked" db:"last_cooked"`
+	Months        []int              `json:"months" db:"months"`
 	Ingredients   []RecipeIngredient `json:"ingredients" db:"-"`
+	Nutrition     nutrition.Result   `json:"nutrition" db:"-"`
 }
 
 var (
@@ -56,7 +62,7 @@ var (
 // "Cooked" means marked cooked, or planned on a day that has passed.
 const recipeSelect = `SELECT r.id, r.title, r.description, r.category, r.meal_types, r.diet, r.cuisine, r.tags, r.servings,
 	r.prep_minutes, r.cook_minutes, r.prep_note, r.prep_lead_hours, r.steps, r.source_url, r.photo, r.favorite, r.rating,
-	r.created_at, r.updated_at,
+	r.created_at, r.updated_at, r.months::int[] AS months,
 	(SELECT count(*)::int FROM meal_plan_items m WHERE m.recipe_id = r.id AND (m.cooked_at IS NOT NULL OR m.date < current_date)) AS times_cooked,
 	(SELECT max(m.date)::text FROM meal_plan_items m WHERE m.recipe_id = r.id AND (m.cooked_at IS NOT NULL OR m.date < current_date)) AS last_cooked
 	FROM recipes r`
@@ -74,7 +80,7 @@ func (s *Server) queryRecipes(ctx context.Context, householdID string, where str
 		recipes[i].Ingredients = []RecipeIngredient{}
 		byID[recipes[i].ID] = &recipes[i]
 	}
-	rows, err = s.db.Query(ctx, `SELECT ri.recipe_id, i.id, i.name, i.aisle, ri.quantity, ri.unit, ri.note
+	rows, err = s.db.Query(ctx, `SELECT ri.recipe_id, i.id, i.name, i.aisle, ri.quantity, ri.unit, ri.note, i.food_key
 		FROM recipe_ingredients ri JOIN ingredients i ON i.id = ri.ingredient_id
 		WHERE ri.recipe_id = ANY($1::uuid[]) ORDER BY ri.position`, ids)
 	if err != nil {
@@ -84,12 +90,30 @@ func (s *Server) queryRecipes(ctx context.Context, householdID string, where str
 	for rows.Next() {
 		var rid string
 		var ing RecipeIngredient
-		if err := rows.Scan(&rid, &ing.IngredientID, &ing.Name, &ing.Aisle, &ing.Quantity, &ing.Unit, &ing.Note); err != nil {
+		if err := rows.Scan(&rid, &ing.IngredientID, &ing.Name, &ing.Aisle, &ing.Quantity, &ing.Unit, &ing.Note, &ing.FoodKey); err != nil {
 			return nil, err
 		}
 		byID[rid].Ingredients = append(byID[rid].Ingredients, ing)
 	}
-	return recipes, rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	for i := range recipes {
+		recipes[i].computeNutrition()
+	}
+	return recipes, nil
+}
+
+// computeNutrition fills in per-serving nutrition and the food groups the dish contains.
+func (rc *Recipe) computeNutrition() {
+	lines := make([]nutrition.Line, len(rc.Ingredients))
+	for i, ing := range rc.Ingredients {
+		lines[i] = nutrition.Line{Name: ing.Name, FoodKey: ing.FoodKey, Quantity: ing.Quantity, Unit: ing.Unit}
+		if f := lines[i].Resolve(); f != nil {
+			rc.Ingredients[i].Food = f.Key
+		}
+	}
+	rc.Nutrition = nutrition.Calc(lines, rc.Servings)
 }
 
 func (s *Server) listRecipes(w http.ResponseWriter, r *http.Request) error {
@@ -156,6 +180,17 @@ func (in *Recipe) validate() error {
 	}
 	in.Tags = tags
 	in.Cuisine = strings.TrimSpace(in.Cuisine)
+	months := []int{}
+	for _, m := range in.Months {
+		if m >= 1 && m <= 12 && !slices.Contains(months, m) {
+			months = append(months, m)
+		}
+	}
+	slices.Sort(months)
+	if len(months) == 12 {
+		months = []int{}
+	}
+	in.Months = months
 	if len(in.Ingredients) > 80 || len(in.Steps) > 60 {
 		return errBadRequest("Too many ingredients or steps")
 	}
@@ -192,53 +227,13 @@ func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) error {
 	if err := in.validate(); err != nil {
 		return err
 	}
-	id := chi.URLParam(r, "id")
-	steps, _ := json.Marshal(in.Steps)
-
 	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback(ctx)
-	if id == "" {
-		err = tx.QueryRow(ctx, `INSERT INTO recipes (household_id, title, description, category, meal_types, diet, cuisine, tags,
-			servings, prep_minutes, cook_minutes, prep_note, prep_lead_hours, steps, source_url, photo, favorite, rating, created_by)
-			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19) RETURNING id`,
-			u.HouseholdID, in.Title, in.Description, in.Category, in.MealTypes, in.Diet, in.Cuisine, in.Tags, in.Servings,
-			in.PrepMinutes, in.CookMinutes, in.PrepNote, in.PrepLeadHours, steps, in.SourceURL, in.Photo, in.Favorite, in.Rating, u.ID).Scan(&id)
-	} else {
-		var tag interface{ RowsAffected() int64 }
-		tag, err = tx.Exec(ctx, `UPDATE recipes SET title = $3, description = $4, category = $5, meal_types = $6, diet = $7,
-			cuisine = $8, tags = $9, servings = $10, prep_minutes = $11, cook_minutes = $12, prep_note = $13, prep_lead_hours = $14,
-			steps = $15, source_url = $16, photo = $17, favorite = $18, rating = $19, updated_at = now()
-			WHERE id = $1 AND household_id = $2`,
-			id, u.HouseholdID, in.Title, in.Description, in.Category, in.MealTypes, in.Diet, in.Cuisine, in.Tags, in.Servings,
-			in.PrepMinutes, in.CookMinutes, in.PrepNote, in.PrepLeadHours, steps, in.SourceURL, in.Photo, in.Favorite, in.Rating)
-		if err == nil && tag.RowsAffected() == 0 {
-			return errNotFound("Recipe not found")
-		}
-		if err == nil {
-			_, err = tx.Exec(ctx, `DELETE FROM recipe_ingredients WHERE recipe_id = $1`, id)
-		}
-	}
+	id, err := writeRecipe(ctx, tx, u, chi.URLParam(r, "id"), &in)
 	if err != nil {
-		return err
-	}
-	for i, ing := range in.Ingredients {
-		if strings.TrimSpace(ing.Name) == "" {
-			continue
-		}
-		iid, _, err := ensureIngredient(ctx, tx, u.HouseholdID, ing.Name)
-		if err != nil {
-			return err
-		}
-		if _, err := tx.Exec(ctx, `INSERT INTO recipe_ingredients (recipe_id, position, ingredient_id, quantity, unit, note)
-			VALUES ($1, $2, $3, $4, $5, $6)`, id, i, iid, ing.Quantity, normalizeUnit(ing.Unit), truncate(strings.TrimSpace(ing.Note), 200)); err != nil {
-			return err
-		}
-	}
-	// Keep plan entries' titles in sync with a renamed recipe.
-	if _, err := tx.Exec(ctx, `UPDATE meal_plan_items SET title = $2 WHERE recipe_id = $1 AND title <> $2`, id, in.Title); err != nil {
 		return err
 	}
 	if err := tx.Commit(ctx); err != nil {
@@ -251,6 +246,54 @@ func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	return ok(w, recipes[0])
+}
+
+// writeRecipe inserts (id "") or replaces a validated recipe and its ingredients.
+func writeRecipe(ctx context.Context, tx pgx.Tx, u *User, id string, in *Recipe) (string, error) {
+	steps, _ := json.Marshal(in.Steps)
+	var err error
+	if id == "" {
+		err = tx.QueryRow(ctx, `INSERT INTO recipes (household_id, title, description, category, meal_types, diet, cuisine, tags,
+			servings, prep_minutes, cook_minutes, prep_note, prep_lead_hours, steps, source_url, photo, favorite, rating, created_by, months)
+			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20) RETURNING id`,
+			u.HouseholdID, in.Title, in.Description, in.Category, in.MealTypes, in.Diet, in.Cuisine, in.Tags, in.Servings,
+			in.PrepMinutes, in.CookMinutes, in.PrepNote, in.PrepLeadHours, steps, in.SourceURL, in.Photo, in.Favorite, in.Rating, u.ID, in.Months).Scan(&id)
+	} else {
+		var tag interface{ RowsAffected() int64 }
+		tag, err = tx.Exec(ctx, `UPDATE recipes SET title = $3, description = $4, category = $5, meal_types = $6, diet = $7,
+			cuisine = $8, tags = $9, servings = $10, prep_minutes = $11, cook_minutes = $12, prep_note = $13, prep_lead_hours = $14,
+			steps = $15, source_url = $16, photo = $17, favorite = $18, rating = $19, months = $20, updated_at = now()
+			WHERE id = $1 AND household_id = $2`,
+			id, u.HouseholdID, in.Title, in.Description, in.Category, in.MealTypes, in.Diet, in.Cuisine, in.Tags, in.Servings,
+			in.PrepMinutes, in.CookMinutes, in.PrepNote, in.PrepLeadHours, steps, in.SourceURL, in.Photo, in.Favorite, in.Rating, in.Months)
+		if err == nil && tag.RowsAffected() == 0 {
+			return "", errNotFound("Recipe not found")
+		}
+		if err == nil {
+			_, err = tx.Exec(ctx, `DELETE FROM recipe_ingredients WHERE recipe_id = $1`, id)
+		}
+	}
+	if err != nil {
+		return "", err
+	}
+	for i, ing := range in.Ingredients {
+		if strings.TrimSpace(ing.Name) == "" {
+			continue
+		}
+		iid, _, err := ensureIngredient(ctx, tx, u.HouseholdID, ing.Name)
+		if err != nil {
+			return "", err
+		}
+		if _, err := tx.Exec(ctx, `INSERT INTO recipe_ingredients (recipe_id, position, ingredient_id, quantity, unit, note)
+			VALUES ($1, $2, $3, $4, $5, $6)`, id, i, iid, ing.Quantity, normalizeUnit(ing.Unit), truncate(strings.TrimSpace(ing.Note), 200)); err != nil {
+			return "", err
+		}
+	}
+	// Keep plan entries' titles in sync with a renamed recipe.
+	if _, err := tx.Exec(ctx, `UPDATE meal_plan_items SET title = $2 WHERE recipe_id = $1 AND title <> $2`, id, in.Title); err != nil {
+		return "", err
+	}
+	return id, nil
 }
 
 func (s *Server) patchRecipe(w http.ResponseWriter, r *http.Request) error {
@@ -291,13 +334,14 @@ func (s *Server) deleteRecipe(w http.ResponseWriter, r *http.Request) error {
 // ---- ingredients ----
 
 type Ingredient struct {
-	ID    string `json:"id" db:"id"`
-	Name  string `json:"name" db:"name"`
-	Aisle string `json:"aisle" db:"aisle"`
+	ID      string `json:"id" db:"id"`
+	Name    string `json:"name" db:"name"`
+	Aisle   string `json:"aisle" db:"aisle"`
+	FoodKey string `json:"foodKey" db:"food_key"`
 }
 
 func (s *Server) listIngredients(w http.ResponseWriter, r *http.Request) error {
-	rows, _ := s.db.Query(r.Context(), `SELECT id, name, aisle FROM ingredients WHERE household_id = $1 ORDER BY lower(name)`, currentUser(r).HouseholdID)
+	rows, _ := s.db.Query(r.Context(), `SELECT id, name, aisle, food_key FROM ingredients WHERE household_id = $1 ORDER BY lower(name)`, currentUser(r).HouseholdID)
 	out, err := pgx.CollectRows(rows, pgx.RowToStructByName[Ingredient])
 	if err != nil {
 		return err
@@ -308,20 +352,33 @@ func (s *Server) listIngredients(w http.ResponseWriter, r *http.Request) error {
 func (s *Server) updateIngredient(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	var in struct {
-		Aisle string `json:"aisle"`
+		Aisle   *string `json:"aisle"`
+		FoodKey *string `json:"foodKey"`
 	}
 	if err := decode(r, &in); err != nil {
 		return err
 	}
-	if !isAisle(in.Aisle) {
+	id := chi.URLParam(r, "id")
+	if in.FoodKey != nil {
+		if k := *in.FoodKey; k != "" && k != "-" && nutrition.ByKey(k) == nil {
+			return errBadRequest("Unknown food")
+		}
+		if _, err := s.db.Exec(r.Context(), `UPDATE ingredients SET food_key = $3 WHERE id = $1 AND household_id = $2`, id, u.HouseholdID, *in.FoodKey); err != nil {
+			return err
+		}
+		s.hub.Publish(u.HouseholdID, eventRecipes.from(r))
+		if in.Aisle == nil {
+			return noContent(w)
+		}
+	}
+	if in.Aisle == nil || !isAisle(*in.Aisle) {
 		return errBadRequest("Unknown aisle")
 	}
-	id := chi.URLParam(r, "id")
-	if _, err := s.db.Exec(r.Context(), `UPDATE ingredients SET aisle = $3 WHERE id = $1 AND household_id = $2`, id, u.HouseholdID, in.Aisle); err != nil {
+	if _, err := s.db.Exec(r.Context(), `UPDATE ingredients SET aisle = $3 WHERE id = $1 AND household_id = $2`, id, u.HouseholdID, *in.Aisle); err != nil {
 		return err
 	}
 	// Move it on the current shopping list too.
-	if _, err := s.db.Exec(r.Context(), `UPDATE grocery_items SET aisle = $3 WHERE ingredient_id = $1 AND household_id = $2`, id, u.HouseholdID, in.Aisle); err != nil {
+	if _, err := s.db.Exec(r.Context(), `UPDATE grocery_items SET aisle = $3 WHERE ingredient_id = $1 AND household_id = $2`, id, u.HouseholdID, *in.Aisle); err != nil {
 		return err
 	}
 	s.hub.Publish(u.HouseholdID, eventGrocery.from(r))

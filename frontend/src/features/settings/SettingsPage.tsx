@@ -1,14 +1,16 @@
 import clsx from 'clsx'
-import { Bell, Home, KeyRound, Palette, Tag, User, Users } from 'lucide-react'
+import { Bell, HeartPulse, Home, KeyRound, Palette, Tag, User, Users } from 'lucide-react'
 import { NavLink, Navigate, useParams } from 'react-router-dom'
 import { PageHeader } from '@/components/ui'
 import { AppearanceSettings, HouseholdSettings, LabelSettings, ProfileSettings } from './GeneralSettings'
+import { HealthSettings } from './HealthSettings'
 import { MembersSettings } from './MembersSettings'
 import { NotificationSettings } from './NotificationSettings'
 import { SecuritySettings } from './SecuritySettings'
 
 const tabs = [
   { id: 'profile', label: 'Profile', icon: User, el: <ProfileSettings /> },
+  { id: 'health', label: 'Health & nutrition', icon: HeartPulse, el: <HealthSettings /> },
   { id: 'notifications', label: 'Notifications', icon: Bell, el: <NotificationSettings /> },
   { id: 'security', label: 'Sign-in & security', icon: KeyRound, el: <SecuritySettings /> },
   { id: 'household', label: 'Household', icon: Home, el: <HouseholdSettings /> },
