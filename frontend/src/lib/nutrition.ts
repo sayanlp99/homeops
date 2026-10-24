@@ -60,7 +60,7 @@ export function progressTone(value: number, target: number, limit?: boolean): 's
 }
 
 export function useHealth(enabled = true) {
-  return useQuery({ queryKey: ['health'], queryFn: () => get<{ members: MemberHealth[]; avoidGroups: string[] }>('/health'), enabled, staleTime: 60_000 })
+  return useQuery({ queryKey: ['health'], queryFn: () => get<{ members: MemberHealth[]; avoidGroups: string[] }>('/nutrition/profiles'), enabled, staleTime: 60_000 })
 }
 
 export function useNutrition(from: string, to: string, enabled = true) {

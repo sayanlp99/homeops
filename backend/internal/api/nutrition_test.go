@@ -27,19 +27,20 @@ func TestNutritionFlow(t *testing.T) {
 		Members []memberHealthOut `json:"members"`
 	}
 	var hl healthList
-	she.do("GET", "/api/health", nil, 200, &hl)
+	she.do("GET", "/api/nutrition/profiles", nil, 200, &hl)
 	if len(hl.Members) != 2 || hl.Members[0].Profile != nil { // the viewer isn't listed
 		t.Fatalf("health: %+v", hl)
 	}
 	sheID, heID := hl.Members[0].UserID, hl.Members[1].UserID
-	cook.do("GET", "/api/health", nil, 403, nil)
+	cook.do("GET", "/api/nutrition/profiles", nil, 403, nil)
+	newClient(t, ts.URL).do("GET", "/api/health", nil, 200, nil) // the public liveness check isn't shadowed
 
 	year := time.Now().Year()
 	// Each can edit the other's details; a viewer can't.
-	she.do("PUT", "/api/health/"+heID, map[string]any{"sex": "male", "birthYear": year - 27, "heightCm": 170, "weightKg": 68, "goal": "maintain", "avoid": []string{"fish", "bogus"}}, 200, nil)
-	he.do("PUT", "/api/health/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 154.9, "weightKg": 59, "goal": "lose"}, 200, &hl)
-	cook.do("PUT", "/api/health/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 155, "weightKg": 50}, 403, nil)
-	she.do("PUT", "/api/health/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 20, "weightKg": 59}, 400, nil)
+	she.do("PUT", "/api/nutrition/profiles/"+heID, map[string]any{"sex": "male", "birthYear": year - 27, "heightCm": 170, "weightKg": 68, "goal": "maintain", "avoid": []string{"fish", "bogus"}}, 200, nil)
+	he.do("PUT", "/api/nutrition/profiles/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 154.9, "weightKg": 59, "goal": "lose"}, 200, &hl)
+	cook.do("PUT", "/api/nutrition/profiles/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 155, "weightKg": 50}, 403, nil)
+	she.do("PUT", "/api/nutrition/profiles/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 20, "weightKg": 59}, 400, nil)
 	if p := hl.Members[1].Profile; p == nil || !slices.Equal(p.Avoid, []string{"fish"}) || hl.Members[1].Targets.Kcal < 2100 {
 		t.Fatalf("his profile: %+v %+v", p, hl.Members[1].Targets)
 	}
@@ -47,7 +48,7 @@ func TestNutritionFlow(t *testing.T) {
 		t.Fatalf("her targets: %+v", tg)
 	}
 	// Overrides replace a computed target.
-	she.do("PUT", "/api/health/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 154.9, "weightKg": 59, "goal": "lose", "overrides": map[string]float64{"protein": 80}}, 200, &hl)
+	she.do("PUT", "/api/nutrition/profiles/"+sheID, map[string]any{"sex": "female", "birthYear": year - 29, "heightCm": 154.9, "weightKg": 59, "goal": "lose", "overrides": map[string]float64{"protein": 80}}, 200, &hl)
 	if hl.Members[0].Targets.Protein != 80 || hl.Members[0].Computed.Protein != 71 {
 		t.Fatalf("override: %+v", hl.Members[0])
 	}

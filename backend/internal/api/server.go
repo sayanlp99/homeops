@@ -171,9 +171,9 @@ func (s *Server) Routes() http.Handler {
 			r.Method("PATCH", "/ingredients/{id}", handler(s.updateIngredient))
 			r.Method("POST", "/ingredients/parse", handler(s.parseIngredients))
 
-			r.With(requireRole("member")).Method("GET", "/health", handler(s.listHealth))
-			r.Method("PUT", "/health/{userId}", handler(s.saveHealth))
-			r.Method("DELETE", "/health/{userId}", handler(s.deleteHealth))
+			r.With(requireRole("member")).Method("GET", "/nutrition/profiles", handler(s.listHealth))
+			r.Method("PUT", "/nutrition/profiles/{userId}", handler(s.saveHealth))
+			r.Method("DELETE", "/nutrition/profiles/{userId}", handler(s.deleteHealth))
 			r.Method("GET", "/nutrition/foods", handler(s.listFoods))
 			r.With(requireRole("member")).Method("GET", "/nutrition", handler(s.nutritionReport))
 

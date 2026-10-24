@@ -78,7 +78,7 @@ function PersonCard({ m, avoidGroups, isMe }: { m: MemberHealth; avoidGroups: st
   const heightCm = unit === 'cm' ? Number(f.heightCm) : Math.round(((Number(f.feet) || 0) * 12 + (Number(f.inches) || 0)) * 2.54 * 10) / 10
   const save = useMutation({
     mutationFn: () =>
-      put(`/health/${m.userId}`, {
+      put(`/nutrition/profiles/${m.userId}`, {
         sex: f.sex,
         birthYear: thisYear - Number(f.age),
         heightCm,
@@ -97,7 +97,7 @@ function PersonCard({ m, avoidGroups, isMe }: { m: MemberHealth; avoidGroups: st
     onError: (e: Error) => toast.error(e.message),
   })
   const remove = useMutation({
-    mutationFn: () => del(`/health/${m.userId}`),
+    mutationFn: () => del(`/nutrition/profiles/${m.userId}`),
     onSuccess: () => {
       toast.success('Details removed')
       qc.invalidateQueries({ queryKey: ['health'] })

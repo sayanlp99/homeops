@@ -92,10 +92,10 @@ the resolved `eaters`.
 
 ## Nutrition (member; viewers can't see or change it)
 
-`GET /health` lists each member's profile with computed and final daily `targets`;
-`PUT /health/{userId}` saves one (`sex`, `birthYear`, `heightCm`, `weightKg`,
+`GET /nutrition/profiles` lists each member's profile with computed and final daily `targets`;
+`PUT /nutrition/profiles/{userId}` saves one (`sex`, `birthYear`, `heightCm`, `weightKg`,
 `activity`, `goal`, `avoid`, `overrides`) for **any** member of the household;
-`DELETE /health/{userId}`. `GET /nutrition?from&to` returns per-person daily totals,
+`DELETE /nutrition/profiles/{userId}`. `GET /nutrition?from&to` returns per-person daily totals,
 averages and gaps with recipe ideas. `GET /nutrition/foods` is the food table.
 
 ## Money (member; personal rows visible to their owner only)

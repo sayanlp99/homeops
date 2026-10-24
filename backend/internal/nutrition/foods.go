@@ -184,7 +184,10 @@ var table = []*Food{
 	food("mozzarella", "Mozzarella", v{300, 22, 22, 2.2, 0, 0.4, 505, 0, 179, 7, 2.3, 2.9, 20, 76, 627}, density(0.45), group("dairy"), aka("mozzarella", "pizza cheese")),
 	food("cream", "Fresh cream", v{195, 2.7, 19, 3.7, 0, 0.1, 96, 0.6, 168, 4, 0.2, 0.3, 9, 132, 40}, density(1.0), group("dairy"), aka("cream", "fresh cream", "malai")),
 	food("egg", "Egg", v{143, 12.6, 9.5, 0.7, 0, 1.75, 56, 0, 160, 47, 0.89, 1.3, 12, 138, 142}, piece(50), group("egg"),
-		aka("egg", "eggs", "dim", "deem", "anda", "boiled egg", "boiled eggs", "hen egg", "egg whites")),
+		aka("egg", "eggs", "dim", "deem", "anda", "boiled egg", "boiled eggs", "hen egg", "hen eggs", "chicken egg", "chicken eggs", "duck egg", "duck eggs",
+			"duck or chicken eggs", "hasher dim", "haser dim")),
+	food("egg-white", "Egg white", v{52, 10.9, 0.7, 0.2, 0, 0.08, 7, 0, 0, 4, 0.09, 0.03, 11, 163, 166}, piece(33), group("egg"),
+		aka("egg white", "egg whites", "egg-white", "whites of eggs")),
 
 	// ---- meat & fish ----
 	food("chicken", "Chicken (curry cut, with bone)", v{119, 19.9, 3.9, 0, 0, 0.9, 10, 0, 18, 8, 0.5, 1.8, 23, 260, 85}, edible(0.75), group("chicken"),
