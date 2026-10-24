@@ -388,9 +388,9 @@ func (p *planner) shortOnProtein(date time.Time, userID string, day []plannedDis
 }
 
 // balance sizes each person's portions so the day lands near their calorie target.
-// Over target, portions shrink in this order: rice/chapati (to ½), then fried sides,
+// Over target, portions shrink in this order: rice/chapati (see stapleSteps), then fried sides,
 // specials and breakfast (to ½), then dal and vegetables (to ½), and protein last (to ¾,
-// only while protein is above target). Under target, only rice/chapati grow (up to 3).
+// only while protein is above target). Under target, only rice/chapati grow.
 // Fruit and dairy are never cut. A meal out is budgeted at about a third of the day.
 func (p *planner) balance(date time.Time, day []plannedDish) {
 	eatingOut := false
@@ -400,7 +400,8 @@ func (p *planner) balance(date time.Time, day []plannedDish) {
 	tier := func(d plannedDish) (int, float64) {
 		switch role := d.recipe.role(); {
 		case d.staple:
-			return 1, 0.5
+			_, floor, _ := stapleSteps(d.recipe)
+			return 1, floor
 		case role == "fruit" || role == "dairy":
 			return 0, 0
 		case role == "side" || role == "special" || role == "weekend" && !d.recipe.isProtein() || d.recipe.Category == "breakfast" || role == "khichdi":
@@ -452,7 +453,8 @@ func (p *planner) balance(date time.Time, day []plannedDish) {
 				d := day[i]
 				cur := p.eaters(d)[id]
 				next := cur + (t.Kcal-kcal)/float64(len(staples))/d.recipe.Nutrition.PerServing.Kcal
-				setPortion(i, math.Min(math.Round(next*4)/4, 3))
+				step, _, most := stapleSteps(d.recipe)
+				setPortion(i, math.Min(math.Round(next/step)*step, most))
 			}
 			continue
 		}
@@ -481,11 +483,25 @@ func (p *planner) balance(date time.Time, day []plannedDish) {
 				d := day[i]
 				_, floor := tier(d)
 				cur := p.eaters(d)[id]
-				next := math.Max(math.Round((cur-f*(cur-floor))*4)/4, floor)
+				step := 0.25
+				if d.staple {
+					step, _, _ = stapleSteps(d.recipe)
+				}
+				next := math.Max(math.Round((cur-f*(cur-floor))/step)*step, floor)
 				setPortion(i, next)
 			}
 		}
 	}
+}
+
+// stapleSteps: how a rice/bread portion moves. A recipe whose serving is one small
+// piece (a roti) goes in whole pieces, at least one and up to about 700 kcal; a plate
+// of rice goes in quarters, from half to three.
+func stapleSteps(r *Recipe) (step, floor, most float64) {
+	if k := r.Nutrition.PerServing.Kcal; k > 0 && k < 150 {
+		return 1, 1, math.Max(3, math.Floor(700/k))
+	}
+	return 0.25, 0.5, 3
 }
 
 func cloneMap(m map[string]float64) map[string]float64 {
@@ -497,7 +513,7 @@ func cloneMap(m map[string]float64) map[string]float64 {
 }
 
 // servingsFor: enough for everyone eating it now and later as leftovers, never less than
-// the recipe makes.
+// the recipe makes (except rotis, which are made to count).
 func (p *planner) servingsFor(day []plannedDish, i int) int {
 	d := day[i]
 	if d.recipe == nil {
@@ -512,7 +528,11 @@ func (p *planner) servingsFor(day []plannedDish, i int) int {
 			total += sum(p.eaters(o))
 		}
 	}
-	return min(max(int(math.Ceil(total-1e-9)), d.recipe.Servings, 1), 50)
+	least := d.recipe.Servings
+	if step, _, _ := stapleSteps(d.recipe); d.staple && step == 1 {
+		least = 1 // rotis are made to count, not by the batch
+	}
+	return min(max(int(math.Ceil(total-1e-9)), least, 1), 50)
 }
 
 func sum(m map[string]float64) float64 {
