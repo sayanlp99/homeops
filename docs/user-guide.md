@@ -133,6 +133,10 @@ they end. The bell icon (inbox) always has everything.
   its page layout, so ingredient groups like "Marinate the fish" become notes on
   each ingredient. Review the imported draft before saving. The server refuses to
   fetch addresses on your home network.
+- **Photos** (recipes and receipts) are shrunk on your phone before upload, like a
+  photo sent on WhatsApp: turned upright, at most 2048 px on the long side. They
+  look sharp full screen and only soften when zoomed in; a 4–8 MB camera photo
+  becomes a few hundred KB, so uploads are quick on mobile data.
 - **Grocery list:** built from planned, uncooked meals. Amounts are scaled to
   servings, units converted and summed, pantry stock subtracted, rounded up to
   what you'd buy and grouped by aisle. Move an item to another aisle once and it

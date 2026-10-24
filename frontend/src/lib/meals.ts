@@ -2,6 +2,7 @@ import { QueryClient, useMutation, useQuery, useQueryClient } from '@tanstack/re
 import { addDays, format, parseISO } from 'date-fns'
 import { toast } from 'sonner'
 import { ApiError, clientId, del, get, patch, post } from './api'
+import { shrinkImage } from './image'
 import type { Diet, GroceryItem, Ingredient, MealItem, PantryItem, Recipe, Slot, Suggestion } from './types'
 import { uuid } from './uuid'
 
@@ -238,7 +239,7 @@ export function useAction<V, R = unknown>(fn: (v: V) => Promise<R>, keys: string
 
 export async function uploadPhoto(file: File): Promise<string> {
   const body = new FormData()
-  body.append('file', file)
+  body.append('file', await shrinkImage(file), 'photo.jpg')
   const res = await fetch('/api/files', { method: 'POST', body, headers: { 'X-Requested-With': 'homeops', 'X-Client-Id': clientId } })
   const data = await res.json().catch(() => null)
   if (!res.ok) throw new Error(data?.message ?? 'Upload failed')

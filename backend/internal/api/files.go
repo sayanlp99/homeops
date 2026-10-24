@@ -33,9 +33,11 @@ func photoKey(id string, thumb bool) string {
 	return "files/" + id + ".jpg"
 }
 
-// storeImage decodes any JPEG/PNG/WebP, then stores a ≤1600px JPEG and a 480px thumbnail
-// in object storage. Re-encoding strips EXIF (including phone GPS data) and keeps
-// camera photos small.
+// storeImage decodes any JPEG/PNG/WebP, turns it upright, then stores a ≤2048px JPEG and
+// a 640px thumbnail in object storage: sharp at full screen, softer only when zoomed in,
+// like a photo sent on a chat app. Re-encoding strips EXIF (including phone GPS data)
+// and keeps camera photos to a few hundred KB. The app already shrinks photos before
+// upload; this is the same limit for everything else.
 func (s *Server) storeImage(ctx context.Context, r io.Reader) (string, error) {
 	raw, err := io.ReadAll(io.LimitReader(r, maxUploadBytes+1))
 	if err != nil {
@@ -44,17 +46,22 @@ func (s *Server) storeImage(ctx context.Context, r io.Reader) (string, error) {
 	if len(raw) > maxUploadBytes {
 		return "", errBadRequest("Image is too large (max 15 MB)")
 	}
-	img, _, err := image.Decode(bytes.NewReader(raw))
+	img, format, err := image.Decode(bytes.NewReader(raw))
 	if err != nil {
 		return "", errBadRequest("Unsupported image. Use JPEG, PNG or WebP.")
 	}
+	img = resize(img, 2048) // first, so turning it is cheap
+	if format == "jpeg" {
+		img = orient(img, jpegOrientation(raw))
+	}
 	id := uuid.NewString()
 	for _, v := range []struct {
-		thumb bool
-		max   int
-	}{{false, 1600}, {true, 480}} {
+		thumb   bool
+		max     int
+		quality int
+	}{{false, 2048, 85}, {true, 640, 80}} {
 		var buf bytes.Buffer
-		if err := jpeg.Encode(&buf, resize(img, v.max), &jpeg.Options{Quality: 82}); err != nil {
+		if err := jpeg.Encode(&buf, resize(img, v.max), &jpeg.Options{Quality: v.quality}); err != nil {
 			return "", err
 		}
 		if err := s.files.Put(ctx, photoKey(id, v.thumb), buf.Bytes(), "image/jpeg"); err != nil {
