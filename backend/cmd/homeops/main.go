@@ -46,6 +46,14 @@ func main() {
 		}
 		return
 	}
+	// `homeops photos [--dry-run]` brings photos saved before the current sizes up to date.
+	if len(os.Args) > 1 && os.Args[1] == "photos" {
+		if err := photos(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
+	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 	if err := run(); err != nil {
 		slog.Error("fatal", "err", err)
@@ -144,4 +152,23 @@ func pack(args []string) error {
 	}
 	fmt.Printf("Added %d recipes; %d already there.\n", added, len(skipped))
 	return nil
+}
+
+func photos(args []string) error {
+	dry := len(args) == 1 && args[0] == "--dry-run"
+	if len(args) > 1 || (len(args) == 1 && !dry) {
+		return errors.New("usage: homeops photos [--dry-run]")
+	}
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	db, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	return api.RefreshPhotos(ctx, cfg, db, dry, func(f string, a ...any) { fmt.Printf(f+"\n", a...) })
 }
