@@ -9,6 +9,8 @@ import (
 	"io"
 	"math"
 	"net/url"
+	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -169,46 +171,71 @@ func thumbCurrent(ctx context.Context, s *Server, id string, main image.Image) b
 	return edge >= 640 || edge >= max(mb.Dx(), mb.Dy())
 }
 
-// sourcePhoto fetches the recipe page's photo again. It's used only when it's bigger
-// than the saved one and looks like the same picture; otherwise it says why not ("" when
-// there's simply nothing better).
+// sourcePhoto looks through the recipe page's photos (sites offer several crops and
+// sizes) for a bigger copy of the saved one: same shape, same picture. It says why not
+// when there isn't one ("" when the saved photo is simply already the biggest).
 func (s *Server) sourcePhoto(ctx context.Context, source string, saved image.Image) ([]byte, string) {
 	u, err := url.Parse(source)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") {
 		return nil, ""
 	}
-	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	ctx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	page, finalURL, err := fetch(ctx, u.String(), 5<<20)
 	if err != nil {
 		return nil, "source page unavailable"
 	}
 	final, _ := url.Parse(finalURL)
-	rec := parseRecipePage(string(page), final)
-	if rec.Photo == "" {
+	var links []string
+	if rec := parseRecipePage(string(page), final); rec.Photo != "" {
+		links = append(links, rec.Photo)
+	}
+	for _, m := range imageLinkRe.FindAllString(string(page), -1) {
+		if !slices.Contains(links, m) {
+			links = append(links, m)
+		}
+	}
+	if len(links) == 0 {
 		return nil, "the source page has no photo"
 	}
-	imgURL, err := final.Parse(rec.Photo)
-	if err != nil {
-		return nil, "bad photo link on the source page"
+	sb := saved.Bounds()
+	shape := float64(sb.Dx()) / float64(sb.Dy())
+	var best []byte
+	bestEdge, sameShape := max(sb.Dx(), sb.Dy()), false
+	for _, l := range links[:min(len(links), 60)] {
+		ref, err := final.Parse(strings.ReplaceAll(l, "&amp;", "&"))
+		if err != nil {
+			continue
+		}
+		data, _, err := fetch(ctx, ref.String(), maxUploadBytes)
+		if err != nil {
+			continue
+		}
+		cfg, _, err := image.DecodeConfig(bytes.NewReader(data))
+		if err != nil || cfg.Height == 0 || math.Abs(float64(cfg.Width)/float64(cfg.Height)-shape) > 0.03 {
+			continue
+		}
+		sameShape = true
+		if max(cfg.Width, cfg.Height) <= bestEdge {
+			continue
+		}
+		img, _, err := image.Decode(bytes.NewReader(data))
+		if err != nil || !samePicture(saved, img) {
+			continue
+		}
+		best, bestEdge = data, max(cfg.Width, cfg.Height)
 	}
-	data, _, err := fetch(ctx, imgURL.String(), maxUploadBytes)
-	if err != nil {
-		return nil, "source photo unavailable"
+	switch {
+	case best != nil:
+		return best, ""
+	case !sameShape:
+		return nil, "no photo of the same shape on the source page"
 	}
-	img, _, err := image.Decode(bytes.NewReader(data))
-	if err != nil {
-		return nil, "source photo unreadable"
-	}
-	sb, cb := saved.Bounds(), img.Bounds()
-	if max(cb.Dx(), cb.Dy()) <= max(sb.Dx(), sb.Dy()) {
-		return nil, "" // the saved photo is already the source's full size
-	}
-	if !samePicture(saved, img) {
-		return nil, "the source photo is a different picture"
-	}
-	return data, ""
+	return nil, ""
 }
+
+// imageLinkRe finds photo links in a page: src, srcset and CSS url(…) alike.
+var imageLinkRe = regexp.MustCompile(`(?i)(?:https?://|/)[^\s"'()<>,]+?\.(?:avif|webp|jpe?g|png)(?:\?[^\s"'()<>,]*)?`)
 
 // samePicture compares two images at 16×16 grey: a photo re-saved or resized matches
 // closely; a different photo doesn't.
