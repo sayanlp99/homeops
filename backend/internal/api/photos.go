@@ -273,3 +273,35 @@ func hostOf(raw string) string {
 	}
 	return "the source"
 }
+
+// SetRecipePhoto gives a household's recipe (matched by title, ignoring case) a new
+// photo from an image file, processed like an upload. The old photo is removed unless
+// something else still uses it.
+func SetRecipePhoto(ctx context.Context, cfg config.Config, db *pgxpool.Pool, household, title string, data []byte) error {
+	var rid, old string
+	err := db.QueryRow(ctx, `SELECT r.id, r.photo FROM recipes r JOIN households h ON h.id = r.household_id
+		WHERE (h.id::text = $1 OR lower(h.name) = lower($1)) AND lower(r.title) = lower($2)`, household, strings.TrimSpace(title)).Scan(&rid, &old)
+	if err != nil {
+		return fmt.Errorf("recipe %q in %q: %w", title, household, err)
+	}
+	s, err := New(ctx, cfg, db)
+	if err != nil {
+		return err
+	}
+	id, err := s.storeImage(ctx, bytes.NewReader(data))
+	if err != nil {
+		return err
+	}
+	if _, err := db.Exec(ctx, `UPDATE recipes SET photo = $2, updated_at = now() WHERE id = $1`, rid, id); err != nil {
+		s.deletePhoto(ctx, id)
+		return err
+	}
+	if old != "" {
+		var refs int
+		db.QueryRow(ctx, `SELECT (SELECT count(*) FROM recipes WHERE photo = $1) + (SELECT count(*) FROM money_transactions WHERE receipt = $1)`, old).Scan(&refs)
+		if refs == 0 {
+			s.deletePhoto(ctx, old)
+		}
+	}
+	return nil
+}

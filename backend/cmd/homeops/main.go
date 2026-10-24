@@ -54,6 +54,14 @@ func main() {
 		}
 		return
 	}
+	// `homeops recipe-photo <household> <recipe title> <image file>` sets a recipe's photo.
+	if len(os.Args) > 1 && os.Args[1] == "recipe-photo" {
+		if err := recipePhoto(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
+	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 	if err := run(); err != nil {
 		slog.Error("fatal", "err", err)
@@ -171,4 +179,30 @@ func photos(args []string) error {
 	defer db.Close()
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn})))
 	return api.RefreshPhotos(ctx, cfg, db, dry, func(f string, a ...any) { fmt.Printf(f+"\n", a...) })
+}
+
+func recipePhoto(args []string) error {
+	if len(args) != 3 {
+		return errors.New("usage: homeops recipe-photo <household> <recipe title> <image file>")
+	}
+	data, err := os.ReadFile(args[2])
+	if err != nil {
+		return err
+	}
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	db, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn})))
+	if err := api.SetRecipePhoto(ctx, cfg, db, args[0], args[1], data); err != nil {
+		return err
+	}
+	fmt.Printf("Photo set for %s.\n", args[1])
+	return nil
 }

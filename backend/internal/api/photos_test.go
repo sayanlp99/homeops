@@ -82,6 +82,26 @@ func TestRefreshPhotos(t *testing.T) {
 	if _, err := s.readFile(ctx, photoKey(old, false)); err == nil {
 		t.Error("the old photo wasn't removed")
 	}
+	// Setting a photo from a file replaces the old one.
+	png := enc(testPhoto(2400, 1792, 90))
+	if err := SetRecipePhoto(ctx, s.cfg, s.db, "home", "shukto", png); err != nil {
+		t.Fatal(err)
+	}
+	prev := r.Photo
+	c.do("GET", "/api/recipes/"+r.ID, nil, 200, &r)
+	if r.Photo == prev {
+		t.Fatal("photo not replaced")
+	}
+	if cfg, _, _ := image.DecodeConfig(bytes.NewReader(must(s.readFile(ctx, photoKey(r.Photo, false))))); cfg.Width != 2048 {
+		t.Fatalf("stored width %d", cfg.Width)
+	}
+	if _, err := s.readFile(ctx, photoKey(prev, false)); err == nil {
+		t.Error("the replaced photo wasn't removed")
+	}
+	if err := SetRecipePhoto(ctx, s.cfg, s.db, "home", "no such dish", png); err == nil {
+		t.Error("unknown recipe accepted")
+	}
+
 	// Re-running finds nothing to do.
 	before := r.Photo
 	if err := RefreshPhotos(ctx, s.cfg, s.db, false, logf); err != nil {
@@ -102,4 +122,11 @@ func TestDecodeAVIF(t *testing.T) {
 	if err != nil || format != "avif" || img.Bounds().Dx() != 64 {
 		t.Fatalf("avif: %v %q", err, format)
 	}
+}
+
+func must[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
 }
