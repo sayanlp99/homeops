@@ -115,6 +115,7 @@ sudo -u postgres dropdb homeops_migtest
 | Add someone | Settings → Members → invite by email (owner/admin) |
 | New household | Administration → New household (platform administrator) |
 | Someone forgot their password and email isn't set up | `sudo ~/homeops/infra/native/reset-password.sh <username or email>`: sets a new password (typed hidden) and signs them out everywhere. With mail set up ([mail.md](mail.md)), they can use *Forgot password?* themselves |
+| Add a recipe pack without the web app | `sudo ~/homeops/infra/native/import-pack.sh <username> bengali-home`: adds it to their household as them; titles already there are skipped |
 | Make someone platform administrator | Administration → People → *Make admin* |
 | Sign out a lost phone | That person: Settings → Sign-in & security → sessions → sign out |
 | Change the server's sudo password | `passwd` (SSH is key-only; see [security.md](security.md)) |

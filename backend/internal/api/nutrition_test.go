@@ -66,6 +66,13 @@ func TestNutritionFlow(t *testing.T) {
 	if res.Added != 0 || len(res.Skipped) != 87 {
 		t.Fatalf("re-import: %+v", res)
 	}
+	// The command-line import uses the same path, as a household member.
+	if n, sk, err := ImportPack(t.Context(), s.db, "sayan", "", "bengali-home"); err != nil || n != 0 || len(sk) != 87 {
+		t.Fatalf("cli import: %d %d %v", n, len(sk), err)
+	}
+	if _, _, err := ImportPack(t.Context(), s.db, "cook", "", "bengali-home"); err == nil {
+		t.Fatal("a viewer imported a pack")
+	}
 	var recipes []Recipe
 	she.do("GET", "/api/recipes", nil, 200, &recipes)
 	byTitle := map[string]Recipe{}

@@ -37,6 +37,15 @@ func main() {
 		}
 		return
 	}
+	// `homeops pack <username|email> <pack> [household]` adds a recipe pack to that
+	// person's household, as if they had pressed Add under Recipes → Recipe packs.
+	if len(os.Args) > 1 && os.Args[1] == "pack" {
+		if err := pack(os.Args[2:]); err != nil {
+			fmt.Fprintln(os.Stderr, "error:", err)
+			os.Exit(1)
+		}
+		return
+	}
 	slog.SetDefault(slog.New(slog.NewTextHandler(os.Stdout, nil)))
 	if err := run(); err != nil {
 		slog.Error("fatal", "err", err)
@@ -108,5 +117,31 @@ func passwd(args []string) error {
 		return err
 	}
 	fmt.Printf("Password changed for %s; they've been signed out everywhere.\n", args[0])
+	return nil
+}
+
+func pack(args []string) error {
+	if len(args) < 2 || len(args) > 3 {
+		return errors.New("usage: homeops pack <username or email> <pack name> [household]")
+	}
+	household := ""
+	if len(args) == 3 {
+		household = args[2]
+	}
+	cfg, err := config.Load()
+	if err != nil {
+		return err
+	}
+	ctx := context.Background()
+	db, err := store.Open(ctx, cfg.DatabaseURL)
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+	added, skipped, err := api.ImportPack(ctx, db, args[0], household, args[1])
+	if err != nil {
+		return err
+	}
+	fmt.Printf("Added %d recipes; %d already there.\n", added, len(skipped))
 	return nil
 }
