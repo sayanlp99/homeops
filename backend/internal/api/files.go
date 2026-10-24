@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	_ "github.com/gen2brain/avif" // BongEats and other sites serve AVIF
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"golang.org/x/image/draw"
@@ -48,7 +49,7 @@ func (s *Server) storeImage(ctx context.Context, r io.Reader) (string, error) {
 	}
 	img, format, err := image.Decode(bytes.NewReader(raw))
 	if err != nil {
-		return "", errBadRequest("Unsupported image. Use JPEG, PNG or WebP.")
+		return "", errBadRequest("Unsupported image. Use JPEG, PNG, WebP or AVIF.")
 	}
 	img = resize(img, 2048) // first, so turning it is cheap
 	if format == "jpeg" {

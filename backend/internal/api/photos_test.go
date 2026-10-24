@@ -6,6 +6,8 @@ import (
 	"image/color"
 	"image/jpeg"
 	"testing"
+
+	"github.com/gen2brain/avif"
 )
 
 func testPhoto(w, h int, shade uint8) image.Image {
@@ -88,5 +90,16 @@ func TestRefreshPhotos(t *testing.T) {
 	c.do("GET", "/api/recipes/"+r.ID, nil, 200, &r)
 	if r.Photo != before {
 		t.Error("a second run changed the photo again")
+	}
+}
+
+func TestDecodeAVIF(t *testing.T) {
+	var b bytes.Buffer
+	if err := avif.Encode(&b, testPhoto(64, 48, 40)); err != nil {
+		t.Fatal(err)
+	}
+	img, format, err := image.Decode(&b)
+	if err != nil || format != "avif" || img.Bounds().Dx() != 64 {
+		t.Fatalf("avif: %v %q", err, format)
 	}
 }
