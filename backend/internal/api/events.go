@@ -24,6 +24,7 @@ const (
 	eventPantry        topic = "pantry"
 	eventMoney         topic = "money"
 	eventRetro         topic = "retro"
+	eventNotes         topic = "notes"
 )
 
 // from builds an event attributed to the request's client (nil for background jobs).

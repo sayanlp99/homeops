@@ -13,6 +13,7 @@ import { useSprints } from '@/lib/sprints'
 import { byRank, useTasks } from '@/lib/tasks'
 import { openQuickAdd } from '@/lib/ui'
 import { TaskRow } from '../tasks/TaskList'
+import { FridgeNotes } from './FridgeNotes'
 
 function greeting() {
   const h = new Date().getHours()
@@ -75,6 +76,8 @@ export function HomePage() {
           </Link>
         </Card>
       )}
+
+      <FridgeNotes />
 
       <Card className="grid grid-cols-2 gap-4 p-4 lg:grid-cols-4">
         <Stat label="Due today" value={v.dueToday.length} sub="assigned to you" />

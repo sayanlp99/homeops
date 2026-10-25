@@ -16,6 +16,7 @@ const topicKeys: Record<string, string[][]> = {
   pantry: [['pantry'], ['suggest']],
   money: [['money']],
   retro: [['retro'], ['team']],
+  notes: [['notes']],
 }
 
 export type LiveState = 'connecting' | 'live' | 'offline'

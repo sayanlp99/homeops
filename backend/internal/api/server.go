@@ -184,6 +184,11 @@ func (s *Server) Routes() http.Handler {
 			r.Method("PATCH", "/meals/{id}", handler(s.updateMeal))
 			r.Method("DELETE", "/meals/{id}", handler(s.deleteMeal))
 
+			r.Method("GET", "/notes", handler(s.listNotes))
+			r.Method("POST", "/notes", handler(s.createNote))
+			r.Method("PATCH", "/notes/{id}", handler(s.updateNote))
+			r.Method("DELETE", "/notes/{id}", handler(s.deleteNote))
+
 			r.Method("GET", "/grocery", handler(s.listGrocery))
 			r.Method("POST", "/grocery", handler(s.addGrocery))
 			r.Method("DELETE", "/grocery", handler(s.clearGrocery))

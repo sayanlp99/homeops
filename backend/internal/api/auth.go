@@ -11,6 +11,7 @@ import (
 	"net/mail"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5"
@@ -404,7 +405,7 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) error {
 
 // ---- profile & sessions ----
 
-var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremony", "meals", "budget", "kudos"}
+var notifyKinds = []string{"task_assigned", "task_due", "task_overdue", "ceremony", "meals", "budget", "kudos", "notes"}
 
 func (s *Server) updateMe(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
@@ -579,11 +580,16 @@ func (o *optionalString) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// truncate keeps at most n bytes, never cutting a character in half (Postgres rejects
+// broken UTF-8, and Bengali or emoji are several bytes each).
 func truncate(s string, n int) string {
-	if len(s) > n {
-		return s[:n]
+	if len(s) <= n {
+		return s
 	}
-	return s
+	for n > 0 && !utf8.RuneStart(s[n]) {
+		n--
+	}
+	return s[:n]
 }
 
 func isHexColor(c string) bool {

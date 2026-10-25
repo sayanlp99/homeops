@@ -29,6 +29,12 @@
   --viz-grid: #ebedf0;
   --viz-ref: #9aa1ac;
   --shadow-lg: 0 12px 32px -8px rgb(16 24 40 / 0.18), 0 4px 8px -4px rgb(16 24 40 / 0.08);
+  --note-yellow: #fff4a8;
+  --note-pink: #ffd6e5;
+  --note-blue: #cfe6ff;
+  --note-green: #d3f2d0;
+  --note-orange: #ffdcb8;
+  --note-ink: #2b2a24;
   color-scheme: light;
 }
 
@@ -58,6 +64,12 @@
   --viz-grid: #22262f;
   --viz-ref: #6b7385;
   --shadow-lg: 0 16px 40px -8px rgb(0 0 0 / 0.6);
+  --note-yellow: #4a4317;
+  --note-pink: #4d2434;
+  --note-blue: #1d3550;
+  --note-green: #1f3d22;
+  --note-orange: #4d3219;
+  --note-ink: #f1eee4;
   color-scheme: dark;
 }
 
@@ -84,6 +96,12 @@
   --color-success-soft: var(--success-soft);
   --shadow-card: var(--shadow);
   --shadow-pop: var(--shadow-lg);
+  --color-note-yellow: var(--note-yellow);
+  --color-note-pink: var(--note-pink);
+  --color-note-blue: var(--note-blue);
+  --color-note-green: var(--note-green);
+  --color-note-orange: var(--note-orange);
+  --color-note-ink: var(--note-ink);
 }
 
 @layer base {

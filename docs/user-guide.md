@@ -6,6 +6,7 @@ pantry and budget, shared live between everyone in a household.
 - [Getting in](#getting-in)
 - [Households and roles](#households-and-roles)
 - [Phones and notifications](#phones-and-notifications)
+- [Fridge notes](#fridge-notes)
 - [Tasks, sprints and chores](#tasks-sprints-and-chores)
 - [Meals, recipes, grocery and pantry](#meals-recipes-grocery-and-pantry)
 - [Nutrition](#nutrition)
@@ -101,10 +102,21 @@ You get notified about:
 - meal prep reminders (e.g. "soak rajma" 10 hours before lunch) and "use soon"
   pantry items at 09:00;
 - budget alerts at 80% and 100% of a category, and bill reminders;
-- kudos from others.
+- kudos from others;
+- a new fridge note from someone else.
 
 Each kind can be switched off per person, and **quiet hours** hold pushes until
 they end. The bell icon (inbox) always has everything.
+
+## Fridge notes
+
+The **On the fridge** board at the top of Home is for quick notes to each other,
+like sticky notes on a real fridge: "gas booked for Tuesday", "buy curd on the
+way back". Tap **+ Note**, write it (up to 500 characters, any language), pick a
+colour and optionally **pin** it so it stays first. Tap a note to edit, recolour,
+pin or delete it. Everyone in the household sees the same board straight away,
+and the others get a notification (switch it off under Settings → Notifications →
+*Fridge notes*). Viewers can read notes but not change them.
 
 ## Tasks, sprints and chores
 
