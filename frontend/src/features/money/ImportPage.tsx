@@ -152,7 +152,7 @@ function StatementImport() {
     <Card>
       <CardHeader title="Import a statement" subtitle="CSV, Excel (.xlsx), HTML-style .xls, or HDFC's text (.txt) download. Re-importing an overlapping period skips rows already imported." />
       <div className="space-y-4 p-4">
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto]">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_auto]">
           <Field label="Account">
             <Select value={accountId} onChange={(e) => setAccountId(e.target.value)}>
               <option value="">+ New account…</option>
@@ -327,7 +327,7 @@ function Mapper({ sample, mapping, onChange, onApply }: { sample: string[][]; ma
   return (
     <div className="space-y-3 rounded-md border border-border p-3">
       <p className="text-[12px] text-muted">Tell us which column is which. This layout is remembered for the account.</p>
-      <div className="grid gap-2 sm:grid-cols-4">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-4">
         <Field label="Header row">
           <Select value={mapping.headerRow} onChange={(e) => onChange({ ...mapping, headerRow: Number(e.target.value) })}>
             {sample.map((r, i) => (
@@ -431,7 +431,7 @@ function InvoiceImport() {
                 <AlertTriangle className="size-4" /> This order is already recorded.
               </div>
             )}
-            <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_320px]">
               <div className="space-y-3">
                 {inv ? (
                   <div className="overflow-hidden rounded-md border border-border">

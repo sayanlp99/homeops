@@ -129,7 +129,7 @@ function RetroBoard({ data }: { data: RetroState }) {
           </>
         )}
       </Card>
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-3">
         {RETRO_COLS.map((col) => (
           <Column key={col.value} col={col.value} retroId={retro.id} status={retro.status} cards={cards.filter((c) => c.col === col.value)} />
         ))}

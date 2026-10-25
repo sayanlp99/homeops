@@ -110,7 +110,7 @@ export function AppShell() {
             <WifiOff className="size-3.5" /> Offline — showing saved data. Changes will sync when you reconnect.
           </div>
         )}
-        <main className={clsx('mx-auto w-full max-w-[1400px] flex-1 px-4 pt-4 pb-28 lg:px-6 lg:pt-5 lg:pb-8', fullHeight && 'lg:flex lg:h-[calc(100dvh-48px-var(--titlebar-inset))] lg:flex-col lg:overflow-hidden')}>
+        <main className={clsx('mx-auto w-full max-w-[1400px] flex-1 overflow-x-clip px-4 pt-4 pb-28 lg:px-6 lg:pt-5 lg:pb-8', fullHeight && 'lg:flex lg:h-[calc(100dvh-48px-var(--titlebar-inset))] lg:flex-col lg:overflow-hidden')}>
           <Outlet />
         </main>
       </div>

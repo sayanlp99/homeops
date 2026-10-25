@@ -86,7 +86,7 @@ export function NutritionPage() {
         </Card>
       ) : (
         <>
-          <div className="grid gap-4 xl:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
             {people.map((p) => (
               <PersonCard key={p.userId} p={p} start={start} goal={health?.members.find((m) => m.userId === p.userId)?.profile?.goal} />
             ))}

@@ -181,7 +181,7 @@ function PersonCard({ m, avoidGroups, isMe }: { m: MemberHealth; avoidGroups: st
             </div>
           </Field>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <Field label="Activity" hint={ACTIVITY_LABELS[f.activity].hint}>
             <Select value={f.activity} onChange={(e) => set({ activity: e.target.value as Activity })}>
               {Object.entries(ACTIVITY_LABELS).map(([k, v]) => (

@@ -124,7 +124,7 @@ export function AddDishDialog({ target, planned, onClose }: { target: { date: st
           ) : suggestions?.length === 0 ? (
             <p className="px-1 py-4 text-[13px] text-subtle">No more recipes fit this slot. Type a dish above.</p>
           ) : (
-            <ul className="grid gap-2 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {(suggestions ?? []).map((s) => (
                 <li key={s.recipeId}>
                   <button
