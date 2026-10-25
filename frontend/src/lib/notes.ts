@@ -19,11 +19,13 @@ export interface FridgeNote {
   text: string
   color: NoteColor
   pinned: boolean
+  /** Shown through this day (YYYY-MM-DD), then taken down. */
+  expiresOn: string | null
   createdAt: string
   updatedAt: string
 }
 
-export type NotePatch = Partial<Pick<FridgeNote, 'text' | 'color' | 'pinned'>>
+export type NotePatch = Partial<Pick<FridgeNote, 'text' | 'color' | 'pinned' | 'expiresOn'>>
 
 export const useNotes = () => useQuery({ queryKey: ['notes'], queryFn: () => get<FridgeNote[]>('/notes') })
 
@@ -47,7 +49,7 @@ export function useNoteActions() {
     onSettled: () => qc.invalidateQueries({ queryKey: ['notes'] }),
   }
   const create = useMutation({
-    mutationFn: (n: { id: string; text: string; color: NoteColor; pinned: boolean; authorId: string }) => post<FridgeNote>('/notes', n),
+    mutationFn: (n: { id: string; text: string; color: NoteColor; pinned: boolean; expiresOn: string | null; authorId: string }) => post<FridgeNote>('/notes', n),
     onMutate: async (n) => {
       await qc.cancelQueries({ queryKey: ['notes'] })
       const now = new Date().toISOString()
@@ -72,7 +74,7 @@ export function useNoteActions() {
     ...settle,
   })
   return {
-    add: (authorId: string, n: { text: string; color: NoteColor; pinned: boolean }) => create.mutate({ ...n, id: uuid(), authorId }),
+    add: (authorId: string, n: { text: string; color: NoteColor; pinned: boolean; expiresOn: string | null }) => create.mutate({ ...n, id: uuid(), authorId }),
     update: (id: string, changes: NotePatch) => update.mutate({ id, changes }),
     remove: (id: string) => remove.mutate(id),
   }

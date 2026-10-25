@@ -1,15 +1,17 @@
 package api
 
 import (
+	"context"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestFridgeNotes(t *testing.T) {
 	if testing.Short() {
 		t.Skip("integration test")
 	}
-	_, ts, _ := startTestServer(t, 54336)
+	srv, ts, db := startTestServer(t, 54336)
 	a := newClient(t, ts.URL)
 	a.do("POST", "/api/setup", map[string]any{"householdName": "Home", "email": "asha@example.com", "username": "asha", "displayName": "Asha", "password": "hunter2hunter2"}, 204, nil)
 	var inv map[string]any
@@ -61,5 +63,51 @@ func TestFridgeNotes(t *testing.T) {
 	a.do("GET", "/api/notes", nil, 200, &list)
 	if len(list) != 1 {
 		t.Fatalf("after delete: %+v", list)
+	}
+
+	// Expiry: a note shows through its last day, then comes down by itself.
+	ctx := context.Background()
+	var hid string
+	db.QueryRow(ctx, `SELECT household_id FROM fridge_notes WHERE id = $1`, milk.ID).Scan(&hid)
+	today, err := srv.householdToday(ctx, hid)
+	if err != nil {
+		t.Fatal(err)
+	}
+	day, _ := time.Parse(time.DateOnly, today)
+	yesterday, tomorrow := day.AddDate(0, 0, -1).Format(time.DateOnly), day.AddDate(0, 0, 1).Format(time.DateOnly)
+	a.do("POST", "/api/notes", map[string]any{"text": "Too late", "expiresOn": yesterday}, 400, nil)
+	a.do("POST", "/api/notes", map[string]any{"text": "Bad date", "expiresOn": "next week"}, 400, nil)
+	a.do("POST", "/api/notes", map[string]any{"text": "Bad date", "expiresOn": 7}, 400, nil)
+	var today1, soon FridgeNote
+	a.do("POST", "/api/notes", map[string]any{"text": "Plumber comes today", "expiresOn": today}, 201, &today1)
+	if today1.ExpiresOn == nil || *today1.ExpiresOn != today {
+		t.Fatalf("expiry: %+v", today1)
+	}
+	a.do("PATCH", "/api/notes/"+milk.ID, map[string]any{"expiresOn": tomorrow}, 200, &soon)
+	if soon.ExpiresOn == nil || *soon.ExpiresOn != tomorrow || soon.Text != milk.Text {
+		t.Fatalf("set expiry: %+v", soon)
+	}
+	a.do("PATCH", "/api/notes/"+milk.ID, map[string]any{"pinned": false}, 200, &soon)
+	if soon.ExpiresOn == nil {
+		t.Fatal("a patch without expiresOn must keep it")
+	}
+	a.do("PATCH", "/api/notes/"+milk.ID, map[string]any{"expiresOn": nil}, 200, &soon)
+	if soon.ExpiresOn != nil {
+		t.Fatalf("clear expiry: %+v", soon)
+	}
+	// Yesterday's note is hidden at once and deleted by the scheduler.
+	db.Exec(ctx, `UPDATE fridge_notes SET expires_on = $2::date WHERE id = $1`, today1.ID, yesterday)
+	a.do("GET", "/api/notes", nil, 200, &list)
+	if len(list) != 1 || list[0].ID != milk.ID {
+		t.Fatalf("expired note should be hidden: %+v", list)
+	}
+	h, _ := srv.getHousehold(ctx, hid)
+	if err := srv.removeExpiredNotes(ctx, h, today); err != nil {
+		t.Fatal(err)
+	}
+	var left int
+	db.QueryRow(ctx, `SELECT count(*) FROM fridge_notes`).Scan(&left)
+	if left != 1 {
+		t.Fatalf("expired note should be deleted, %d left", left)
 	}
 }

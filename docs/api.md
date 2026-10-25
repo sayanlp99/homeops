@@ -81,7 +81,7 @@ POST `/{id}/start`, `/{id}/complete`); `/recurring` (CRUD); `/retros`, `/retro`,
 `/recipes` (CRUD, POST `/import` `{url}`); `/ingredients` (GET, PATCH, POST `/parse`);
 `/meals` (CRUD, GET `/suggest`, POST `/autofill`); `/grocery` (CRUD, POST `/generate`,
 `/complete`, GET `/trips`, DELETE clears the list); `/notes` (fridge notes: GET, POST
-`{text, color, pinned}`, PATCH, DELETE); `/pantry` (CRUD, POST `/restock`); `/files` (POST upload,
+`{text, color, pinned, expiresOn}`, PATCH, DELETE; `expiresOn` is the last day shown, null for never); `/pantry` (CRUD, POST `/restock`); `/files` (POST upload,
 GET `/{id}`).
 
 Recipes carry `nutrition` (`perServing`, `coverage`, `missing`, `contains`) and

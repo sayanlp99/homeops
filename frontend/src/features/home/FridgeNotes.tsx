@@ -1,9 +1,10 @@
 import clsx from 'clsx'
-import { Check, Pin, Plus, StickyNote, Trash2 } from 'lucide-react'
+import { addDays, format, parseISO } from 'date-fns'
+import { Check, Clock, Pin, Plus, StickyNote, Trash2 } from 'lucide-react'
 import { useState } from 'react'
 import { Modal } from '@/components/Dialog'
-import { Avatar, Button, Card, CardHeader, Switch, Textarea } from '@/components/ui'
-import { timeAgo } from '@/lib/format'
+import { Avatar, Button, Card, CardHeader, Input, Switch, Textarea } from '@/components/ui'
+import { timeAgo, todayISO } from '@/lib/format'
 import { NOTE_COLORS, type FridgeNote, type NoteColor, useNoteActions, useNotes } from '@/lib/notes'
 import { hasRole, useSession } from '@/lib/session'
 
@@ -19,10 +20,21 @@ const paper: Record<NoteColor, string> = {
 const tilts = ['-rotate-1', 'rotate-1', 'rotate-0', '-rotate-[0.6deg]', 'rotate-[0.8deg]']
 const tiltFor = (id: string) => tilts[[...id].reduce((s, c) => s + c.charCodeAt(0), 0) % tilts.length]
 
+const isoIn = (days: number) => format(addDays(new Date(), days), 'yyyy-MM-dd')
+
+/** "Today only", "Until tomorrow", "Until Tue 28 Oct". */
+function untilLabel(expiresOn: string) {
+  if (expiresOn === todayISO()) return 'Today only'
+  if (expiresOn === isoIn(1)) return 'Until tomorrow'
+  return `Until ${format(parseISO(expiresOn), 'EEE d MMM')}`
+}
+
 /** Sticky notes on the household's fridge: quick messages both partners see on Home. */
 export function FridgeNotes() {
   const { user } = useSession()
-  const { data: notes = [], isLoading } = useNotes()
+  const { data: all = [], isLoading } = useNotes()
+  const today = todayISO()
+  const notes = all.filter((n) => !n.expiresOn || n.expiresOn >= today) // past midnight, before the next refetch
   const [editing, setEditing] = useState<FridgeNote | 'new' | null>(null)
   const canEdit = hasRole(user, 'member')
 
@@ -78,7 +90,8 @@ function NoteTile({ note, onOpen }: { note: FridgeNote; onOpen?: () => void }) {
       <p className="line-clamp-6 min-w-0 flex-1 text-[13px] leading-snug break-words whitespace-pre-wrap">{note.text}</p>
       <span className="mt-2 flex items-center gap-1.5 text-[11px] opacity-70">
         {author && <Avatar name={author.displayName} color={author.color} size={16} />}
-        <span className="truncate">{timeAgo(note.createdAt)}</span>
+        <span className="truncate">{note.expiresOn ? untilLabel(note.expiresOn) : timeAgo(note.createdAt)}</span>
+        {note.expiresOn && <Clock className="ml-auto size-3 shrink-0" aria-hidden />}
       </span>
     </button>
   )
@@ -91,14 +104,15 @@ function NoteEditor({ note, onClose }: { note: FridgeNote | 'new' | null; onClos
   const [text, setText] = useState(existing?.text ?? '')
   const [color, setColor] = useState<NoteColor>(existing?.color ?? 'yellow')
   const [pinned, setPinned] = useState(existing?.pinned ?? false)
+  const [expiresOn, setExpiresOn] = useState<string | null>(existing?.expiresOn ?? null)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const trimmed = text.trim()
   const tooLong = [...trimmed].length > 500
 
   const save = () => {
     if (!trimmed || tooLong) return
-    if (existing) update(existing.id, { text: trimmed, color, pinned })
-    else add(user.id, { text: trimmed, color, pinned })
+    if (existing) update(existing.id, { text: trimmed, color, pinned, expiresOn })
+    else add(user.id, { text: trimmed, color, pinned, expiresOn })
     onClose()
   }
 
@@ -175,6 +189,55 @@ function NoteEditor({ note, onClose }: { note: FridgeNote | 'new' | null; onClos
           <Switch checked={pinned} onChange={setPinned} label="Pin to top" />
         </label>
       </div>
+      <ExpiryPicker value={expiresOn} onChange={setExpiresOn} />
     </Modal>
+  )
+}
+
+const EXPIRY_PRESETS = [
+  { label: 'Never', days: null },
+  { label: 'After today', days: 0 },
+  { label: 'After tomorrow', days: 1 },
+  { label: 'In a week', days: 6 },
+] as const
+
+/** When the note takes itself down: never, a preset, or a picked date. */
+function ExpiryPicker({ value, onChange }: { value: string | null; onChange: (v: string | null) => void }) {
+  const presetDays = EXPIRY_PRESETS.find((p) => (p.days === null ? value === null : value === isoIn(p.days)))
+  const [custom, setCustom] = useState(!!value && !presetDays)
+  const chip = (active: boolean) =>
+    clsx('h-8 rounded-full border px-3 text-[12px] transition-colors', active ? 'border-accent bg-accent-soft text-accent' : 'border-border text-muted hover:text-text')
+  return (
+    <div className="mt-4">
+      <div className="mb-1.5 flex items-center gap-1.5 text-[12px] font-medium text-muted">
+        <Clock className="size-3.5" /> Take it down
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {EXPIRY_PRESETS.map((p) => (
+          <button
+            key={p.label}
+            type="button"
+            className={chip(!custom && presetDays === p)}
+            onClick={() => (setCustom(false), onChange(p.days === null ? null : isoIn(p.days)))}
+          >
+            {p.label}
+          </button>
+        ))}
+        <button type="button" className={chip(custom)} onClick={() => (setCustom(true), onChange(value ?? isoIn(2)))}>
+          Pick a date
+        </button>
+      </div>
+      {custom && (
+        <Input
+          type="date"
+          aria-label="Last day on the fridge"
+          className="mt-2 w-auto"
+          min={todayISO()}
+          value={value ?? ''}
+          onChange={(e) => onChange(e.target.value || null)}
+        />
+      )}
+      {value && <p className="mt-1.5 text-[12px] text-subtle">Shows through {format(parseISO(value), 'EEEE d MMMM')}, then comes off by itself.</p>}
+    </div>
   )
 }

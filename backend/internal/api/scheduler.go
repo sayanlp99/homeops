@@ -167,6 +167,7 @@ func (s *Server) schedulerTick(ctx context.Context, now time.Time) {
 			logErr("scheduler: bills", s.billReminders(ctx, h, localToday(h, now)))
 		}
 		logErr("scheduler: prep", s.prepReminders(ctx, h, now))
+		logErr("scheduler: expired notes", s.removeExpiredNotes(ctx, h, today))
 	}
 	if now.Minute() == 0 && now.Hour() == 4 {
 		logErr("scheduler: prune files", s.pruneOrphanFiles(ctx))

@@ -114,7 +114,11 @@ The **On the fridge** board at the top of Home is for quick notes to each other,
 like sticky notes on a real fridge: "gas booked for Tuesday", "buy curd on the
 way back". Tap **+ Note**, write it (up to 500 characters, any language), pick a
 colour and optionally **pin** it so it stays first. Tap a note to edit, recolour,
-pin or delete it. Everyone in the household sees the same board straight away,
+pin or delete it.
+Under **Take it down** choose *After today*, *After tomorrow*, *In a week* or
+*Pick a date*: the note shows through that day (it says "Today only" or
+"Until Wed 28 Oct") and comes off the fridge by itself afterwards. *Never* keeps
+it until someone deletes it. Everyone in the household sees the same board straight away,
 and the others get a notification (switch it off under Settings → Notifications →
 *Fridge notes*). Viewers can read notes but not change them.
 
