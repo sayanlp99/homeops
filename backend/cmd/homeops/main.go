@@ -137,12 +137,12 @@ func passwd(args []string) error {
 }
 
 func pack(args []string) error {
-	if len(args) < 2 || len(args) > 3 {
-		return errors.New("usage: homeops pack <username or email> <pack name> [household]")
+	if len(args) < 2 {
+		return errors.New("usage: homeops pack <username or email> <pack name> [household [recipe title...]]")
 	}
-	household := ""
-	if len(args) == 3 {
-		household = args[2]
+	household, only := "", []string(nil)
+	if len(args) >= 3 {
+		household, only = args[2], args[3:]
 	}
 	cfg, err := config.Load()
 	if err != nil {
@@ -154,7 +154,7 @@ func pack(args []string) error {
 		return err
 	}
 	defer db.Close()
-	added, skipped, err := api.ImportPack(ctx, db, args[0], household, args[1])
+	added, skipped, err := api.ImportPack(ctx, db, args[0], household, args[1], only...)
 	if err != nil {
 		return err
 	}

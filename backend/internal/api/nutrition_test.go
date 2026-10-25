@@ -71,6 +71,19 @@ func TestNutritionFlow(t *testing.T) {
 	if n, sk, err := ImportPack(t.Context(), s.db, "sayan", "", "bengali-home"); err != nil || n != 0 || len(sk) != 89 {
 		t.Fatalf("cli import: %d %d %v", n, len(sk), err)
 	}
+	// Naming titles adds just those, leaving out recipes the household removed.
+	if _, err := s.db.Exec(t.Context(), `DELETE FROM recipes WHERE title IN ('Boiled corn', 'Chapati')`); err != nil {
+		t.Fatal(err)
+	}
+	if n, _, err := ImportPack(t.Context(), s.db, "sayan", "", "bengali-home", "boiled corn"); err != nil || n != 1 {
+		t.Fatalf("import one: %d %v", n, err)
+	}
+	if n, _, err := ImportPack(t.Context(), s.db, "sayan", "", "bengali-home", "Chapati", "Pizza margherita"); err == nil || n != 0 {
+		t.Fatalf("unknown title: %d %v", n, err)
+	}
+	if n, _, err := ImportPack(t.Context(), s.db, "sayan", "", "bengali-home"); err != nil || n != 1 {
+		t.Fatalf("re-add the rest: %d %v", n, err)
+	}
 	if _, _, err := ImportPack(t.Context(), s.db, "cook", "", "bengali-home"); err == nil {
 		t.Fatal("a viewer imported a pack")
 	}

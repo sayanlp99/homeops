@@ -5,8 +5,10 @@ import (
 	"embed"
 	"encoding/json"
 	"fmt"
+	"maps"
 	"net/http"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/go-chi/chi/v5"
@@ -79,7 +81,8 @@ func (s *Server) importPack(w http.ResponseWriter, r *http.Request) error {
 	return ok(w, map[string]any{"added": added, "skipped": skipped})
 }
 
-func importPack(ctx context.Context, db *pgxpool.Pool, u *User, name string) (int, []string, error) {
+// importPack adds the pack's recipes the household doesn't have; with only, just those titles.
+func importPack(ctx context.Context, db *pgxpool.Pool, u *User, name string, only ...string) (int, []string, error) {
 	packs, err := loadPacks()
 	if err != nil {
 		return 0, nil, err
@@ -92,6 +95,16 @@ func importPack(ctx context.Context, db *pgxpool.Pool, u *User, name string) (in
 	}
 	if pack == nil {
 		return 0, nil, errNotFound("Unknown recipe pack")
+	}
+	wanted := map[string]bool{}
+	for _, t := range only {
+		wanted[strings.ToLower(strings.TrimSpace(t))] = true
+	}
+	for _, rc := range pack.Recipes {
+		delete(wanted, strings.ToLower(strings.TrimSpace(rc.Title)))
+	}
+	if len(wanted) > 0 {
+		return 0, nil, fmt.Errorf("not in the %s pack: %s", name, strings.Join(slices.Sorted(maps.Keys(wanted)), ", "))
 	}
 	existing := map[string]bool{}
 	rows, err := db.Query(ctx, `SELECT lower(title) FROM recipes WHERE household_id = $1`, u.HouseholdID)
@@ -112,6 +125,9 @@ func importPack(ctx context.Context, db *pgxpool.Pool, u *User, name string) (in
 	defer tx.Rollback(ctx)
 	added, skipped := 0, []string{}
 	for _, rc := range pack.Recipes {
+		if len(only) > 0 && !slices.ContainsFunc(only, func(t string) bool { return strings.EqualFold(strings.TrimSpace(t), strings.TrimSpace(rc.Title)) }) {
+			continue
+		}
 		if existing[strings.ToLower(strings.TrimSpace(rc.Title))] {
 			skipped = append(skipped, rc.Title)
 			continue
@@ -128,8 +144,8 @@ func importPack(ctx context.Context, db *pgxpool.Pool, u *User, name string) (in
 }
 
 // ImportPack adds a recipe pack to a user's household from the command line, as that
-// user. Someone in several households must name one.
-func ImportPack(ctx context.Context, db *pgxpool.Pool, username, household, name string) (int, []string, error) {
+// user. Someone in several households must name one. With only, just those titles are added.
+func ImportPack(ctx context.Context, db *pgxpool.Pool, username, household, name string, only ...string) (int, []string, error) {
 	var u User
 	rows, err := db.Query(ctx, `SELECT u.id, m.household_id, h.name FROM users u
 		JOIN memberships m ON m.user_id = u.id JOIN households h ON h.id = m.household_id
@@ -155,5 +171,5 @@ func ImportPack(ctx context.Context, db *pgxpool.Pool, username, household, name
 	case n > 1:
 		return 0, nil, fmt.Errorf("%q is in several households; name one", username)
 	}
-	return importPack(ctx, db, &u, name)
+	return importPack(ctx, db, &u, name, only...)
 }

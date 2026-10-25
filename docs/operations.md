@@ -115,7 +115,7 @@ sudo -u postgres dropdb homeops_migtest
 | Add someone | Settings → Members → invite by email (owner/admin) |
 | New household | Administration → New household (platform administrator) |
 | Someone forgot their password and email isn't set up | `sudo ~/homeops/infra/native/reset-password.sh <username or email>`: sets a new password (typed hidden) and signs them out everywhere. With mail set up ([mail.md](mail.md)), they can use *Forgot password?* themselves |
-| Add a recipe pack without the web app | `sudo ~/homeops/infra/native/import-pack.sh <username> bengali-home`: adds it to their household as them; titles already there are skipped |
+| Add a recipe pack without the web app | `sudo ~/homeops/infra/native/import-pack.sh <username> bengali-home`: adds it to their household as them; titles already there are skipped. Add `"<household>" "<title>" …` to add only those recipes |
 | Refresh photos saved at older sizes | `sudo ~/homeops/infra/native/refresh-photos.sh --dry-run` to preview, then without `--dry-run`: imported recipes get a bigger copy from their source when it's the same picture; other photos get a sharper thumbnail. Safe to re-run |
 | Set a recipe photo from a file on the server | `sudo ~/homeops/infra/native/recipe-photo.sh "<household>" "<recipe title>" <image>`: processed like an upload (2048px, upright); the old photo is removed |
 | Make someone platform administrator | Administration → People → *Make admin* |
