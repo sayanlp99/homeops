@@ -23,7 +23,8 @@ import (
 //
 // Cooking is done once for two days: breakfast, lunch and dinner cooked one day come back
 // reheated at the same meal the next day (made in double quantity, so nothing is left
-// over), then something fresh is cooked. Fruit and dairy are fresh every day. A special
+// over), then something fresh is cooked. Rotis are made fresh each day from dough made
+// for both days; fruit and dairy are fresh every day. A special
 // dinner or a meal out is one night only, and the dinner before it is cooked for one night.
 //
 // Dishes are scored with the usual suggestion rules (variety, season, "every:N"
@@ -100,6 +101,8 @@ type plannedDish struct {
 	portions map[string]float64 // nil = default eaters
 	leftover bool
 	from     string // the plan item a leftover is reheated from
+	dough    string // the plan item whose dough these fresh rotis are made from
+	note     string
 	staple   bool
 }
 
@@ -252,6 +255,9 @@ func (p *planner) planDay(date time.Time, slots []string, filled map[string]bool
 		for _, m := range p.toReheat(date, slot) {
 			r := p.c.recipe(*m.RecipeID)
 			d := plannedDish{recipe: r, title: m.Title, slot: slot, leftover: true, from: m.ID, staple: r.role() == "rice" || r.role() == "bread"}
+			if r.role() == "bread" { // rotis are made fresh each day, from dough made once
+				d = plannedDish{recipe: r, title: m.Title, slot: slot, dough: m.ID, note: "Fresh, from yesterday's dough", staple: true}
+			}
 			if m.Portions != nil {
 				d.portions = cloneMap(m.Portions)
 			}
@@ -594,6 +600,9 @@ func (p *planner) save(date time.Time, day []plannedDish) error {
 		if d.leftover {
 			m.Note = "Cooked yesterday, reheated"
 		}
+		if d.note != "" {
+			m.Note = d.note
+		}
 		if _, err := p.s.db.Exec(p.ctx, `INSERT INTO meal_plan_items (id, household_id, date, slot, position, recipe_id, title, servings, note, portions, leftover)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
 			m.ID, p.hid, m.Date, m.Slot, m.Position, rid, m.Title, m.Servings, m.Note, m.Portions, m.Leftover); err != nil {
@@ -603,6 +612,11 @@ func (p *planner) save(date time.Time, day []plannedDish) error {
 		p.created++
 		if d.from != "" {
 			if err := p.cookForTwoDays(d); err != nil {
+				return err
+			}
+		}
+		if d.dough != "" {
+			if err := p.doughForTwoDays(d.dough); err != nil {
 				return err
 			}
 		}
@@ -635,6 +649,23 @@ func (p *planner) cookForTwoDays(d plannedDish) error {
 }
 
 // autofillMeals plans every empty slot in the range.
+// doughForTwoDays notes on the first day's rotis that the dough is for tomorrow's too.
+func (p *planner) doughForTwoDays(id string) error {
+	for i := range p.planned {
+		src := &p.planned[i]
+		if src.ID != id {
+			continue
+		}
+		if day, err := time.Parse(time.DateOnly, src.Date); err != nil || day.Before(p.c.today) || src.Note != "" {
+			return nil
+		}
+		src.Note = "Make dough for two days"
+		_, err := p.s.db.Exec(p.ctx, `UPDATE meal_plan_items SET note = $3 WHERE id = $1 AND household_id = $2`, src.ID, p.hid, src.Note)
+		return err
+	}
+	return nil
+}
+
 func (s *Server) autofillMeals(w http.ResponseWriter, r *http.Request) error {
 	u := currentUser(r)
 	ctx := r.Context()

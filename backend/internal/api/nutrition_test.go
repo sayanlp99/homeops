@@ -190,6 +190,11 @@ func TestNutritionFlow(t *testing.T) {
 			if len(cooked.reheated) > 0 && len(yday.reheated) > 0 {
 				t.Errorf("%s %s: reheated a third day", ds, slot)
 			}
+			for _, mi := range meals {
+				if mi.Date == ds && mi.Slot == slot && mi.RecipeID != nil && rid[*mi.RecipeID].role() == "bread" && mi.Leftover {
+					t.Errorf("%s %s: rotis reheated, not made fresh", ds, slot)
+				}
+			}
 			oneNight := slot == "dinner" && (dinnerPattern[day.Weekday()] != "cook" || dinnerPattern[day.AddDate(0, 0, 1).Weekday()] != "cook")
 			if day.Before(to) && len(cooked.fresh) > 0 && !oneNight {
 				if len(again.reheated) != len(cooked.fresh) {
@@ -245,15 +250,15 @@ func fishHousehold(t *testing.T, s *Server, recipeID string) string {
 
 type slotMeals struct{ fresh, reheated []MealItem }
 
-// cookedFor: a day's cooked dishes in a slot (not fruit or dairy, which are fresh daily).
+// cookedFor: a day's cooked dishes in a slot (not fruit, dairy or rotis, made fresh daily).
 func cookedFor(meals []MealItem, rid map[string]Recipe, day time.Time, slot string) slotMeals {
 	var out slotMeals
 	for _, mi := range meals {
 		if mi.Date != day.Format(time.DateOnly) || mi.Slot != slot || mi.RecipeID == nil {
 			continue
 		}
-		if role := rid[*mi.RecipeID].role(); role == "fruit" || role == "dairy" {
-			continue
+		if role := rid[*mi.RecipeID].role(); role == "fruit" || role == "dairy" || role == "bread" {
+			continue // fresh every day (rotis from dough made for two days)
 		}
 		if mi.Leftover {
 			out.reheated = append(out.reheated, mi)

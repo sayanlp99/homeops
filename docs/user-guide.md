@@ -188,8 +188,9 @@ recipe); pick who's cooking and save. It then shows on the board like any other 
 - **cook once, eat twice**: breakfast, lunch and dinner cooked one day come back
   reheated at the same meal the next day, then something fresh is cooked. The cooking
   day's servings (and the grocery list) cover both days; the second day is marked
-  *leftover*, so it isn't bought or taken from the pantry again. Fruit and dairy are
-  fresh daily. A special dinner or a meal out is one night only, so the dinner before
+  *leftover*, so it isn't bought or taken from the pantry again. Rotis are made
+  fresh each night from dough made once for both days (the first night says *Make
+  dough for two days*). Fruit and dairy are fresh daily. A special dinner or a meal out is one night only, so the dinner before
   it is cooked for one night.
 
 This is only a starting point: swap any meal for leftovers (Who's eating… →
