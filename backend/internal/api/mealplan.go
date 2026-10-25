@@ -194,6 +194,7 @@ func (s *Server) updateMeal(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	prevDate := m.Date
 	if in.Date != nil {
 		if _, err := parseDate(*in.Date); err != nil {
 			return err
@@ -240,6 +241,10 @@ func (s *Server) updateMeal(w http.ResponseWriter, r *http.Request) error {
 		}
 		pantryChanged = true
 	}
+	tasksMoved, err := moveCookingTasks(ctx, tx, m.ID, prevDate, m.Date)
+	if err != nil {
+		return err
+	}
 	updated, err := s.getMeal(ctx, tx, u.HouseholdID, m.ID, false)
 	if err != nil {
 		return err
@@ -248,6 +253,9 @@ func (s *Server) updateMeal(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 	s.hub.Publish(u.HouseholdID, eventMeals.from(r))
+	if tasksMoved {
+		s.hub.Publish(u.HouseholdID, eventTasks.from(r))
+	}
 	if pantryChanged {
 		s.hub.Publish(u.HouseholdID, eventPantry.from(r))
 		s.hub.Publish(u.HouseholdID, eventRecipes.from(r)) // times cooked
@@ -351,4 +359,20 @@ func (s *Server) updateMealTimes(ctx context.Context, householdID string, times 
 	b, _ := json.Marshal(clean)
 	_, err := s.db.Exec(ctx, `UPDATE households SET meal_times = meal_times || $2::jsonb WHERE id = $1`, householdID, b)
 	return err
+}
+
+// moveCookingTasks keeps a dish's open cooking tasks due on the dish's new day, and
+// updates the day in their description ("Lunch on Mon 26 Oct").
+func moveCookingTasks(ctx context.Context, q querier, mealID, from, to string) (bool, error) {
+	if from == to {
+		return false, nil
+	}
+	f, err1 := time.Parse(time.DateOnly, from)
+	t, err2 := time.Parse(time.DateOnly, to)
+	if err1 != nil || err2 != nil {
+		return false, nil
+	}
+	tag, err := q.Exec(ctx, `UPDATE tasks SET due_date = $2::date, description = replace(description, $3, $4), updated_at = now()
+		WHERE meal_id = $1 AND status <> 'done'`, mealID, to, " on "+f.Format("Mon 2 Jan"), " on "+t.Format("Mon 2 Jan"))
+	return tag.RowsAffected() > 0, err
 }

@@ -1,21 +1,25 @@
 import clsx from 'clsx'
 import { addDays, format, isSameDay, parseISO } from 'date-fns'
-import { CheckCircle2, ChevronLeft, ChevronRight, Circle, ExternalLink, ListTodo, Minus, Plus, RotateCcw, ShoppingCart, Trash2, Users, Wand2 } from 'lucide-react'
+import { CheckCircle2, ChevronLeft, ChevronRight, Circle, Copy, ExternalLink, ListTodo, Minus, Plus, RotateCcw, ShoppingCart, Trash2, Users, Wand2 } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { toast } from 'sonner'
 import { Modal } from '@/components/Dialog'
 import { Menu, MenuItem, MenuLabel, MenuSeparator } from '@/components/Menu'
 import { Avatar, Button, Card, PageHeader, Switch } from '@/components/ui'
 import { post } from '@/lib/api'
+import { taskKey } from '@/lib/format'
 import { useIsDesktop } from '@/lib/hooks'
-import { SLOTS, isPast, slotLabel, useAction, useMealActions, useMeals, useRecipes, weekRange } from '@/lib/meals'
-import type { TaskPatch } from '@/lib/tasks'
-import { openQuickAdd } from '@/lib/ui'
+import { SLOTS, isPast, useAction, useMealActions, useMeals, useRecipes, weekRange } from '@/lib/meals'
+import { useTasks } from '@/lib/tasks'
+import { useTaskParam } from '@/lib/ui'
+import { useSprints } from '@/lib/sprints'
 import { weekStart } from '@/lib/weeks'
 import { hasRole, useSession } from '@/lib/session'
 import { fmtAmount, useNutrition } from '@/lib/nutrition'
-import type { MealItem, PersonReport, Recipe, Slot } from '@/lib/types'
+import type { MealItem, PersonReport, Recipe, Slot, Task } from '@/lib/types'
 import { AddDishDialog } from './AddDishDialog'
+import { CookingTasks, TaskMark, addCookingTask, useTaskByMeal } from './CookingTasks'
 import { DietMark, MealsNav } from './MealBits'
 
 export function MealPlanPage() {
@@ -34,6 +38,8 @@ export function MealPlanPage() {
   const { data: report = [] } = useNutrition(from, to, hasRole(user, 'member'))
   const tracked = report.filter((p) => p.targets)
   const recipeById = useMemo(() => new Map(recipes.map((r) => [r.id, r])), [recipes])
+  const { data: tasks = [] } = useTasks()
+  const taskByMeal = useTaskByMeal(tasks)
   const [target, setTarget] = useState<{ date: string; slot: Slot } | null>(null)
   const [mobileDay, setMobileDay] = useState(() => {
     const i = days.findIndex((d) => isSameDay(d, new Date()))
@@ -105,7 +111,7 @@ export function MealPlanPage() {
               )
             })}
             {SLOTS.map((s) => (
-              <SlotRow key={s.value} slot={s.value} label={s.label} time={household.mealTimes?.[s.value]} days={days} cell={cell} recipeById={recipeById} onAdd={setTarget} />
+              <SlotRow key={s.value} slot={s.value} label={s.label} time={household.mealTimes?.[s.value]} days={days} cell={cell} recipeById={recipeById} taskByMeal={taskByMeal} onAdd={setTarget} />
             ))}
             {tracked.length > 0 && (
               <>
@@ -166,7 +172,7 @@ export function MealPlanPage() {
                   <div className="space-y-1.5 p-2">
                     {items.length === 0 && <p className="px-1 py-1.5 text-[13px] text-subtle">Nothing planned</p>}
                     {items.map((m) => (
-                      <DishChip key={m.id} meal={m} recipe={m.recipeId ? recipeById.get(m.recipeId) : undefined} large />
+                      <DishChip key={m.id} meal={m} recipe={m.recipeId ? recipeById.get(m.recipeId) : undefined} task={taskByMeal.get(m.id)} large />
                     ))}
                   </div>
                 </Card>
@@ -176,13 +182,15 @@ export function MealPlanPage() {
         </>
       )}
 
+      <CookingTasks meals={meals} tasks={tasks} recipeById={recipeById} days={isDesktop ? days.map((d) => format(d, 'yyyy-MM-dd')) : [format(days[mobileDay]!, 'yyyy-MM-dd')]} />
+
       <AddDishDialog target={target} planned={meals} onClose={() => setTarget(null)} />
       <AutofillDialog open={autofill} onOpenChange={setAutofill} from={format(new Date() > start ? new Date() : start, 'yyyy-MM-dd')} to={to} />
     </div>
   )
 }
 
-function SlotRow({ slot, label, time, days, cell, recipeById, onAdd }: { slot: Slot; label: string; time?: string; days: Date[]; cell: (d: Date, s: Slot) => MealItem[]; recipeById: Map<string, Recipe>; onAdd: (t: { date: string; slot: Slot }) => void }) {
+function SlotRow({ slot, label, time, days, cell, recipeById, taskByMeal, onAdd }: { slot: Slot; label: string; time?: string; days: Date[]; cell: (d: Date, s: Slot) => MealItem[]; recipeById: Map<string, Recipe>; taskByMeal: Map<string, Task>; onAdd: (t: { date: string; slot: Slot }) => void }) {
   return (
     <>
       <div className="border-b border-border bg-surface-2/40 px-3 py-2.5 last:border-b-0">
@@ -195,7 +203,7 @@ function SlotRow({ slot, label, time, days, cell, recipeById, onAdd }: { slot: S
         return (
           <div key={date} className={clsx('group min-h-24 space-y-1 border-b border-l border-border p-1.5', isSameDay(d, new Date()) && 'bg-accent-soft/40')}>
             {items.map((m) => (
-              <DishChip key={m.id} meal={m} recipe={m.recipeId ? recipeById.get(m.recipeId) : undefined} />
+              <DishChip key={m.id} meal={m} recipe={m.recipeId ? recipeById.get(m.recipeId) : undefined} task={taskByMeal.get(m.id)} />
             ))}
             <button
               onClick={() => onAdd({ date, slot })}
@@ -215,8 +223,10 @@ function SlotRow({ slot, label, time, days, cell, recipeById, onAdd }: { slot: S
   )
 }
 
-function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; large?: boolean }) {
-  const { update, remove } = useMealActions()
+function DishChip({ meal, recipe, task, large }: { meal: MealItem; recipe?: Recipe; task?: Task; large?: boolean }) {
+  const { add, update, remove } = useMealActions()
+  const { open: openTask } = useTaskParam()
+  const { sprints } = useSprints()
   const { members, memberById, user, household } = useSession()
   const navigate = useNavigate()
   const [portions, setPortions] = useState(false)
@@ -225,6 +235,7 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
   const everyone = members.filter((m) => m.role !== 'viewer')
   // Show who's eating only when it isn't simply "everyone, one serving each".
   const special = eaters.length !== everyone.length || eaters.some(([, v]) => v !== 1)
+  const nextDay = format(addDays(parseISO(meal.date), 1), 'yyyy-MM-dd')
   return (
     <>
       <Menu
@@ -251,6 +262,7 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
               </span>
             )}
             {recipe && meal.servings !== recipe.servings && !special && <span className="shrink-0 text-[10px] text-subtle tabular">×{meal.servings}</span>}
+            <TaskMark task={task} />
             {cooked && <CheckCircle2 className="size-3.5 shrink-0 text-success" />}
           </button>
         }
@@ -271,10 +283,18 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
             Who's eating…
           </MenuItem>
         )}
-        {hasRole(user, 'member') && !cooked && !meal.leftover && (
-          <MenuItem icon={<ListTodo className="size-4" />} onSelect={() => openQuickAdd(cookingTask(meal, recipe, household.mealTimes?.[meal.slot]))}>
-            Add cooking task
+        {task ? (
+          <MenuItem icon={<ListTodo className="size-4" />} onSelect={() => openTask(task)}>
+            Open cooking task ({taskKey(task.number)})
           </MenuItem>
+        ) : (
+          hasRole(user, 'member') &&
+          !cooked &&
+          !meal.leftover && (
+            <MenuItem icon={<ListTodo className="size-4" />} onSelect={() => addCookingTask(meal, recipe, sprints, household.mealTimes?.[meal.slot])}>
+              Add cooking task
+            </MenuItem>
+          )
         )}
         <MenuItem keepOpen icon={<Plus className="size-4" />} onSelect={() => update(meal.id, { servings: Math.min(50, meal.servings + 1) })}>
           More servings
@@ -287,6 +307,17 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
             Move to next day
           </MenuItem>
         )}
+        {!isPast(nextDay) && (
+          <MenuItem
+            icon={<Copy className="size-4" />}
+            onSelect={() => {
+              add({ date: nextDay, slot: meal.slot, recipeId: meal.recipeId, title: meal.title, servings: meal.servings, note: meal.note, portions: meal.portions, leftover: meal.leftover })
+              toast.success(`${meal.title} copied to ${format(parseISO(nextDay), 'EEE d MMM')}`)
+            }}
+          >
+            Duplicate to next day
+          </MenuItem>
+        )}
         <MenuSeparator />
         <MenuItem danger icon={<Trash2 className="size-4" />} onSelect={() => remove(meal.id)}>
           Remove
@@ -295,14 +326,6 @@ function DishChip({ meal, recipe, large }: { meal: MealItem; recipe?: Recipe; la
       <PortionsDialog open={portions} onOpenChange={setPortions} meal={meal} recipe={recipe} people={everyone} />
     </>
   )
-}
-
-/** A task to cook a planned dish, due that day; opened in quick add to pick who cooks it. */
-function cookingTask(meal: MealItem, recipe: Recipe | undefined, time?: string): TaskPatch {
-  const when = `${slotLabel(meal.slot)} on ${format(parseISO(meal.date), 'EEE d MMM')}${time ? ` at ${time}` : ''}`
-  const lines = [`${when} · ${meal.servings} ${meal.servings === 1 ? 'serving' : 'servings'}`]
-  if (recipe) lines.push(`Recipe: ${window.location.origin}/recipes/${recipe.id}?servings=${meal.servings}`)
-  return { title: `Cook ${meal.title}`.slice(0, 200), description: lines.join('\n\n'), dueDate: meal.date }
 }
 
 const portionLabel = (v: number) => {

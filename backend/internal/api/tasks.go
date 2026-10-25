@@ -27,6 +27,7 @@ type Task struct {
 	DueDate     *string    `json:"dueDate" db:"due_date"`
 	Rank        float64    `json:"rank" db:"rank"`
 	RecurringID *string    `json:"recurringId" db:"recurring_id"`
+	MealID      *string    `json:"mealId" db:"meal_id"` // the planned dish a cooking task is for
 	CompletedAt *time.Time `json:"completedAt" db:"completed_at"`
 	CompletedBy *string    `json:"completedBy" db:"completed_by"`
 	CreatedAt   time.Time  `json:"createdAt" db:"created_at"`
@@ -34,7 +35,7 @@ type Task struct {
 }
 
 const taskColumns = `id, number, title, description, status, priority, points, labels, assignee_id, reporter_id,
-	sprint_id, due_date::text AS due_date, rank, recurring_id, completed_at, completed_by, created_at, updated_at`
+	sprint_id, due_date::text AS due_date, rank, recurring_id, meal_id, completed_at, completed_by, created_at, updated_at`
 
 var taskStatuses = map[string]bool{"backlog": true, "todo": true, "in_progress": true, "done": true}
 
@@ -171,7 +172,7 @@ func (s *Server) applyTaskInput(ctx context.Context, q querier, householdID stri
 	for _, ref := range []struct {
 		key, table string
 		dst        **string
-	}{{"assigneeId", "members", &t.AssigneeID}, {"sprintId", "sprints", &t.SprintID}} {
+	}{{"assigneeId", "members", &t.AssigneeID}, {"sprintId", "sprints", &t.SprintID}, {"mealId", "meal_plan_items", &t.MealID}} {
 		if !in.has(ref.key) {
 			continue
 		}
@@ -265,10 +266,10 @@ func (s *Server) insertTask(ctx context.Context, q querier, householdID string, 
 		completedAt, completedBy = &now, &actorID
 	}
 	_, err := q.Exec(ctx, `INSERT INTO tasks (id, household_id, number, title, description, status, priority, points, labels,
-		assignee_id, reporter_id, sprint_id, due_date, rank, recurring_id, completed_at, completed_by)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::date, $14, $15, $16, $17)`,
+		assignee_id, reporter_id, sprint_id, due_date, rank, recurring_id, meal_id, completed_at, completed_by)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13::date, $14, $15, $16, $17, $18)`,
 		t.ID, householdID, t.Number, t.Title, t.Description, t.Status, t.Priority, t.Points, t.Labels,
-		t.AssigneeID, t.ReporterID, t.SprintID, t.DueDate, t.Rank, t.RecurringID, completedAt, completedBy)
+		t.AssigneeID, t.ReporterID, t.SprintID, t.DueDate, t.Rank, t.RecurringID, t.MealID, completedAt, completedBy)
 	return err
 }
 
@@ -301,9 +302,9 @@ func (s *Server) updateTask(w http.ResponseWriter, r *http.Request) error {
 	}
 	if _, err := tx.Exec(ctx, `UPDATE tasks SET title = $2, description = $3, status = $4, priority = $5, points = $6,
 		labels = $7, assignee_id = $8, sprint_id = $9, due_date = $10::date, rank = $11, completed_at = $12,
-		completed_by = $13, updated_at = now() WHERE id = $1`,
+		completed_by = $13, meal_id = $14, updated_at = now() WHERE id = $1`,
 		t.ID, t.Title, t.Description, t.Status, t.Priority, t.Points, t.Labels, t.AssigneeID, t.SprintID,
-		t.DueDate, t.Rank, t.CompletedAt, t.CompletedBy); err != nil {
+		t.DueDate, t.Rank, t.CompletedAt, t.CompletedBy, t.MealID); err != nil {
 		return err
 	}
 	updated, err := s.getTask(ctx, tx, u.HouseholdID, t.ID, false)

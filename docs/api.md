@@ -76,6 +76,10 @@ POST `/{id}/start`, `/{id}/complete`); `/recurring` (CRUD); `/retros`, `/retro`,
 `/retros/{id}/cards|reveal|close`, `/retro-cards/{id}` (PATCH/DELETE, POST `/vote`);
 `/metrics/burndown`, `/metrics/team`; POST `/kudos`.
 
+A task may carry `mealId`, the planned dish it's for (set when it's created). Moving
+that dish to another day moves the task's due date, unless the task is done; removing
+the dish keeps the task and clears `mealId`.
+
 ## Kitchen (member)
 
 `/recipes` (CRUD, POST `/import` `{url}`); `/ingredients` (GET, PATCH, POST `/parse`);

@@ -21,7 +21,7 @@ export function useSprintTasks(sprintId: string | null) {
 }
 
 export type TaskPatch = Partial<
-  Pick<Task, 'title' | 'description' | 'status' | 'priority' | 'points' | 'labels' | 'assigneeId' | 'sprintId' | 'dueDate' | 'rank'>
+  Pick<Task, 'title' | 'description' | 'status' | 'priority' | 'points' | 'labels' | 'assigneeId' | 'sprintId' | 'dueDate' | 'rank' | 'mealId'>
 >
 export type NewTask = TaskPatch & { id: string; title: string }
 
@@ -49,7 +49,7 @@ export function registerTaskMutations(qc: QueryClient) {
       const now = new Date().toISOString()
       const draft: Task = {
         number: 0, description: '', status: 'todo', priority: 2, points: null, labels: [], assigneeId: null,
-        reporterId: null, sprintId: null, dueDate: null, rank: Number.MAX_SAFE_INTEGER, recurringId: null,
+        reporterId: null, sprintId: null, dueDate: null, rank: Number.MAX_SAFE_INTEGER, recurringId: null, mealId: null,
         completedAt: null, completedBy: null, createdAt: now, updatedAt: now, ...t,
       }
       setTasks(qc, (ts) => [...ts, draft])

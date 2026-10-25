@@ -90,7 +90,7 @@ export function useIngredients() {
 
 // ---- offline-capable mutations (registered on the client so they survive restarts) ----
 
-type NewMeal = { id: string; date: string; slot: Slot; recipeId?: string | null; title: string; servings?: number; note?: string }
+type NewMeal = { id: string; date: string; slot: Slot; recipeId?: string | null; title: string; servings?: number; note?: string; portions?: Record<string, number> | null; leftover?: boolean }
 type MealPatch = Partial<Pick<MealItem, 'date' | 'slot' | 'servings' | 'note' | 'position' | 'portions' | 'leftover'>> & { cooked?: boolean }
 type NewGrocery = { id: string; text: string }
 type GroceryPatch = { checked?: boolean; quantity?: number | null; unit?: string; note?: string }

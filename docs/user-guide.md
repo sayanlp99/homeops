@@ -189,7 +189,20 @@ eaten again but kept off the grocery list and pantry.
 
 **Cooking as a task.** Tap a dish → **Add cooking task** to open a new task already
 filled in ("Cook …", due that day, with the meal time, servings and a link to the
-recipe); pick who's cooking and save. It then shows on the board like any other task.
+recipe), placed in the sprint that covers that day; pick who's cooking and save. It
+then shows on the board like any other task.
+
+**Cooking tasks section.** Below the meal plan, every dish to cook (leftovers aren't
+cooked, so they're left out) shows its cooking task: **in a sprint** (blue), **in the
+backlog** (orange, with **Add to sprint**), or **No task** (with **Add**). The top line
+counts each. Done, cooked and past dishes are hidden until you tap **Show all**. On a
+phone it shows the day you've picked. Dishes with a task also carry a small task mark
+in the plan, and their menu has **Open cooking task**. Moving a dish to another day
+moves its open cooking task's due date with it.
+
+**Duplicate to next day.** Tap a dish → **Duplicate to next day** to plan the same
+dish, servings and portions again for the same meal tomorrow; **Move to next day**
+moves it instead.
 
 **Auto-fill follows a Bengali home routine** when the recipes have the right tags
 (the *Bengali home kitchen* recipe pack has them):

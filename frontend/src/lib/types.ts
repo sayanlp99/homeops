@@ -96,6 +96,8 @@ export interface Task {
   dueDate: string | null // YYYY-MM-DD
   rank: number
   recurringId: string | null
+  /** The planned dish a cooking task is for. */
+  mealId: string | null
   completedAt: string | null
   completedBy: string | null
   createdAt: string
