@@ -128,6 +128,8 @@ var table = []*Food{
 	food("beans", "French beans", v{31, 1.8, 0.2, 7, 2.7, 1.0, 37, 12, 35, 33, 0, 0.2, 25, 211, 6}, density(0.5), aka("french beans", "beans", "green beans", "bins", "string beans")),
 	food("capsicum", "Capsicum", v{20, 0.9, 0.2, 4.6, 1.7, 0.3, 10, 80, 18, 10, 0, 0.1, 10, 175, 3}, density(0.45), piece(120), aka("capsicum", "bell pepper", "green capsicum", "shimla mirch")),
 	food("cucumber", "Cucumber", v{15, 0.7, 0.1, 3.6, 0.5, 0.3, 16, 3, 5, 7, 0, 0.2, 13, 147, 2}, density(dChop), piece(200), aka("cucumber", "shosha", "sasha", "kheera", "khira")),
+	food("sweet-corn", "Sweet corn", v{86, 3.3, 1.4, 18.7, 2, 0.5, 2, 6.8, 9, 42, 0, 0.5, 37, 270, 15}, density(0.6), piece(100), // a cob gives ~100 g kernels
+		aka("sweet corn", "corn", "corn kernels", "sweet corn kernels", "corn on the cob", "bhutta", "makai", "bhutta dana")),
 	food("radish", "Radish (mulo)", v{16, 0.7, 0.1, 3.4, 1.6, 0.3, 25, 15, 0, 25, 0, 0.3, 10, 233, 39}, density(dChop), piece(200), aka("radish", "mulo", "mooli", "white radish")),
 	food("sweet-potato", "Sweet potato", v{86, 1.6, 0.1, 20, 3, 0.6, 30, 2.4, 709, 11, 0, 0.3, 25, 337, 55}, density(dChop), piece(200), aka("sweet potato", "ranga alu", "shakarkandi", "rangalu")),
 	food("drumstick", "Drumstick (sajne data)", v{37, 2.1, 0.2, 8.5, 3.2, 0.4, 30, 141, 4, 44, 0, 0.5, 45, 461, 42}, piece(60), aka("drumstick", "sajne data", "sojne data", "moringa pods", "drumsticks")),

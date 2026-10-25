@@ -6406,6 +6406,72 @@
    ]
   },
   {
+   "title": "Cucumber onion salad",
+   "description": "Quick side with rice, roti or khichuri.",
+   "category": "salad",
+   "mealTypes": [
+    "lunch",
+    "dinner"
+   ],
+   "diet": "vegan",
+   "cuisine": "Bengali",
+   "tags": [],
+   "servings": 2,
+   "prepMinutes": 10,
+   "cookMinutes": null,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Dice the cucumber (or cut thin rounds) and finely chop the onion.",
+    "Toss with green chilli, coriander, lemon juice, salt and pepper just before serving (salt draws water out of the cucumber)."
+   ],
+   "ingredients": [
+    {
+     "name": "Cucumber",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "diced or sliced"
+    },
+    {
+     "name": "Onion",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "finely chopped"
+    },
+    {
+     "name": "Green chilli",
+     "quantity": 1,
+     "unit": "pcs",
+     "note": "chopped"
+    },
+    {
+     "name": "Coriander leaves",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": "chopped"
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tbsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    }
+   ]
+  },
+  {
    "title": "Bhuna khichuri",
    "description": "Twice a month; with palong shaak ghonto once a month, otherwise a bhaja or papad.",
    "category": "rice",
@@ -6537,6 +6603,67 @@
      "name": "Water",
      "quantity": 4,
      "unit": "cup",
+     "note": ""
+    }
+   ]
+  },
+  {
+   "title": "Boiled corn",
+   "description": "Evening snack, one cob each.",
+   "category": "snack",
+   "mealTypes": [
+    "snacks"
+   ],
+   "diet": "veg",
+   "cuisine": "Bengali",
+   "tags": [
+    "quick"
+   ],
+   "servings": 2,
+   "prepMinutes": 2,
+   "cookMinutes": 12,
+   "prepNote": "",
+   "prepLeadHours": 0,
+   "months": [],
+   "steps": [
+    "Boil the cobs in salted water for 10–12 minutes (kernels 5–6 minutes) until tender, or pressure-cook for 2 whistles.",
+    "Drain, rub with butter while hot, then sprinkle salt, pepper and chaat masala and squeeze over the lemon."
+   ],
+   "ingredients": [
+    {
+     "name": "Sweet corn",
+     "quantity": 2,
+     "unit": "pcs",
+     "note": "cobs, or 300 g kernels"
+    },
+    {
+     "name": "Butter",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Lemon juice",
+     "quantity": 1,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Chaat masala",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Black pepper",
+     "quantity": 0.25,
+     "unit": "tsp",
+     "note": ""
+    },
+    {
+     "name": "Salt",
+     "quantity": 0.25,
+     "unit": "tsp",
      "note": ""
     }
    ]
