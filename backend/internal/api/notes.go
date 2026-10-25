@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"slices"
 	"strings"
@@ -14,17 +15,27 @@ import (
 
 // FridgeNote is a sticky note on the household's home screen.
 type FridgeNote struct {
-	ID        string    `json:"id" db:"id"`
-	AuthorID  *string   `json:"authorId" db:"author_id"`
-	Text      string    `json:"text" db:"text"`
-	Color     string    `json:"color" db:"color"`
-	Pinned    bool      `json:"pinned" db:"pinned"`
-	ExpiresOn *string   `json:"expiresOn" db:"expires_on"` // shown through this day, then removed
-	CreatedAt time.Time `json:"createdAt" db:"created_at"`
-	UpdatedAt time.Time `json:"updatedAt" db:"updated_at"`
+	ID        string     `json:"id" db:"id"`
+	AuthorID  *string    `json:"authorId" db:"author_id"`
+	Text      string     `json:"text" db:"text"`
+	Color     string     `json:"color" db:"color"`
+	Pinned    bool       `json:"pinned" db:"pinned"`
+	ExpiresOn *string    `json:"expiresOn" db:"expires_on"` // shown through this day, then removed
+	Items     []NoteItem `json:"items" db:"items"`          // a checklist; Text is then its title
+	CreatedAt time.Time  `json:"createdAt" db:"created_at"`
+	UpdatedAt time.Time  `json:"updatedAt" db:"updated_at"`
 }
 
-const noteColumns = `id, author_id, text, color, pinned, expires_on::text, created_at, updated_at`
+// NoteItem is one line of a checklist note.
+type NoteItem struct {
+	ID   string `json:"id"`
+	Text string `json:"text"`
+	Done bool   `json:"done"`
+}
+
+const noteColumns = `id, author_id, text, color, pinned, expires_on::text, items, created_at, updated_at`
+
+const maxNoteItems = 30
 
 var noteColors = []string{"yellow", "pink", "blue", "green", "orange"}
 
@@ -96,13 +107,57 @@ func (s *Server) removeExpiredNotes(ctx context.Context, h *Household, today str
 
 func noteText(t string) (string, error) {
 	t = strings.TrimSpace(t)
-	if t == "" {
-		return "", errBadRequest("Write something on the note")
-	}
 	if len([]rune(t)) > 500 {
 		return "", errBadRequest("Keep the note under 500 characters")
 	}
 	return t, nil
+}
+
+// noteItems tidies a checklist: blank lines dropped, ids kept (new ones assigned).
+func noteItems(in []NoteItem) ([]NoteItem, error) {
+	out := []NoteItem{}
+	seen := map[string]bool{}
+	for _, it := range in {
+		it.Text = strings.TrimSpace(it.Text)
+		if it.Text == "" {
+			continue
+		}
+		if len([]rune(it.Text)) > 200 {
+			return nil, errBadRequest("Keep each checklist item under 200 characters")
+		}
+		if it.ID == "" || len(it.ID) > 64 || seen[it.ID] {
+			it.ID = randomUUID()
+		}
+		seen[it.ID] = true
+		out = append(out, it)
+	}
+	if len(out) > maxNoteItems {
+		return nil, errBadRequest(fmt.Sprintf("A checklist holds up to %d items", maxNoteItems))
+	}
+	return out, nil
+}
+
+func checkNoteFilled(text string, items []NoteItem) error {
+	if text == "" && len(items) == 0 {
+		return errBadRequest("Write something on the note")
+	}
+	return nil
+}
+
+// noteSummary is what a notification says: the text, or the checklist's items.
+func noteSummary(text string, items []NoteItem) string {
+	if len(items) == 0 {
+		return text
+	}
+	names := make([]string, len(items))
+	for i, it := range items {
+		names[i] = it.Text
+	}
+	list := strings.Join(names, ", ")
+	if text == "" {
+		return list
+	}
+	return text + ": " + list
 }
 
 // notePreview shortens a note for a notification without splitting a character.
@@ -122,6 +177,7 @@ func (s *Server) createNote(w http.ResponseWriter, r *http.Request) error {
 		Color     string          `json:"color"`
 		Pinned    bool            `json:"pinned"`
 		ExpiresOn json.RawMessage `json:"expiresOn"`
+		Items     []NoteItem      `json:"items"`
 	}
 	if err := decode(r, &in); err != nil {
 		return err
@@ -135,6 +191,13 @@ func (s *Server) createNote(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
+	items, err := noteItems(in.Items)
+	if err != nil {
+		return err
+	}
+	if err := checkNoteFilled(text, items); err != nil {
+		return err
+	}
 	if in.Color == "" {
 		in.Color = "yellow"
 	}
@@ -145,8 +208,8 @@ func (s *Server) createNote(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	if _, err := s.db.Exec(ctx, `INSERT INTO fridge_notes (id, household_id, author_id, text, color, pinned, expires_on) VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-		in.ID, u.HouseholdID, u.ID, text, in.Color, in.Pinned, expires); err != nil {
+	if _, err := s.db.Exec(ctx, `INSERT INTO fridge_notes (id, household_id, author_id, text, color, pinned, expires_on, items) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+		in.ID, u.HouseholdID, u.ID, text, in.Color, in.Pinned, expires, items); err != nil {
 		return err
 	}
 	note, err := s.getNote(ctx, u.HouseholdID, in.ID)
@@ -156,7 +219,7 @@ func (s *Server) createNote(w http.ResponseWriter, r *http.Request) error {
 	s.hub.Publish(u.HouseholdID, eventNotes.from(r))
 	s.notifyPartners(ctx, u, notification{
 		Kind: "notes", DedupeKey: "note:" + note.ID,
-		Title: u.DisplayName + " left a note on the fridge", Body: notePreview(text, 140), URL: "/",
+		Title: u.DisplayName + " left a note on the fridge", Body: notePreview(noteSummary(text, items), 140), URL: "/",
 	})
 	return writeJSON(w, http.StatusCreated, note)
 }
@@ -169,6 +232,7 @@ func (s *Server) updateNote(w http.ResponseWriter, r *http.Request) error {
 		Color     *string         `json:"color"`
 		Pinned    *bool           `json:"pinned"`
 		ExpiresOn json.RawMessage `json:"expiresOn"` // null clears it
+		Items     *[]NoteItem     `json:"items"`     // replaces the checklist; [] makes it a plain note
 	}
 	if err := decode(r, &in); err != nil {
 		return err
@@ -181,6 +245,14 @@ func (s *Server) updateNote(w http.ResponseWriter, r *http.Request) error {
 		if note.Text, err = noteText(*in.Text); err != nil {
 			return err
 		}
+	}
+	if in.Items != nil {
+		if note.Items, err = noteItems(*in.Items); err != nil {
+			return err
+		}
+	}
+	if err := checkNoteFilled(note.Text, note.Items); err != nil {
+		return err
 	}
 	if in.Color != nil {
 		if !slices.Contains(noteColors, *in.Color) {
@@ -196,8 +268,32 @@ func (s *Server) updateNote(w http.ResponseWriter, r *http.Request) error {
 			return err
 		}
 	}
-	if err := s.db.QueryRow(ctx, `UPDATE fridge_notes SET text = $2, color = $3, pinned = $4, expires_on = $5, updated_at = now() WHERE id = $1 RETURNING updated_at`,
-		note.ID, note.Text, note.Color, note.Pinned, note.ExpiresOn).Scan(&note.UpdatedAt); err != nil {
+	if err := s.db.QueryRow(ctx, `UPDATE fridge_notes SET text = $2, color = $3, pinned = $4, expires_on = $5, items = $6, updated_at = now() WHERE id = $1 RETURNING updated_at`,
+		note.ID, note.Text, note.Color, note.Pinned, note.ExpiresOn, note.Items).Scan(&note.UpdatedAt); err != nil {
+		return err
+	}
+	s.hub.Publish(u.HouseholdID, eventNotes.from(r))
+	return ok(w, note)
+}
+
+// tickNoteItem ticks or unticks one checklist item in place, so two people ticking
+// different items at once don't overwrite each other.
+func (s *Server) tickNoteItem(w http.ResponseWriter, r *http.Request) error {
+	u := currentUser(r)
+	ctx := r.Context()
+	var in struct {
+		Done bool `json:"done"`
+	}
+	if err := decode(r, &in); err != nil {
+		return err
+	}
+	rows, _ := s.db.Query(ctx, `UPDATE fridge_notes SET updated_at = now(), items = (
+			SELECT jsonb_agg(CASE WHEN e->>'id' = $3 THEN jsonb_set(e, '{done}', to_jsonb($4::boolean)) ELSE e END ORDER BY n)
+			FROM jsonb_array_elements(items) WITH ORDINALITY AS t(e, n))
+		WHERE id = $1 AND household_id = $2 AND items @> jsonb_build_array(jsonb_build_object('id', $3::text))
+		RETURNING `+noteColumns, chi.URLParam(r, "id"), u.HouseholdID, chi.URLParam(r, "item"), in.Done)
+	note, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[FridgeNote])
+	if err != nil {
 		return err
 	}
 	s.hub.Publish(u.HouseholdID, eventNotes.from(r))

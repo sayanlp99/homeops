@@ -65,6 +65,47 @@ func TestFridgeNotes(t *testing.T) {
 		t.Fatalf("after delete: %+v", list)
 	}
 
+	// Checklists: a title is optional, blank items are dropped, ticks are per item.
+	a.do("POST", "/api/notes", map[string]any{"text": "", "items": []map[string]any{{"text": "  "}}}, 400, nil)
+	many := make([]map[string]any, 31)
+	for i := range many {
+		many[i] = map[string]any{"text": "x"}
+	}
+	a.do("POST", "/api/notes", map[string]any{"items": many}, 400, nil)
+	var shop FridgeNote
+	a.do("POST", "/api/notes", map[string]any{"items": []map[string]any{{"text": "Atta"}, {"text": " "}, {"text": "Curd", "done": true}, {"text": "দই"}}}, 201, &shop)
+	if shop.Text != "" || len(shop.Items) != 3 || shop.Items[0].ID == "" || shop.Items[1].Text != "Curd" || !shop.Items[1].Done {
+		t.Fatalf("checklist: %+v", shop)
+	}
+	if n := noteAlerts(b); len(n) != 2 || n[0].Body != "Atta, Curd, দই" {
+		t.Fatalf("checklist notification: %+v", n)
+	}
+	// Both tick different items "at once": neither undoes the other.
+	b.do("PATCH", "/api/notes/"+shop.ID+"/items/"+shop.Items[0].ID, map[string]any{"done": true}, 200, nil)
+	var ticked FridgeNote
+	a.do("PATCH", "/api/notes/"+shop.ID+"/items/"+shop.Items[2].ID, map[string]any{"done": true}, 200, &ticked)
+	if !ticked.Items[0].Done || !ticked.Items[1].Done || !ticked.Items[2].Done || ticked.Items[0].Text != "Atta" {
+		t.Fatalf("ticks: %+v", ticked.Items)
+	}
+	a.do("PATCH", "/api/notes/"+shop.ID+"/items/"+shop.Items[1].ID, map[string]any{"done": false}, 200, &ticked)
+	if ticked.Items[1].Done {
+		t.Fatalf("untick: %+v", ticked.Items)
+	}
+	a.do("PATCH", "/api/notes/"+shop.ID+"/items/nope", map[string]any{"done": true}, 404, nil)
+	a.do("PATCH", "/api/notes/"+milk.ID+"/items/"+shop.Items[0].ID, map[string]any{"done": true}, 404, nil) // item of another note
+	// Editing the list keeps ids; clearing every item from an untitled note is refused.
+	var edited FridgeNote
+	a.do("PATCH", "/api/notes/"+shop.ID, map[string]any{"text": "Shopping", "items": []any{ticked.Items[0], map[string]any{"text": "Eggs"}}}, 200, &edited)
+	if edited.Text != "Shopping" || len(edited.Items) != 2 || edited.Items[0].ID != shop.Items[0].ID || !edited.Items[0].Done || edited.Items[1].ID == "" {
+		t.Fatalf("edit checklist: %+v", edited)
+	}
+	a.do("PATCH", "/api/notes/"+shop.ID, map[string]any{"text": "", "items": []any{}}, 400, nil)
+	a.do("PATCH", "/api/notes/"+shop.ID, map[string]any{"text": "Eggs and atta", "items": []any{}}, 200, &edited)
+	if len(edited.Items) != 0 || edited.Text != "Eggs and atta" {
+		t.Fatalf("back to a plain note: %+v", edited)
+	}
+	a.do("DELETE", "/api/notes/"+shop.ID, nil, 204, nil)
+
 	// Expiry: a note shows through its last day, then comes down by itself.
 	ctx := context.Background()
 	var hid string

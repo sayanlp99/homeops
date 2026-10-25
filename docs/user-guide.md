@@ -115,6 +115,10 @@ like sticky notes on a real fridge: "gas booked for Tuesday", "buy curd on the
 way back". Tap **+ Note**, write it (up to 500 characters, any language), pick a
 colour and optionally **pin** it so it stays first. Tap a note to edit, recolour,
 pin or delete it.
+Switch a note to **Checklist** for lists like shopping or packing: add a title if
+you like, then items (Enter adds the next one, up to 30). Tick items straight on
+the fridge without opening the note; both of you can tick at the same time. A
+note with several lines turns into a checklist with one item per line, and back.
 Under **Take it down** choose *After today*, *After tomorrow*, *In a week* or
 *Pick a date*: the note shows through that day (it says "Today only" or
 "Until Wed 28 Oct") and comes off the fridge by itself afterwards. *Never* keeps

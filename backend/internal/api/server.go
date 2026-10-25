@@ -187,6 +187,7 @@ func (s *Server) Routes() http.Handler {
 			r.Method("GET", "/notes", handler(s.listNotes))
 			r.Method("POST", "/notes", handler(s.createNote))
 			r.Method("PATCH", "/notes/{id}", handler(s.updateNote))
+			r.Method("PATCH", "/notes/{id}/items/{item}", handler(s.tickNoteItem))
 			r.Method("DELETE", "/notes/{id}", handler(s.deleteNote))
 
 			r.Method("GET", "/grocery", handler(s.listGrocery))
