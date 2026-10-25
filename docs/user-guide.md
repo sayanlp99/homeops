@@ -141,7 +141,8 @@ they end. The bell icon (inbox) always has everything.
   servings, units converted and summed, pantry stock subtracted, rounded up to
   what you'd buy and grouped by aisle. Move an item to another aisle once and it
   stays there. Ticking items off works offline. **Finish shopping** stocks the pantry
-  and can record the bill as an expense.
+  and can record the bill as an expense. The bin icon on an item deletes it;
+  **Delete all** clears the whole list (after a confirmation), cart included.
 - **Pantry:** marking a meal cooked deducts its ingredients (undo restores them).
   Low-stock and expiry badges, and one-tap restock to the grocery list.
 

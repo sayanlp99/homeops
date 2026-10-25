@@ -186,6 +186,7 @@ func (s *Server) Routes() http.Handler {
 
 			r.Method("GET", "/grocery", handler(s.listGrocery))
 			r.Method("POST", "/grocery", handler(s.addGrocery))
+			r.Method("DELETE", "/grocery", handler(s.clearGrocery))
 			r.Method("POST", "/grocery/generate", handler(s.generateGrocery))
 			r.Method("POST", "/grocery/complete", handler(s.completeShopping))
 			r.Method("GET", "/grocery/trips", handler(s.listTrips))

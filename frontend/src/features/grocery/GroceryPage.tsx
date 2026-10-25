@@ -4,8 +4,8 @@ import { Check, ListChecks, MoreHorizontal, Plus, RefreshCw, ShoppingBag, Trash2
 import { useMemo, useState } from 'react'
 import { Modal } from '@/components/Dialog'
 import { Menu, MenuItem, MenuLabel, MenuSeparator } from '@/components/Menu'
-import { Avatar, Badge, Button, Card, EmptyState, Field, Input, PageHeader, Spinner, Switch } from '@/components/ui'
-import { patch, post } from '@/lib/api'
+import { Avatar, Badge, Button, Card, EmptyState, Field, IconButton, Input, PageHeader, Spinner, Switch } from '@/components/ui'
+import { api, patch, post } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import { formatQty, useAction, useGrocery, useGroceryActions, useIngredients } from '@/lib/meals'
 import { useSession } from '@/lib/session'
@@ -22,6 +22,7 @@ export function GroceryPage() {
   const [text, setText] = useState('')
   const [finishing, setFinishing] = useState(false)
   const [generating, setGenerating] = useState(false)
+  const [clearing, setClearing] = useState(false)
 
   const { open, checked, byAisle } = useMemo(() => {
     const open = items.filter((i) => !i.checkedAt)
@@ -45,6 +46,11 @@ export function GroceryPage() {
         subtitle={items.length ? `${open.length} to buy · ${checked.length} in cart` : 'Your shopping list'}
         actions={
           <>
+            {items.length > 0 && (
+              <Button variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setClearing(true)}>
+                Delete all
+              </Button>
+            )}
             <Button icon={<RefreshCw className="size-4" />} onClick={() => setGenerating(true)}>
               From meal plan
             </Button>
@@ -108,6 +114,7 @@ export function GroceryPage() {
         </div>
       )}
       <FinishDialog open={finishing} onOpenChange={setFinishing} count={checked.length} />
+      <ClearDialog open={clearing} onOpenChange={setClearing} count={items.length} />
       <GenerateDialog open={generating} onOpenChange={setGenerating} sprintStartDow={household.sprintStartDow} />
     </div>
   )
@@ -139,6 +146,9 @@ function Row({ item }: { item: GroceryItem }) {
       {item.source === 'plan' && !done && <Badge tone="accent">Plan</Badge>}
       {item.source === 'pantry' && !done && <Badge tone="warning">Restock</Badge>}
       {done && who && <Avatar name={who.displayName} color={who.color} size={18} />}
+      <IconButton label={`Delete ${item.name}`} className="text-subtle hover:text-danger" onClick={() => remove(item.id)}>
+        <Trash2 className="size-4" />
+      </IconButton>
       <Menu
         align="end"
         trigger={
@@ -159,10 +169,39 @@ function Row({ item }: { item: GroceryItem }) {
           </>
         )}
         <MenuItem danger icon={<Trash2 className="size-4" />} onSelect={() => remove(item.id)}>
-          Remove
+          Delete
         </MenuItem>
       </Menu>
     </div>
+  )
+}
+
+function ClearDialog({ open, onOpenChange, count }: { open: boolean; onOpenChange: (o: boolean) => void; count: number }) {
+  const clear = useAction(
+    () => api<{ deleted: number }>('DELETE', '/grocery'),
+    [['grocery']],
+    (r) => `Deleted ${r.deleted} ${r.deleted === 1 ? 'item' : 'items'}`,
+  )
+  return (
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Delete the whole list?"
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" loading={clear.isPending} onClick={() => clear.mutate(undefined, { onSuccess: () => onOpenChange(false) })}>
+            Delete all
+          </Button>
+        </>
+      }
+    >
+      <p className="text-[13px] text-muted">
+        All {count} {count === 1 ? 'item' : 'items'} will be removed, including what's in the cart. The pantry and past shopping trips stay as they are.
+      </p>
+    </Modal>
   )
 }
 

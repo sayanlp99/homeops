@@ -146,6 +146,17 @@ func (s *Server) deleteGrocery(w http.ResponseWriter, r *http.Request) error {
 	return noContent(w)
 }
 
+// clearGrocery empties the whole list, ticked items included.
+func (s *Server) clearGrocery(w http.ResponseWriter, r *http.Request) error {
+	u := currentUser(r)
+	tag, err := s.db.Exec(r.Context(), `DELETE FROM grocery_items WHERE household_id = $1`, u.HouseholdID)
+	if err != nil {
+		return err
+	}
+	s.hub.Publish(u.HouseholdID, eventGrocery.from(r))
+	return ok(w, map[string]int64{"deleted": tag.RowsAffected()})
+}
+
 type need struct {
 	ingredientID, name, aisle, unit string
 	qty                             *float64 // nil = "to taste": buy only if not in pantry

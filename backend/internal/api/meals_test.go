@@ -168,6 +168,15 @@ func TestMealsFlow(t *testing.T) {
 		t.Fatal("restock should not duplicate")
 	}
 
+	// Clear the whole list.
+	var cleared map[string]int
+	c.do("DELETE", "/api/grocery", nil, 200, &cleared)
+	var empty []GroceryItem
+	c.do("GET", "/api/grocery", nil, 200, &empty)
+	if cleared["deleted"] == 0 || len(empty) != 0 {
+		t.Fatalf("clear: %v, left %d", cleared, len(empty))
+	}
+
 	// Suggestions: with dal already at lunch, rice/rajma rank; dal excluded from its own slot.
 	var sugg []Suggestion
 	c.do("GET", "/api/meals/suggest?date="+d0+"&slot=lunch", nil, 200, &sugg)
