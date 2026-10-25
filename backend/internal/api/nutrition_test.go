@@ -2,6 +2,7 @@ package api
 
 import (
 	"slices"
+	"sort"
 	"testing"
 	"time"
 )
@@ -177,10 +178,29 @@ func TestNutritionFlow(t *testing.T) {
 			if len(dinner) != 1 || dinner[0].Title != eatingOutTitle {
 				t.Errorf("%s: expected eating out, got %v", ds, titles(dinner))
 			}
-		case "leftover":
-			for _, mi := range dinner {
-				if !mi.Leftover {
-					t.Errorf("%s: leftover night has a fresh dish %s", ds, mi.Title)
+		}
+		// Cooked once for two days: a meal cooked today comes back reheated tomorrow (same
+		// dishes, made in enough quantity for both days), then something fresh is cooked.
+		for _, slot := range []string{"breakfast", "lunch", "dinner"} {
+			cooked, again := cookedFor(meals, rid, day, slot), cookedFor(meals, rid, day.AddDate(0, 0, 1), slot)
+			yday := cookedFor(meals, rid, day.AddDate(0, 0, -1), slot)
+			if len(cooked.fresh) > 0 && len(cooked.reheated) > 0 {
+				t.Errorf("%s %s: cooked and reheated dishes mixed: %v / %v", ds, slot, titles(cooked.fresh), titles(cooked.reheated))
+			}
+			if len(cooked.reheated) > 0 && len(yday.reheated) > 0 {
+				t.Errorf("%s %s: reheated a third day", ds, slot)
+			}
+			oneNight := slot == "dinner" && (dinnerPattern[day.Weekday()] != "cook" || dinnerPattern[day.AddDate(0, 0, 1).Weekday()] != "cook")
+			if day.Before(to) && len(cooked.fresh) > 0 && !oneNight {
+				if len(again.reheated) != len(cooked.fresh) {
+					t.Errorf("%s %s: cooked %v but next day has %v", ds, slot, titles(cooked.fresh), titles(again.reheated))
+					continue
+				}
+				for i, mi := range cooked.fresh {
+					next := again.reheated[i]
+					if next.Title != mi.Title || float64(mi.Servings) < sum(mi.Eaters)+sum(next.Eaters)-1e-9 {
+						t.Errorf("%s %s: %s ×%d doesn't cover %v + next day's %s %v", ds, slot, mi.Title, mi.Servings, mi.Eaters, next.Title, next.Eaters)
+					}
 				}
 			}
 		}
@@ -221,6 +241,29 @@ func fishHousehold(t *testing.T, s *Server, recipeID string) string {
 		t.Fatal(err)
 	}
 	return hid
+}
+
+type slotMeals struct{ fresh, reheated []MealItem }
+
+// cookedFor: a day's cooked dishes in a slot (not fruit or dairy, which are fresh daily).
+func cookedFor(meals []MealItem, rid map[string]Recipe, day time.Time, slot string) slotMeals {
+	var out slotMeals
+	for _, mi := range meals {
+		if mi.Date != day.Format(time.DateOnly) || mi.Slot != slot || mi.RecipeID == nil {
+			continue
+		}
+		if role := rid[*mi.RecipeID].role(); role == "fruit" || role == "dairy" {
+			continue
+		}
+		if mi.Leftover {
+			out.reheated = append(out.reheated, mi)
+		} else {
+			out.fresh = append(out.fresh, mi)
+		}
+	}
+	sort.SliceStable(out.fresh, func(i, j int) bool { return out.fresh[i].Title < out.fresh[j].Title })
+	sort.SliceStable(out.reheated, func(i, j int) bool { return out.reheated[i].Title < out.reheated[j].Title })
+	return out
 }
 
 func titles(ms []MealItem) []string {

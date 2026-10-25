@@ -19,8 +19,12 @@ import (
 //	snacks     one seasonal fruit per person
 //	dairy      one a day for calcium (curd or buttermilk at lunch, milk at breakfast),
 //	           never the same one two days running
-//	dinner     chapati + a simple curry, leftovers of lunch two nights, a special one
-//	           night, eating out one night
+//	dinner     chapati + a simple curry, a special one night, eating out one night
+//
+// Cooking is done once for two days: breakfast, lunch and dinner cooked one day come back
+// reheated at the same meal the next day (made in double quantity, so nothing is left
+// over), then something fresh is cooked. Fruit and dairy are fresh every day. A special
+// dinner or a meal out is one night only, and the dinner before it is cooked for one night.
 //
 // Dishes are scored with the usual suggestion rules (variety, season, "every:N"
 // spacing, history) plus nutrition: each pick closes the eaters' gaps for the week.
@@ -29,7 +33,7 @@ import (
 
 // Dinner pattern by weekday; the user can change any night afterwards.
 var dinnerPattern = map[time.Weekday]string{
-	time.Monday: "cook", time.Tuesday: "leftover", time.Wednesday: "cook", time.Thursday: "leftover",
+	time.Monday: "cook", time.Tuesday: "cook", time.Wednesday: "cook", time.Thursday: "cook",
 	time.Friday: "special", time.Saturday: "out", time.Sunday: "cook",
 }
 
@@ -95,7 +99,7 @@ type plannedDish struct {
 	slot     string
 	portions map[string]float64 // nil = default eaters
 	leftover bool
-	from     int // index of the dish a leftover comes from, -1 otherwise
+	from     string // the plan item a leftover is reheated from
 	staple   bool
 }
 
@@ -160,6 +164,41 @@ func (p *planner) lastPlanned(recipeID string, date time.Time) time.Time {
 	return last
 }
 
+// toReheat: yesterday's dishes for the slot when they're cooked for two days, so today is
+// the second day. Not when yesterday was itself a second day, held only fruit, dairy or
+// no recipe, or (for a day already past) wasn't made in enough quantity.
+func (p *planner) toReheat(date time.Time, slot string) []MealItem {
+	yday := date.AddDate(0, 0, -1)
+	if slot == "dinner" && dinnerPattern[yday.Weekday()] != "cook" {
+		return nil // a special dinner or a meal out is one night only
+	}
+	var out []MealItem
+	for _, m := range p.planned {
+		if m.Date != yday.Format(time.DateOnly) || m.Slot != slot {
+			continue
+		}
+		if m.Leftover {
+			return nil
+		}
+		if m.RecipeID == nil {
+			continue
+		}
+		r := p.c.recipe(*m.RecipeID)
+		if r == nil || r.role() == "fruit" || r.role() == "dairy" {
+			continue
+		}
+		if yday.Before(p.c.today) && float64(m.Servings) < 2*sum(p.itemEaters(m))-1e-9 {
+			return nil
+		}
+		out = append(out, m)
+	}
+	return out
+}
+
+func (p *planner) itemEaters(m MealItem) map[string]float64 {
+	return p.eaters(plannedDish{recipe: p.c.recipe(*m.RecipeID), portions: m.Portions})
+}
+
 func hasRole(role string) func(*Recipe) bool { return func(r *Recipe) bool { return r.role() == role } }
 
 // asItems turns the day's draft into plan items so scoring sees them.
@@ -195,7 +234,7 @@ func (p *planner) planDay(date time.Time, slots []string, filled map[string]bool
 		if r == nil {
 			return -1
 		}
-		day = append(day, plannedDish{recipe: r, title: r.Title, slot: slot, from: -1, staple: r.role() == "rice" || r.role() == "bread"})
+		day = append(day, plannedDish{recipe: r, title: r.Title, slot: slot, staple: r.role() == "rice" || r.role() == "bread"})
 		return len(day) - 1
 	}
 	want := func(slot string) bool { return slices.Contains(slots, slot) && !filled[slot] }
@@ -203,6 +242,24 @@ func (p *planner) planDay(date time.Time, slots []string, filled map[string]bool
 	shared := func(r *Recipe) bool { // everyone at the table eats it
 		return len(p.c.hh.defaultEaters(r.Nutrition.Contains)) == len(p.c.hh.defaultEaters(nil))
 	}
+
+	// Yesterday's cooking, eaten again: such a meal is planned as yesterday's dishes.
+	reheated := map[string]bool{}
+	for _, slot := range []string{"breakfast", "lunch", "dinner"} {
+		if !want(slot) || (slot == "dinner" && dinnerPattern[date.Weekday()] != "cook") {
+			continue
+		}
+		for _, m := range p.toReheat(date, slot) {
+			r := p.c.recipe(*m.RecipeID)
+			d := plannedDish{recipe: r, title: m.Title, slot: slot, leftover: true, from: m.ID, staple: r.role() == "rice" || r.role() == "bread"}
+			if m.Portions != nil {
+				d.portions = cloneMap(m.Portions)
+			}
+			day = append(day, d)
+			reheated[slot] = true
+		}
+	}
+	want = func(slot string) bool { return slices.Contains(slots, slot) && !filled[slot] && !reheated[slot] }
 
 	if want("breakfast") {
 		add(p.pick(date, "breakfast", draft(), func(r *Recipe) bool { return r.Category == "breakfast" && !r.hasTag("fruit") }), "breakfast")
@@ -250,7 +307,7 @@ func (p *planner) planDay(date time.Time, slots []string, filled map[string]bool
 	var dairy *Recipe
 	dairySlot := ""
 	for _, slot := range []string{"lunch", "breakfast"} {
-		if !want(slot) {
+		if !slices.Contains(slots, slot) || filled[slot] {
 			continue
 		}
 		r := p.pick(date, slot, draft(), func(r *Recipe) bool {
@@ -265,23 +322,7 @@ func (p *planner) planDay(date time.Time, slots []string, filled map[string]bool
 	if want("dinner") {
 		switch dinnerPattern[date.Weekday()] {
 		case "out":
-			day = append(day, plannedDish{title: eatingOutTitle, slot: "dinner", from: -1})
-		case "leftover":
-			n := len(day)
-			for i := 0; i < n; i++ {
-				if day[i].slot == "lunch" && day[i].recipe != nil && day[i].recipe.role() != "dairy" {
-					d := day[i]
-					d.slot, d.leftover, d.from = "dinner", true, i
-					if d.portions != nil {
-						d.portions = cloneMap(d.portions)
-					}
-					day = append(day, d)
-				}
-			}
-			if len(day) > n {
-				break
-			}
-			fallthrough // nothing at lunch to eat again
+			day = append(day, plannedDish{title: eatingOutTitle, slot: "dinner"})
 		case "special":
 			if dinnerPattern[date.Weekday()] == "special" {
 				if i := add(p.pick(date, "dinner", draft(), func(r *Recipe) bool { return r.hasTag("dinner-special") }), "dinner"); i >= 0 {
@@ -360,7 +401,7 @@ func (p *planner) addProteins(date time.Time, slot string, day *[]plannedDish, o
 		if r == nil {
 			return
 		}
-		d := plannedDish{recipe: r, title: r.Title, slot: slot, from: -1}
+		d := plannedDish{recipe: r, title: r.Title, slot: slot}
 		eats := p.c.hh.defaultEaters(r.Nutrition.Contains)
 		if len(ids) < len(eats) {
 			d.portions = map[string]float64{}
@@ -512,8 +553,8 @@ func cloneMap(m map[string]float64) map[string]float64 {
 	return out
 }
 
-// servingsFor: enough for everyone eating it now and later as leftovers, never less than
-// the recipe makes (except rotis, which are made to count).
+// servingsFor: enough for everyone eating it, never less than the recipe makes (except
+// rotis, which are made to count). The second day's share is added when it's planned.
 func (p *planner) servingsFor(day []plannedDish, i int) int {
 	d := day[i]
 	if d.recipe == nil {
@@ -523,11 +564,6 @@ func (p *planner) servingsFor(day []plannedDish, i int) int {
 		return max(int(math.Ceil(sum(p.eaters(d)))), 1)
 	}
 	total := sum(p.eaters(d))
-	for _, o := range day {
-		if o.leftover && o.from == i {
-			total += sum(p.eaters(o))
-		}
-	}
 	least := d.recipe.Servings
 	if step, _, _ := stapleSteps(d.recipe); d.staple && step == 1 {
 		least = 1 // rotis are made to count, not by the batch
@@ -556,7 +592,7 @@ func (p *planner) save(date time.Time, day []plannedDish) error {
 		}
 		m.RecipeID = rid
 		if d.leftover {
-			m.Note = "Leftover from lunch"
+			m.Note = "Cooked yesterday, reheated"
 		}
 		if _, err := p.s.db.Exec(p.ctx, `INSERT INTO meal_plan_items (id, household_id, date, slot, position, recipe_id, title, servings, note, portions, leftover)
 			VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
@@ -565,6 +601,35 @@ func (p *planner) save(date time.Time, day []plannedDish) error {
 		}
 		p.planned = append(p.planned, m)
 		p.created++
+		if d.from != "" {
+			if err := p.cookForTwoDays(d); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+// cookForTwoDays raises the servings of the dish a leftover comes from so it's made in
+// enough quantity for both days (and the grocery list buys for both).
+func (p *planner) cookForTwoDays(d plannedDish) error {
+	for i := range p.planned {
+		src := &p.planned[i]
+		if src.ID != d.from {
+			continue
+		}
+		if day, err := time.Parse(time.DateOnly, src.Date); err != nil || day.Before(p.c.today) {
+			return nil // already eaten; toReheat checked it was enough
+		}
+		need := min(int(math.Ceil(sum(p.itemEaters(*src))+sum(p.eaters(d))-1e-9)), 50)
+		if need <= src.Servings {
+			return nil
+		}
+		if _, err := p.s.db.Exec(p.ctx, `UPDATE meal_plan_items SET servings = $3 WHERE id = $1 AND household_id = $2`, src.ID, p.hid, need); err != nil {
+			return err
+		}
+		src.Servings = need
+		return nil
 	}
 	return nil
 }
@@ -603,7 +668,11 @@ func (s *Server) autofillMeals(w http.ResponseWriter, r *http.Request) error {
 	if err != nil {
 		return err
 	}
-	p := &planner{s: s, c: c, ctx: ctx, hid: u.HouseholdID, planned: plannedBetween(c.history, weekStart(from, h.SprintStartDow), to.AddDate(0, 0, 6))}
+	start := weekStart(from, h.SprintStartDow)
+	if y := from.AddDate(0, 0, -1); y.Before(start) {
+		start = y // yesterday's cooking may carry into the first day
+	}
+	p := &planner{s: s, c: c, ctx: ctx, hid: u.HouseholdID, planned: plannedBetween(c.history, start, to.AddDate(0, 0, 6))}
 	routine := false
 	for i := range c.recipes {
 		if c.recipes[i].role() == "rice" {
@@ -635,7 +704,7 @@ func (s *Server) autofillMeals(w http.ResponseWriter, r *http.Request) error {
 			var day []plannedDish
 			for _, best := range c.plate(d, slot, p.planned) {
 				if rc := c.recipe(best.RecipeID); rc != nil {
-					day = append(day, plannedDish{recipe: rc, title: rc.Title, slot: slot, from: -1})
+					day = append(day, plannedDish{recipe: rc, title: rc.Title, slot: slot})
 				}
 			}
 			if err := p.save(d, day); err != nil {

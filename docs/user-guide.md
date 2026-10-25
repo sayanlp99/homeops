@@ -183,10 +183,17 @@ recipe); pick who's cooking and save. It then shows on the board like any other 
   month);
 - Sunday lunch is the weekend special (pulao set) every two weeks; prawns at most
   weekly;
-- dinners are chapati + a simple curry, lunch leftovers on Tuesday and Thursday, a
-  special on Friday and eating out on Saturday. This is only a starting point: swap
-  any night for leftovers (Who's eating… → leftover) or a fresh dish as the fridge
-  allows.
+- dinners are chapati + a simple curry, a special on Friday and eating out on
+  Saturday;
+- **cook once, eat twice**: breakfast, lunch and dinner cooked one day come back
+  reheated at the same meal the next day, then something fresh is cooked. The cooking
+  day's servings (and the grocery list) cover both days; the second day is marked
+  *leftover*, so it isn't bought or taken from the pantry again. Fruit and dairy are
+  fresh daily. A special dinner or a meal out is one night only, so the dinner before
+  it is cooked for one night.
+
+This is only a starting point: swap any meal for leftovers (Who's eating… →
+leftover) or a fresh dish as the fridge allows.
 
 Seasonal dishes (echor in summer, peyajkoli in winter) are only planned in season.
 Each pick favours what closes the week's nutrient gaps, and each person's portions
