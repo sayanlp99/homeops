@@ -80,6 +80,7 @@ func (s *Server) Routes() http.Handler {
 			return ok(w, map[string]string{"status": "ok"})
 		}))
 		r.Method("GET", "/bootstrap", s.optionalAuth(handler(s.bootstrap)))
+		r.Method("POST", "/client-errors", s.optionalAuth(handler(s.reportClientError)))
 		r.Method("POST", "/setup", handler(s.setup))
 		r.Method("POST", "/auth/login", handler(s.login))
 		r.Method("POST", "/auth/logout", handler(s.logout))

@@ -54,7 +54,9 @@ export const persister = createAsyncStoragePersister({
   throttleTime: 500,
 })
 
-export const CACHE_BUSTER = 'v1'
+// Data saved by an older build may not match what this build expects, so each build
+// starts from a fresh cache rather than risk rendering stale shapes.
+export const CACHE_BUSTER = __BUILD_ID__
 
 /** Wipe local data, e.g. on sign-out, so the next user starts clean. */
 export async function clearLocalData() {

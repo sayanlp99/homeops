@@ -30,6 +30,26 @@
   </head>
   <body>
     <div id="root"></div>
+    <script>
+      // If the app never draws (its code failed to load or start), offer a way out instead
+      // of a blank screen: drop saved data and the installed copy, then load fresh.
+      setTimeout(function () {
+        var root = document.getElementById('root')
+        if (!root || root.childElementCount) return
+        root.innerHTML =
+          '<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:24px;text-align:center;font:14px system-ui,sans-serif">' +
+          '<b style="font-size:16px">HomeOps didn’t start</b><span style="opacity:.7">Reload to fetch the latest version.</span>' +
+          '<button id="ho-reset" style="height:36px;padding:0 16px;border:0;border-radius:6px;background:#1d4ed8;color:#fff;font:inherit">Reload HomeOps</button></div>'
+        document.getElementById('ho-reset').onclick = function () {
+          var done = function () { location.replace('/') }
+          try { indexedDB.deleteDatabase('keyval-store') } catch (e) {}
+          Promise.all([
+            navigator.serviceWorker ? navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister() })) }) : 0,
+            window.caches ? caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k) })) }) : 0,
+          ]).then(done, done)
+        }
+      }, 12000)
+    </script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

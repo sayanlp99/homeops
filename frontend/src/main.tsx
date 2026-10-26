@@ -5,9 +5,13 @@ import { BrowserRouter } from 'react-router-dom'
 import { Toaster, toast } from 'sonner'
 import { registerSW } from 'virtual:pwa-register'
 import { App } from './App'
+import { ErrorBoundary } from './components/ErrorBoundary'
+import { reportUncaught } from './lib/crash'
 import { CACHE_BUSTER, persister, queryClient } from './lib/queryClient'
 import { useTheme } from './lib/theme'
 import './index.css'
+
+reportUncaught()
 
 // A new version waits until the user agrees, so nobody loses a half-typed form.
 const updateSW = registerSW({
@@ -47,6 +51,8 @@ function Root() {
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <Root />
+    <ErrorBoundary>
+      <Root />
+    </ErrorBoundary>
   </StrictMode>,
 )

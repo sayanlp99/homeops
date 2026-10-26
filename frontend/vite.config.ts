@@ -4,7 +4,11 @@ import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import { fileURLToPath } from 'node:url'
 
+// Changes on every build: tags cached data and crash reports with the version that made them.
+const buildId = new Date().toISOString().replace(/[-:]/g, '').slice(0, 13)
+
 export default defineConfig({
+  define: { __BUILD_ID__: JSON.stringify(buildId) },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   plugins: [
     react(),
