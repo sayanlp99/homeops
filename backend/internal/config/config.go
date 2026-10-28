@@ -25,7 +25,9 @@ type Config struct {
 	SMTPPort    int
 	SMTPUser    string
 	SMTPPass    string
-	MailFrom    string // e.g. "HomeOps <no-reply@example.com>"
+	MailFrom    string   // e.g. "HomeOps <no-reply@example.com>"
+	GeminiKey   string   // Google AI Studio key; empty switches the AI helpers off
+	GeminiModel []string // tried in order
 }
 
 func Load() (Config, error) {
@@ -46,6 +48,8 @@ func Load() (Config, error) {
 		SMTPUser:    env("HOMEOPS_SMTP_USER", ""),
 		SMTPPass:    env("HOMEOPS_SMTP_PASSWORD", ""),
 		MailFrom:    env("HOMEOPS_MAIL_FROM", "HomeOps <no-reply@localhost>"),
+		GeminiKey:   env("HOMEOPS_GEMINI_API_KEY", ""),
+		GeminiModel: strings.Split(env("HOMEOPS_GEMINI_MODELS", "gemini-3.5-flash-lite,gemini-3.5-flash"), ","),
 	}
 	if p := env("HOMEOPS_SMTP_PORT", "587"); p != "" {
 		n, err := strconv.Atoi(p)

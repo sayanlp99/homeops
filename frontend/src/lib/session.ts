@@ -16,6 +16,7 @@ export interface Session {
   labels: Label[]
   households: MyHousehold[]
   mailEnabled: boolean
+  aiEnabled: boolean
   vapidPublicKey: string
   memberById: Map<string, Member>
   labelById: Map<string, Label>
@@ -36,6 +37,7 @@ export function useSession(): Session {
       labels,
       households: data.households ?? [],
       mailEnabled: data.mailEnabled ?? false,
+      aiEnabled: data.aiEnabled ?? false,
       vapidPublicKey: data.vapidPublicKey ?? '',
       memberById: new Map(members.map((m) => [m.id, m])),
       labelById: new Map(labels.map((l) => [l.id, l])),

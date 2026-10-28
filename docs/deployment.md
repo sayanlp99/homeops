@@ -135,6 +135,14 @@ Open apps pick up the new version through the "A new version is ready" prompt.
 | `HOMEOPS_SMTP_USER` / `HOMEOPS_SMTP_PASSWORD` | (none) | SMTP login |
 | `HOMEOPS_MAIL_FROM` | `HomeOps <no-reply@localhost>` | Sender of emails |
 | `HOMEOPS_DEV` | off | `1` allows non-HTTPS cookies (local testing only) |
+| `HOMEOPS_GEMINI_API_KEY` | (none) | Google AI Studio key for the AI helpers; empty hides them. Keep it in `/etc/homeops/ai.env` (root 0600) |
+| `HOMEOPS_GEMINI_MODELS` | `gemini-3.5-flash-lite,gemini-3.5-flash` | Models to try, in order |
+
+The AI helpers draft a recipe from a dish name, read a pasted shopping list, and fill in
+a task (or a recurring chore) from a sentence. They only ever send that text, the
+household's member and label names, and ingredient names — never money data, since
+on Google's free tier prompts may be used to improve Google's products. Each household
+gets 150 requests a day.
 
 Without SMTP, invites still work: the invite screen shows the link to send yourself.
 Password-reset emails need SMTP. [mail.md](mail.md) sets up a local mail server.

@@ -142,6 +142,7 @@ If every key is lost, use the server's own keyboard and screen. Or temporarily s
 | Database, S3 and VAPID settings | `/etc/homeops/homeops.env`, `/etc/homeops/s3.json` (root:homeops 0640) | Edit and restart; VAPID keys are in the DB (rotating them means everyone re-enables push) |
 | Tunnel token | cloudflared service | Cloudflare dashboard → tunnel → refresh token, then `sudo cloudflared service install <new token>` |
 | Mail passwords, bridge token, Brevo key | `/etc/homeops/mail.env` (root 0600) | Edit and re-run `install-mail.sh` (update the worker's `BRIDGE_TOKEN` too) |
+| Gemini API key | `/etc/homeops/ai.env` (root 0600) | Make a new key in Google AI Studio, `sudoedit /etc/homeops/ai.env`, restart `homeops`, delete the old key |
 
 Nothing secret is in the repository: `.env`, `.local/` and `backend/.devdata/`
 are git-ignored. Real bank statements and invoices are never committed, and the

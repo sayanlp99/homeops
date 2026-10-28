@@ -15,6 +15,7 @@ import (
 
 	"homeops/internal/blob"
 	"homeops/internal/config"
+	"homeops/internal/gemini"
 	"homeops/internal/mail"
 	"homeops/internal/realtime"
 )
@@ -29,6 +30,8 @@ type Server struct {
 	push     *pusher
 	files    blob.Store
 	mailer   mail.Sender
+	ai       *gemini.Client // nil when no key is configured
+	aiLimit  *rateLimiter
 	stopping <-chan struct{} // closed on shutdown so long-lived SSE streams end
 }
 
@@ -48,6 +51,8 @@ func New(ctx context.Context, cfg config.Config, db *pgxpool.Pool) (*Server, err
 		wa:       wa,
 		ceremony: newTTLStore[webauthn.SessionData](5 * time.Minute),
 		limiter:  newRateLimiter(10, 15*time.Minute),
+		ai:       gemini.New(cfg.GeminiKey, cfg.GeminiModel...),
+		aiLimit:  newRateLimiter(150, 24*time.Hour),
 	}
 	s.push, err = newPusher(ctx, db, cfg.VAPIDEmail)
 	if err != nil {
@@ -67,6 +72,7 @@ func New(ctx context.Context, cfg config.Config, db *pgxpool.Pool) (*Server, err
 		return nil, err
 	}
 	slog.Info("email", "smtp", cfg.SMTPHost != "", "from", cfg.MailFrom)
+	slog.Info("ai helpers", "enabled", s.ai != nil, "models", strings.Join(cfg.GeminiModel, ","))
 	return s, nil
 }
 
@@ -246,6 +252,10 @@ func (s *Server) Routes() http.Handler {
 			r.Method("GET", "/metrics/burndown", handler(s.burndown))
 			r.Method("GET", "/metrics/team", handler(s.teamMetrics))
 			r.Method("POST", "/kudos", handler(s.giveKudos))
+
+			r.Method("POST", "/ai/recipe", handler(s.aiRecipe))
+			r.Method("POST", "/ai/grocery", handler(s.aiGrocery))
+			r.Method("POST", "/ai/task", handler(s.aiTask))
 
 			r.Method("GET", "/notifications", handler(s.listNotifications))
 			r.Method("POST", "/notifications/read", handler(s.markNotificationsRead))

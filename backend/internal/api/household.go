@@ -98,6 +98,7 @@ func (s *Server) bootstrap(w http.ResponseWriter, r *http.Request) error {
 		"labels":         labels,
 		"households":     households,
 		"mailEnabled":    s.mailer.Enabled(),
+		"aiEnabled":      s.ai != nil,
 		"vapidPublicKey": s.push.publicKey,
 		"serverTime":     time.Now(),
 	})

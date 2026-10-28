@@ -1,10 +1,11 @@
 import clsx from 'clsx'
 import { addDays, format } from 'date-fns'
-import { Check, ListChecks, MoreHorizontal, Plus, RefreshCw, ShoppingBag, Trash2 } from 'lucide-react'
+import { Check, ListChecks, MoreHorizontal, Plus, RefreshCw, ShoppingBag, Sparkles, Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Modal } from '@/components/Dialog'
 import { Menu, MenuItem, MenuLabel, MenuSeparator } from '@/components/Menu'
-import { Avatar, Badge, Button, Card, EmptyState, Field, IconButton, Input, PageHeader, Spinner, Switch } from '@/components/ui'
+import { toast } from 'sonner'
+import { Avatar, Badge, Button, Card, EmptyState, Field, IconButton, Input, PageHeader, Spinner, Switch, Textarea } from '@/components/ui'
 import { api, patch, post } from '@/lib/api'
 import { formatINR } from '@/lib/format'
 import { formatQty, useAction, useGrocery, useGroceryActions, useIngredients } from '@/lib/meals'
@@ -18,8 +19,9 @@ const AISLE_ORDER = ['Vegetables', 'Fruits & Nuts', 'Dairy & Eggs', 'Meat & Fish
 export function GroceryPage() {
   const { data: items = [], isLoading } = useGrocery()
   const { add } = useGroceryActions()
-  const { household } = useSession()
+  const { household, aiEnabled } = useSession()
   const [text, setText] = useState('')
+  const [pasting, setPasting] = useState(false)
   const [finishing, setFinishing] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [clearing, setClearing] = useState(false)
@@ -49,6 +51,11 @@ export function GroceryPage() {
             {items.length > 0 && (
               <Button variant="ghost" icon={<Trash2 className="size-4" />} onClick={() => setClearing(true)}>
                 Delete all
+              </Button>
+            )}
+            {aiEnabled && (
+              <Button icon={<Sparkles className="size-4" />} onClick={() => setPasting(true)}>
+                Paste a list
               </Button>
             )}
             <Button icon={<RefreshCw className="size-4" />} onClick={() => setGenerating(true)}>
@@ -115,6 +122,7 @@ export function GroceryPage() {
       )}
       <FinishDialog open={finishing} onOpenChange={setFinishing} count={checked.length} />
       <ClearDialog open={clearing} onOpenChange={setClearing} count={items.length} />
+      {aiEnabled && <PasteListDialog open={pasting} onOpenChange={setPasting} />}
       <GenerateDialog open={generating} onOpenChange={setGenerating} sprintStartDow={household.sprintStartDow} />
     </div>
   )
@@ -173,6 +181,89 @@ function Row({ item }: { item: GroceryItem }) {
         </MenuItem>
       </Menu>
     </div>
+  )
+}
+
+type ReadItem = { name: string; quantity: number | null; unit: string; note: string; aisle: string }
+
+/** Any written list (Hinglish, one line, voice-typed…) read into items by the AI, checked here before adding. */
+function PasteListDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const { addItem } = useGroceryActions()
+  const [text, setText] = useState('')
+  const [read, setRead] = useState<ReadItem[] | null>(null)
+  const [keep, setKeep] = useState<boolean[]>([])
+  const [busy, setBusy] = useState(false)
+  const close = () => {
+    onOpenChange(false)
+    setText('')
+    setRead(null)
+  }
+  const readList = async () => {
+    setBusy(true)
+    try {
+      const items = await post<ReadItem[]>('/ai/grocery', { text })
+      setRead(items)
+      setKeep(items.map(() => true))
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't read the list")
+    } finally {
+      setBusy(false)
+    }
+  }
+  const chosen = read?.filter((_, i) => keep[i]) ?? []
+  const addAll = () => {
+    chosen.forEach(({ name, quantity, unit, note }) => addItem({ name, quantity, unit, note }))
+    toast.success(`Added ${chosen.length} ${chosen.length === 1 ? 'item' : 'items'}`)
+    close()
+  }
+  return (
+    <Modal
+      open={open}
+      onOpenChange={(o) => (o ? onOpenChange(true) : close())}
+      title="Paste a shopping list"
+      description={read ? 'Untick anything you don’t want, then add.' : 'Any language or layout: a WhatsApp message, a note, or just type. Nothing is added until you check it.'}
+      footer={
+        read ? (
+          <>
+            <Button variant="ghost" onClick={() => setRead(null)}>
+              Back
+            </Button>
+            <Button variant="primary" disabled={!chosen.length} onClick={addAll}>
+              Add {chosen.length} {chosen.length === 1 ? 'item' : 'items'}
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button variant="ghost" onClick={close}>
+              Cancel
+            </Button>
+            <Button variant="primary" loading={busy} disabled={!text.trim()} icon={<Sparkles className="size-4" />} onClick={readList}>
+              Read list
+            </Button>
+          </>
+        )
+      }
+    >
+      {read ? (
+        <div className="-mx-1 max-h-[55vh] overflow-y-auto">
+          {read.map((it, i) => (
+            <label key={i} className="flex min-h-11 items-center gap-3 rounded-md px-1 hover:bg-surface-2">
+              <input type="checkbox" checked={keep[i]} onChange={(e) => setKeep((k) => k.map((v, j) => (j === i ? e.target.checked : v)))} className="size-4 accent-[var(--accent)]" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[14px] lg:text-[13px]">
+                  {it.name}
+                  {(it.quantity != null || it.unit) && <span className="ml-1.5 text-muted tabular">{formatQty(it.quantity, it.unit)}</span>}
+                </span>
+                {it.note && <span className="block truncate text-[12px] text-subtle">{it.note}</span>}
+              </span>
+              <span className="shrink-0 text-[11px] text-subtle">{it.aisle}</span>
+            </label>
+          ))}
+        </div>
+      ) : (
+        <Textarea autoFocus value={text} onChange={(e) => setText(e.target.value)} maxLength={3000} placeholder={'2 kg aloo, dhania ek bunch, 1 dozen eggs\nAmul butter 500g\nkuch tamatar'} className="min-h-36" />
+      )}
+    </Modal>
   )
 }
 

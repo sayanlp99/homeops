@@ -10,6 +10,8 @@ Type=simple
 User=homeops
 Group=homeops
 EnvironmentFile=/etc/homeops/homeops.env
+# Optional: the Gemini key for the AI helpers (root 0600).
+EnvironmentFile=-/etc/homeops/ai.env
 ExecStart=/opt/homeops/homeops
 Restart=on-failure
 RestartSec=3

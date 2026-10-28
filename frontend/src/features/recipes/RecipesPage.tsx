@@ -1,12 +1,13 @@
 import clsx from 'clsx'
-import { Clock, Heart, Link2, Package, Plus, Search } from 'lucide-react'
+import { Clock, Heart, Link2, Package, Plus, Search, Sparkles } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { toast } from 'sonner'
 import { Modal } from '@/components/Dialog'
-import { Button, Card, EmptyState, Field, Input, PageHeader, Segmented, Spinner } from '@/components/ui'
+import { Button, Card, EmptyState, Field, Input, PageHeader, Segmented, Spinner, Textarea } from '@/components/ui'
 import { get, post } from '@/lib/api'
 import { relativeDay } from '@/lib/format'
+import { useSession } from '@/lib/session'
 import { SLOTS, categoryLabel, useAction, useRecipes } from '@/lib/meals'
 import { useQuery } from '@tanstack/react-query'
 import type { Recipe, RecipePack, Slot } from '@/lib/types'
@@ -20,6 +21,8 @@ export function RecipesPage() {
   const [q, setQ] = useState('')
   const [importing, setImporting] = useState(false)
   const [packs, setPacks] = useState(false)
+  const [drafting, setDrafting] = useState(false)
+  const { aiEnabled } = useSession()
   const slot = (params.get('slot') as Slot | 'all' | 'fav') || 'all'
   const setSlot = (v: string) =>
     setParams((p) => {
@@ -48,6 +51,11 @@ export function RecipesPage() {
             <Button icon={<Link2 className="size-4" />} onClick={() => setImporting(true)}>
               Import from link
             </Button>
+            {aiEnabled && (
+              <Button icon={<Sparkles className="size-4" />} onClick={() => setDrafting(true)}>
+                Draft with AI
+              </Button>
+            )}
             <Link to="/recipes/new">
               <Button variant="primary" icon={<Plus className="size-4" />}>
                 New recipe
@@ -98,6 +106,7 @@ export function RecipesPage() {
       )}
       <ImportDialog open={importing} onOpenChange={setImporting} />
       <PacksDialog open={packs} onOpenChange={setPacks} />
+      {aiEnabled && <DraftDialog open={drafting} onOpenChange={setDrafting} />}
     </div>
   )
 }
@@ -181,6 +190,68 @@ function ImportDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o:
         </Field>
       </form>
       <p className={clsx('mt-3 text-[12px] text-subtle')}>Tip: on your phone, use the site's Share button → Copy link, then paste here.</p>
+    </Modal>
+  )
+}
+
+/** A whole recipe from just its name, opened in the editor to check before saving. */
+function DraftDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: boolean) => void }) {
+  const [name, setName] = useState('')
+  const [servings, setServings] = useState(2)
+  const [notes, setNotes] = useState('')
+  const [busy, setBusy] = useState(false)
+  const navigate = useNavigate()
+  const submit = async () => {
+    if (!name.trim()) return
+    setBusy(true)
+    try {
+      const draft = await post<Recipe>('/ai/recipe', { name, servings, notes })
+      importDraft.current = draft
+      onOpenChange(false)
+      setName('')
+      setNotes('')
+      navigate('/recipes/new?import=1')
+      draft.warnings?.forEach((w) => toast.warning(w))
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't draft the recipe")
+    } finally {
+      setBusy(false)
+    }
+  }
+  return (
+    <Modal
+      open={open}
+      onOpenChange={onOpenChange}
+      title="Draft a recipe with AI"
+      description="Type a dish and get ingredients, steps and nutrition. You'll review everything before saving."
+      footer={
+        <>
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" loading={busy} disabled={!name.trim()} icon={<Sparkles className="size-4" />} onClick={submit}>
+            Draft recipe
+          </Button>
+        </>
+      }
+    >
+      <form
+        className="space-y-3"
+        onSubmit={(e) => {
+          e.preventDefault()
+          submit()
+        }}
+      >
+        <Field label="Dish">
+          <Input autoFocus placeholder="e.g. Shukto, Aloo posto, Chicken kosha" value={name} maxLength={120} onChange={(e) => setName(e.target.value)} />
+        </Field>
+        <Field label="Servings">
+          <Input type="number" inputMode="numeric" min={1} max={20} value={servings} onChange={(e) => setServings(Number(e.target.value) || 2)} className="w-24" />
+        </Field>
+        <Field label="Anything to keep in mind (optional)">
+          <Textarea placeholder="e.g. less oil, no onion-garlic, the way Ma makes it with posto" value={notes} maxLength={500} onChange={(e) => setNotes(e.target.value)} className="min-h-16" />
+        </Field>
+      </form>
     </Modal>
   )
 }

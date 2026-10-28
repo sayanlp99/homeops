@@ -31,14 +31,16 @@ export function RecipeEditorPage() {
   const [uploading, setUploading] = useState(false)
   const [pasting, setPasting] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  // Kept so a repeated effect run (StrictMode) finds the draft again after it was taken.
+  const imported = useRef<Recipe | null>(null)
   const navigate = useNavigate()
   const qc = useQueryClient()
 
   useEffect(() => {
     if (d) return
     if (id && recipe) setD({ ...recipe, steps: recipe.steps.length ? recipe.steps : [''], ingredients: recipe.ingredients.length ? recipe.ingredients : blank.ingredients })
-    else if (!id && params.get('import') && importDraft.current) {
-      const r = importDraft.current
+    else if (!id && params.get('import') && (imported.current ?? importDraft.current)) {
+      const r = (imported.current ??= importDraft.current!)
       setD({ ...blank, ...r, id: undefined, steps: r.steps.length ? r.steps : [''], ingredients: r.ingredients.length ? r.ingredients : blank.ingredients })
       importDraft.current = null
     } else if (!id) setD(blank)

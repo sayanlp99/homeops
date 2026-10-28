@@ -51,6 +51,7 @@ export interface Bootstrap {
   labels?: Label[]
   households?: MyHousehold[]
   mailEnabled?: boolean
+  aiEnabled?: boolean
   vapidPublicKey?: string
 }
 

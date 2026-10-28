@@ -92,7 +92,8 @@ export function useIngredients() {
 
 type NewMeal = { id: string; date: string; slot: Slot; recipeId?: string | null; title: string; servings?: number; note?: string; portions?: Record<string, number> | null; leftover?: boolean }
 type MealPatch = Partial<Pick<MealItem, 'date' | 'slot' | 'servings' | 'note' | 'position' | 'portions' | 'leftover'>> & { cooked?: boolean }
-type NewGrocery = { id: string; text: string }
+// `text` is parsed on the server; or send the parts directly (as the AI list reader does).
+type NewGrocery = { id: string; text?: string; name?: string; quantity?: number | null; unit?: string; note?: string }
 type GroceryPatch = { checked?: boolean; quantity?: number | null; unit?: string; note?: string }
 
 const mealsKeys = (qc: QueryClient) => qc.getQueryCache().findAll({ queryKey: ['meals'] }).map((q) => q.queryKey)
@@ -165,7 +166,7 @@ export function registerMealMutations(qc: QueryClient) {
     onMutate: async (g: NewGrocery) => {
       await qc.cancelQueries({ queryKey: ['grocery'] })
       const draft: GroceryItem = {
-        id: g.id, ingredientId: null, name: g.text, quantity: null, unit: '', aisle: 'Other', note: '', source: 'manual',
+        id: g.id, ingredientId: null, name: g.name ?? g.text ?? '', quantity: g.quantity ?? null, unit: g.unit ?? '', aisle: 'Other', note: g.note ?? '', source: 'manual',
         checkedAt: null, checkedBy: null, createdBy: null, createdAt: new Date().toISOString(),
       }
       setGrocery(qc, (gs) => [...gs, draft])
@@ -219,6 +220,7 @@ export function useGroceryActions() {
   const remove = useMutation<void, Error, string>({ mutationKey: ['grocery.delete'] })
   return {
     add: (text: string) => add.mutate({ id: uuid(), text }),
+    addItem: (g: Omit<NewGrocery, 'id' | 'text'>) => add.mutate({ ...g, id: uuid() }),
     update: (id: string, changes: GroceryPatch) => update.mutate({ id, changes }),
     remove: (id: string) => remove.mutate(id),
   }
